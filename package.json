@@ -1,0 +1,9 @@
+{
+  "name": "linkup",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun src/app.js",
+    "build": "bun build.js"
+  }
+}
