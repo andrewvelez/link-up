@@ -1,20 +1,8 @@
-/**
- * App.js - main entrypoint
- * by: Andrew Velez 2026 All Rights Reserved 
- */
-
-import { start } from "./api.js";
-
-await start();
+// @ts-check
 
 /**
- * Creates rendering window.
- * @param {{ url: string }} options
+ * Application entry point.
  */
-function createWindow({ url }) {
-  console.log("open WebView:", url);
+export function createApp() {
+  return {};
 }
-
-createWindow({
-  url: "http://127.0.0.1:4510"
-});

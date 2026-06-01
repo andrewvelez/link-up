@@ -1,9 +1,10 @@
 {
-  "name": "linkup",
-  "version": "0.1.0",
+  "name": "link-up",
+  "private": true,
   "type": "module",
   "scripts": {
+    "dev": "bun --watch src/app.js",
     "start": "bun src/app.js",
-    "build": "bun build.js"
+    "test": "bun test"
   }
 }
