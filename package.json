@@ -6,5 +6,8 @@
     "dev": "bun --watch src/app.js",
     "start": "bun src/app.js",
     "test": "bun test"
+  },
+  "dependencies": {
+    "htmx.org": "^2.0.10"
   }
 }

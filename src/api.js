@@ -27,8 +27,8 @@ export async function start() {
         });
       }
 
-      if (url.pathname === "/app.css") {
-        return new Response(Bun.file("./web/app.css"), {
+      if (url.pathname === "/styles.css") {
+        return new Response(Bun.file("./web/styles.css"), {
           headers: {
             "content-type": "text/css"
           }

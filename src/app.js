@@ -1,8 +1,5 @@
 // @ts-check
 
-/**
- * Application entry point.
- */
-export function createApp() {
-  return {};
-}
+import { start } from "./api.js";
+
+await start();
