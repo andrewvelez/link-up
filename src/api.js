@@ -20,7 +20,7 @@ export async function start() {
       }
 
       if (url.pathname === "/app.js") {
-        return new Response(Bun.file("./web/app.js"), {
+        return new Response(Bun.file("./src/app.js"), {
           headers: {
             "content-type": "application/javascript"
           }
@@ -32,26 +32,6 @@ export async function start() {
           headers: {
             "content-type": "text/css"
           }
-        });
-      }
-
-      if (url.pathname === "/api/health") {
-        return Response.json({
-          ok: true
-        });
-      }
-
-      if (url.pathname === "/api/state") {
-        return Response.json(state);
-      }
-
-      if (url.pathname === "/api/set") {
-        return req.json().then((body) => {
-          Object.assign(state, body);
-
-          return Response.json({
-            ok: true
-          });
         });
       }
 
