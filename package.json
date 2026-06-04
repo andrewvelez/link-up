@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "bun --watch src/app.js",
     "start": "bun src/app.js",
-    "test": "bun test"
+    "test": "bun test",
+    "build": "bun build --compile --target=bun-linux-x64 ./src/app.js web/**/* --outfile link-up-app"
   },
   "dependencies": {
     "htmx.org": "^2.0.10"

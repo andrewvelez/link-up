@@ -5,21 +5,15 @@ import { $ } from "bun";
 await $`rm -rf dist`;
 await $`mkdir -p dist`;
 
-const result = await Bun.build({
-  entrypoints: ["src/app.js"],
-  target: "bun",
-  compile: true,
-  outfile: "dist/linkup",
-});
+/** @type {import("bun").BuildConfig} */
+const config = {
+  entrypoints: ["./src/api.js", ...new Bun.Glob("web/**").scanSync(".")],
+  compile: {
+    target: "bun-linux-x64", // Change to bun-windows-x64 or bun-darwin-arm64 as needed
+    outfile: "./link-up",
+  },
+};
 
-if (!result.success) {
-  console.error("Build failed");
-
-  for (const message of result.logs) {
-    console.error(message);
-  }
-
-  process.exit(1);
-}
+await Bun.build(config);
 
 console.log("Built dist/linkup");

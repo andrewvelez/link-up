@@ -3,62 +3,41 @@
  * @property {Array<object>} users
  */
 
-/** @type {State} */
-const state = {
-  users: []
-};
+/** @type {Map<string, import("bun").Blob>} */
+const assets = new Map();
 
-export async function start() {
-  Bun.serve({
-    port: 4510,
+for (const file of Bun.embeddedFiles) {
+  // Strips the "web/" prefix to match URL paths
+  const path = file.name.replace(/^web\//, "");
+  assets.set(path === "" ? "index.html" : path, file);
+}
 
-    fetch(req, server) {
-      const url = new URL(req.url);
+Bun.serve({
+  port: 3000,
+  /** @param {Request} req */
+  fetch(req) {
+    const url = new URL(req.url);
+    const path = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
 
-      if (url.pathname === "/") {
-        return Bun.file("./web/index.html");
-      }
-
-      if (url.pathname === "/app.js") {
-        return new Response(Bun.file("./src/app.js"), {
-          headers: {
-            "content-type": "application/javascript"
-          }
-        });
-      }
-
-      if (url.pathname === "/styles.css") {
-        return new Response(Bun.file("./web/styles.css"), {
-          headers: {
-            "content-type": "text/css"
-          }
-        });
-      }
-
-      if (url.pathname === "/ws") {
-        if (server.upgrade(req)) {
-          return;
-        }
-      }
-
-      return new Response("Not found", {
-        status: 404
+    // 1. Handle API routes
+    if (path.startsWith("api/")) {
+      return new Response(JSON.stringify({ message: "Hello from API" }), {
+        headers: { "Content-Type": "application/json" }
       });
-    },
-
-    websocket: {
-      open(ws) {
-        ws.send(JSON.stringify({
-          type: "init",
-          state
-        }));
-      },
-
-      message(ws, message) {
-        console.log("ws:", message);
-      }
     }
-  });
+
+    // 2. Handle Static Assets (Embedded)
+    const asset = assets.get(path);
+    if (asset) {
+      return new Response(asset, {
+        headers: { "Content-Type": asset.type }
+      });
+    }
+
+    return new Response("Not Found", { status: 404 });
+  },
+});
+
 
   console.log("API listening on http://127.0.0.1:4510");
 }

@@ -1,5 +1,10 @@
 {
   "name": "Link-Up",
+  "short_name": "Link-Up",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f0f0",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "icons/512.png",
