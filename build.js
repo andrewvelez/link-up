@@ -2,18 +2,31 @@
 
 import { $ } from "bun";
 
-await $`rm -rf dist`;
-await $`mkdir -p dist`;
+await $`rm -f link-up`;
+
+await $`tsc -p tsconfig.json --noEmit`;
 
 /** @type {import("bun").BuildConfig} */
 const config = {
-  entrypoints: ["./src/api.js", ...new Bun.Glob("web/**").scanSync(".")],
+  entrypoints: [
+    "./src/api.js",
+    ...new Bun.Glob("web/**").scanSync("."),
+  ],
+
   compile: {
-    target: "bun-linux-x64", // Change to bun-windows-x64 or bun-darwin-arm64 as needed
+    target: "bun-linux-x64",
     outfile: "./link-up",
   },
 };
 
-await Bun.build(config);
+const result = await Bun.build(config);
 
-console.log("Built dist/linkup");
+if (!result.success) {
+  for (const message of result.logs) {
+    console.error(message);
+  }
+
+  process.exit(1);
+}
+
+console.log("Built ./link-up");

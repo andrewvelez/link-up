@@ -3,10 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/app.js",
-    "start": "bun src/app.js",
+    "dev": "bun src/api.js",
+    "start": "bun src/api.js",
     "test": "bun test",
-    "build": "bun build --compile --target=bun-linux-x64 ./src/app.js web/**/* --outfile link-up-app"
+    "build": "bun ./build.js"
   },
   "dependencies": {
     "htmx.org": "^2.0.10"
