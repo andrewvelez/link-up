@@ -1,6 +1,6 @@
 import indexHtml from "../web/index.html";
 
-export const assets = {
+export const routes = {
   "/": indexHtml,
   "/index.html": indexHtml,
 };

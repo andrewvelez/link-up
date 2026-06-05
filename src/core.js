@@ -1,9 +1,9 @@
-import { assets } from "./assets.js";
+import { routes } from "./routes.js";
 
 Bun.serve({
   port: 3000,
 
-  routes: assets,
+  routes: routes,
 
   fetch() {
     return new Response("Not Found", { status: 404 });
