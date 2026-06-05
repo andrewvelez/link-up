@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun src/core.js",
-    "start": "bun src/core.js",
+    "dev": "bun ./build.js --dev",
+    "start": "bun ./build.js --start",
     "test": "bun ./build.js --test",
     "build": "bun ./build.js --build",
     "clean": "bun ./build.js --clean"
