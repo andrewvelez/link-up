@@ -3,17 +3,11 @@ import { assets } from "./assets.js";
 Bun.serve({
   port: 3000,
 
-  fetch(req) {
-    const path = new URL(req.url).pathname;
+  routes: assets,
 
-    if (path.startsWith("/api/")) {
-      // API handling
-    }
-
-    const asset = assets[path];
-
-    return asset !== undefined
-      ? new Response(asset)
-      : new Response("Not Found", { status: 404 });
+  fetch() {
+    return new Response("Not Found", { status: 404 });
   },
 });
+
+console.log("Listening on http://127.0.0.1:3000");
