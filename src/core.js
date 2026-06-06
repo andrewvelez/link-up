@@ -2,9 +2,7 @@ import { routes } from "./routes.js";
 
 Bun.serve({
   port: 3000,
-
   routes: routes,
-
   fetch() {
     return new Response("Not Found", { status: 404 });
   },

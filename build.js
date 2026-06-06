@@ -9,19 +9,23 @@ const OUTFILE = `${OUTDIR}/link-up`;
 const ENTRYPOINT = "./src/core.js";
 const APP_URL = "http://127.0.0.1:3000/";
 
-async function typecheck() {
-  await $`tsc -p tsconfig.json --noEmit`;
+function typecheck() {
+  return $`tsc -p tsconfig.json --noEmit`;
 }
 
-async function test() {
-  await $`bun test`;
+function test() {
+  return $`bun test`;
 }
 
-async function clean() {
-  await rm(OUTDIR, {
+function clean() {
+  return rm(OUTDIR, {
     recursive: true,
     force: true,
   });
+}
+
+function openBrowser() {
+  return $`xdg-open ${APP_URL}`.quiet();
 }
 
 async function build() {
@@ -39,10 +43,6 @@ async function build() {
   if (!result.success) {
     process.exit(1);
   }
-}
-
-async function openBrowser() {
-  await $`xdg-open ${APP_URL}`.quiet();
 }
 
 async function waitForServer() {
@@ -76,14 +76,6 @@ async function serve({ open }) {
   await server.exited;
 }
 
-async function dev() {
-  await serve({ open: true });
-}
-
-async function start() {
-  await serve({ open: true });
-}
-
 const { values } = parseArgs({
   args: Bun.argv.slice(2),
   options: {
@@ -108,8 +100,8 @@ if (selected.length !== 1) {
 }
 
 const commands = {
-  dev,
-  start,
+  dev: () => serve({ open: true }),
+  start: () => serve({ open: true }),
   build,
   test,
   clean,
