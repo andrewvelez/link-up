@@ -9,6 +9,7 @@ Bun.serve({
   hostname: "127.0.0.1",
   port: 3000,
   routes,
+  /** @returns {Response} */
   fetch() {
     return new Response("Not Found", { status: 404 });
   },

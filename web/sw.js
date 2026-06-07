@@ -1,16 +1,24 @@
+/** @type {string} */
 const CACHE_NAME = "link-up-v1";
 
+/** @type {Array<string>} */
 const ASSETS = [
   "/",
   "/index.html",
 ];
 
-/** @param {string} pathname */
+/**
+ * @param {string} pathname
+ * @returns {boolean}
+ */
 function isApiPath(pathname) {
   return pathname === "/api" || pathname.startsWith("/api/");
 }
 
-/** @param {Request} request */
+/**
+ * @param {Request} request
+ * @returns {Promise<Response>}
+ */
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);

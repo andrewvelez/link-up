@@ -8,19 +8,26 @@ import { $ } from "bun";
 import { rm } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
+/** @type {string} */
 const OUTDIR = "./dist";
+/** @type {string} */
 const OUTFILE = `${OUTDIR}/link-up`;
+/** @type {string} */
 const ENTRYPOINT = "./src/core.js";
+/** @type {string} */
 const APP_URL = "http://127.0.0.1:3000/";
 
+/** @returns {Promise<object>} */
 function typecheck() {
   return $`tsc -p tsconfig.json --noEmit`;
 }
 
+/** @returns {Promise<object>} */
 function test() {
   return $`bun test`;
 }
 
+/** @returns {Promise<void>} */
 function clean() {
   return rm(OUTDIR, {
     recursive: true,
@@ -28,10 +35,12 @@ function clean() {
   });
 }
 
+/** @returns {Promise<object>} */
 function openBrowser() {
   return $`xdg-open ${APP_URL}`.quiet();
 }
 
+/** @returns {Promise<void>} */
 async function build() {
   await typecheck();
 
@@ -49,8 +58,9 @@ async function build() {
   }
 }
 
+/** @returns {Promise<void>} */
 async function waitForServer() {
-  for (;;) {
+  for (; ;) {
     try {
       const response = await fetch(APP_URL);
 
@@ -65,6 +75,11 @@ async function waitForServer() {
   }
 }
 
+/**
+ * @param {object} options
+ * @param {boolean} options.open
+ * @returns {Promise<void>}
+ */
 async function serve({ open }) {
   const server = Bun.spawn(["bun", ENTRYPOINT], {
     stdin: "inherit",
@@ -103,6 +118,7 @@ if (selected.length !== 1) {
   process.exit(1);
 }
 
+/** @type {Object.<string, Function>} */
 const commands = {
   dev: () => serve({ open: true }),
   start: () => serve({ open: true }),
@@ -112,4 +128,10 @@ const commands = {
   typecheck,
 };
 
-await commands[selected[0]]();
+const command = commands[selected[0]];
+
+if (!command) {
+  process.exit(1);
+}
+
+await command();
