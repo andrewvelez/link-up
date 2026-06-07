@@ -1,4 +1,8 @@
 #!/usr/bin/env bun
+/**
+ * build.js - build the project in dev, test, prod
+ * by: Andrew Velez 2026
+ */
 
 import { $ } from "bun";
 import { rm } from "node:fs/promises";

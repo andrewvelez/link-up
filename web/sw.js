@@ -3,10 +3,30 @@ const CACHE_NAME = "link-up-v1";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css",
-  "/app.js",
-  "/manifest.json",
 ];
+
+/** @param {string} pathname */
+function isApiPath(pathname) {
+  return pathname === "/api" || pathname.startsWith("/api/");
+}
+
+/** @param {Request} request */
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+
+  if (cached) {
+    return cached;
+  }
+
+  const response = await fetch(request);
+
+  if (response.ok) {
+    await cache.put(request, response.clone());
+  }
+
+  return response;
+}
 
 /** @param {ExtendableEvent} event */
 self.addEventListener("install", (event) => {
@@ -17,9 +37,15 @@ self.addEventListener("install", (event) => {
 
 /** @param {FetchEvent} event */
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then(
-      (response) => response || fetch(event.request),
-    ),
-  );
+  const url = new URL(event.request.url);
+
+  if (
+    event.request.method !== "GET" ||
+    url.origin !== location.origin ||
+    isApiPath(url.pathname)
+  ) {
+    return;
+  }
+
+  event.respondWith(cacheFirst(event.request));
 });

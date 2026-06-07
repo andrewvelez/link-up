@@ -1,8 +1,14 @@
+/**
+ * core.js - the app api layer
+ * by: Andrew Velez 2026
+ */
+
 import { routes } from "./routes.js";
 
 Bun.serve({
+  hostname: "127.0.0.1",
   port: 3000,
-  routes: routes,
+  routes,
   fetch() {
     return new Response("Not Found", { status: 404 });
   },
