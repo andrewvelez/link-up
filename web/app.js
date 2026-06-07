@@ -3,7 +3,6 @@
  * by: Andrew Velez 2026
  */
 
-/** @type {Element | null} */
 const serviceWorker = document.querySelector("#service-worker");
 
 if ("serviceWorker" in navigator && serviceWorker instanceof HTMLLinkElement) {

@@ -17,17 +17,14 @@ const ENTRYPOINT = "./src/core.js";
 /** @type {string} */
 const APP_URL = "http://127.0.0.1:3000/";
 
-/** @returns {Promise<object>} */
 function typecheck() {
   return $`tsc -p tsconfig.json --noEmit`;
 }
 
-/** @returns {Promise<object>} */
 function test() {
   return $`bun test`;
 }
 
-/** @returns {Promise<void>} */
 function clean() {
   return rm(OUTDIR, {
     recursive: true,
@@ -35,13 +32,12 @@ function clean() {
   });
 }
 
-/** @returns {Promise<object>} */
 function openBrowser() {
   return $`xdg-open ${APP_URL}`.quiet();
 }
 
-/** @returns {Promise<void>} */
 async function build() {
+  clean();
   await typecheck();
 
   const result = await Bun.build({
@@ -58,7 +54,6 @@ async function build() {
   }
 }
 
-/** @returns {Promise<void>} */
 async function waitForServer() {
   for (; ;) {
     try {
@@ -75,19 +70,14 @@ async function waitForServer() {
   }
 }
 
-/**
- * @param {object} options
- * @param {boolean} options.open
- * @returns {Promise<void>}
- */
-async function serve({ open }) {
+async function serve({ openBrowser }) {
   const server = Bun.spawn(["bun", ENTRYPOINT], {
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
   });
 
-  if (open) {
+  if (openBrowser) {
     await waitForServer();
     await openBrowser();
   }
@@ -118,7 +108,6 @@ if (selected.length !== 1) {
   process.exit(1);
 }
 
-/** @type {Object.<string, Function>} */
 const commands = {
   dev: () => serve({ open: true }),
   start: () => serve({ open: true }),

@@ -3,7 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun ./build.js --dev",
     "start": "bun ./build.js --start",
     "test": "bun ./build.js --test",
     "build": "bun ./build.js --build",

@@ -17,7 +17,6 @@ function isApiPath(pathname) {
 
 /**
  * @param {Request} request
- * @returns {Promise<Response>}
  */
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
