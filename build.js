@@ -8,7 +8,8 @@ import { $ } from "bun";
 import { rm } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
-//#region "constants"
+// #region constants
+
 /** @type {string} */
 const OUTDIR = "./dist";
 /** @type {string} */
@@ -16,10 +17,18 @@ const OUTFILE = `${OUTDIR}/link-up`;
 /** @type {string} */
 const ENTRYPOINT = "./src/core.js";
 /** @type {string} */
-const APP_URL = "http://127.0.0.1:3000/";
-//#endregion
+const PORT = Bun.env.PORT ?? "3000";
+const HOST = Bun.env.HOST ?? "127.0.0.1";
+const APP_URL = `http://${HOST}:${PORT}/`;
+/** @type {number} */
+const SERVER_TIMEOUT_MS = 5_000;
+/** @type {number} */
+const SERVER_POLL_MS = 100;
 
-//#region "helper functions"
+// #endregion
+
+// #region helper functions
+
 function openBrowser() {
   if (process.platform === "darwin") {
     return $`open ${APP_URL}`.quiet();
@@ -40,22 +49,28 @@ function serverIsReady() {
 }
 
 async function waitForServer() {
-  for (;;) {
+  const deadline = performance.now() + SERVER_TIMEOUT_MS;
+
+  while (performance.now() < deadline) {
     if (await serverIsReady()) {
       return;
     }
 
-    await Bun.sleep(100);
+    await Bun.sleep(SERVER_POLL_MS);
   }
+
+  throw new Error(`Timed out waiting for server at ${APP_URL}`);
 }
 
 function errorUsage(commandNames) {
   console.error(`Usage: bun ./build.js ${commandNames.join(" | ")}`);
   process.exit(1);
 }
-//#endregion
 
-//#region "command functions"
+// #endregion
+
+// #region command functions
+
 function typecheck() {
   return $`tsc -p tsconfig.json --noEmit`;
 }
@@ -96,9 +111,14 @@ async function start() {
     stderr: "inherit",
   });
 
-  await waitForServer();
-  await openBrowser();
+  try {
+    await waitForServer();
+  } catch (error) {
+    server.kill();
+    throw error;
+  }
 
+  await openBrowser();
   await server.exited;
 }
 
@@ -109,9 +129,11 @@ const commandHandlers = Object.freeze({
   clean,
   typecheck,
 });
-//#endregion
 
-//#region "main execution"
+// #endregion
+
+// #region main execution
+
 async function main() {
   const commandNames = Object.keys(commandHandlers);
 
@@ -128,4 +150,5 @@ async function main() {
 }
 
 await main();
-//#endregion
+
+// #endregion
