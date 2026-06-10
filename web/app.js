@@ -2,6 +2,7 @@
  * app.js - client side javascript leveraging a service worker for the PWA
  * by: Andrew Velez 2026
  */
+"use strict";
 
 const serviceWorker = document.querySelector("#service-worker");
 

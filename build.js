@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#! /usr/bin/env bun
 /**
  * build.js - build the project in dev, test, prod
  * by: Andrew Velez 2026
@@ -33,6 +33,14 @@ function clean() {
 }
 
 function openBrowser() {
+  if (process.platform === "darwin") {
+    return $`open ${APP_URL}`.quiet();
+  }
+
+  if (process.platform === "win32") {
+    return $`cmd /c start "" ${APP_URL}`.quiet();
+  }
+
   return $`xdg-open ${APP_URL}`.quiet();
 }
 
@@ -56,45 +64,44 @@ async function build() {
 
 async function waitForServer() {
   for (; ;) {
-    try {
-      const response = await fetch(APP_URL);
+    const response = await fetch(APP_URL);
 
-      if (response.ok) {
-        return;
-      }
-    } catch {
-      // server is not ready yet
+    if (response.ok) {
+      return;
     }
 
     await Bun.sleep(100);
   }
 }
 
-async function serve({ openBrowser }) {
+async function start() {
   const server = Bun.spawn(["bun", ENTRYPOINT], {
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
   });
 
-  if (openBrowser) {
-    await waitForServer();
-    await openBrowser();
-  }
+  await waitForServer();
+  await openBrowser();
 
   await server.exited;
 }
 
+const commands = Object.freeze({
+  start,
+  build,
+  test,
+  clean,
+  typecheck,
+});
+
+const commandNames = Object.keys(commands);
+
 const { values } = parseArgs({
   args: Bun.argv.slice(2),
-  options: {
-    dev: { type: "boolean" },
-    start: { type: "boolean" },
-    build: { type: "boolean" },
-    test: { type: "boolean" },
-    clean: { type: "boolean" },
-    typecheck: { type: "boolean" },
-  },
+  options: Object.fromEntries(
+    commandNames.map((name) => [name, { type: "boolean" }]),
+  ),
 });
 
 const selected = Object.entries(values)
@@ -103,19 +110,12 @@ const selected = Object.entries(values)
 
 if (selected.length !== 1) {
   console.error(
-    "Usage: bun ./build.js --dev | --start | --build | --test | --clean | --typecheck",
+    `Usage: bun ./build.js ${commandNames.map((name) => `--${name}`).join(" | ")}`,
   );
   process.exit(1);
 }
 
-const commands = {
-  dev: () => serve({ open: true }),
-  start: () => serve({ open: true }),
-  build,
-  test,
-  clean,
-  typecheck,
-};
+await commands[selected[0]]();
 
 const command = commands[selected[0]];
 
