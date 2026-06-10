@@ -6,7 +6,8 @@
     "start": "bun ./build.js --start",
     "test": "bun ./build.js --test",
     "build": "bun ./build.js --build",
-    "clean": "bun ./build.js --clean"
+    "clean": "bun ./build.js --clean",
+    "typecheck": "bun ./build.js --typecheck"
   },
   "dependencies": {
     "htmx.org": "^2.0.10"
