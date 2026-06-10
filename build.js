@@ -8,6 +8,7 @@ import { $ } from "bun";
 import { rm } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
+//#region "constants"
 /** @type {string} */
 const OUTDIR = "./dist";
 /** @type {string} */
@@ -16,7 +17,45 @@ const OUTFILE = `${OUTDIR}/link-up`;
 const ENTRYPOINT = "./src/core.js";
 /** @type {string} */
 const APP_URL = "http://127.0.0.1:3000/";
+//#endregion
 
+//#region "helper functions"
+function openBrowser() {
+  if (process.platform === "darwin") {
+    return $`open ${APP_URL}`.quiet();
+  }
+
+  if (process.platform === "win32") {
+    return $`cmd /c start "" ${APP_URL}`.quiet();
+  }
+
+  return $`xdg-open ${APP_URL}`.quiet();
+}
+
+function serverIsReady() {
+  return fetch(APP_URL).then(
+    (response) => response.ok,
+    () => false,
+  );
+}
+
+async function waitForServer() {
+  for (;;) {
+    if (await serverIsReady()) {
+      return;
+    }
+
+    await Bun.sleep(100);
+  }
+}
+
+function errorUsage(commandNames) {
+  console.error(`Usage: bun ./build.js ${commandNames.join(" | ")}`);
+  process.exit(1);
+}
+//#endregion
+
+//#region "command functions"
 function typecheck() {
   return $`tsc -p tsconfig.json --noEmit`;
 }
@@ -32,20 +71,8 @@ function clean() {
   });
 }
 
-function openBrowser() {
-  if (process.platform === "darwin") {
-    return $`open ${APP_URL}`.quiet();
-  }
-
-  if (process.platform === "win32") {
-    return $`cmd /c start "" ${APP_URL}`.quiet();
-  }
-
-  return $`xdg-open ${APP_URL}`.quiet();
-}
-
 async function build() {
-  clean();
+  await clean();
   await typecheck();
 
   const result = await Bun.build({
@@ -62,18 +89,6 @@ async function build() {
   }
 }
 
-async function waitForServer() {
-  for (; ;) {
-    const response = await fetch(APP_URL);
-
-    if (response.ok) {
-      return;
-    }
-
-    await Bun.sleep(100);
-  }
-}
-
 async function start() {
   const server = Bun.spawn(["bun", ENTRYPOINT], {
     stdin: "inherit",
@@ -87,40 +102,30 @@ async function start() {
   await server.exited;
 }
 
-const commands = Object.freeze({
+const commandHandlers = Object.freeze({
   start,
   build,
   test,
   clean,
   typecheck,
 });
+//#endregion
 
-const commandNames = Object.keys(commands);
+//#region "main execution"
+async function main() {
+  const commandNames = Object.keys(commandHandlers);
 
-const { values } = parseArgs({
-  args: Bun.argv.slice(2),
-  options: Object.fromEntries(
-    commandNames.map((name) => [name, { type: "boolean" }]),
-  ),
-});
+  const { positionals } = parseArgs({
+    args: Bun.argv.slice(2),
+    allowPositionals: true,
+  });
 
-const selected = Object.entries(values)
-  .filter(([, enabled]) => enabled)
-  .map(([name]) => name);
+  if (positionals.length !== 1 || !Object.hasOwn(commandHandlers, positionals[0])) {
+    errorUsage(commandNames);
+  }
 
-if (selected.length !== 1) {
-  console.error(
-    `Usage: bun ./build.js ${commandNames.map((name) => `--${name}`).join(" | ")}`,
-  );
-  process.exit(1);
+  await commandHandlers[positionals[0]]();
 }
 
-await commands[selected[0]]();
-
-const command = commands[selected[0]];
-
-if (!command) {
-  process.exit(1);
-}
-
-await command();
+await main();
+//#endregion
