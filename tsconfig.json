@@ -28,7 +28,7 @@
   },
   "include": [
     "src/**/*.js",
-    "web/app.js"
+    "web/**/*.js"
   ],
   "exclude": [
     "docs",

@@ -1,15 +1,16 @@
 {
+  "dependencies": {
+    "@types/bun": "latest",
+    "@types/node": "latest",
+    "htmx.org": "^2.0.10"
+  },
+  "license": "MIT",
   "name": "link-up",
   "private": true,
-  "type": "module",
   "scripts": {
-    "start": "bun ./build.js start",
-    "test": "bun ./build.js test",
-    "build": "bun ./build.js build",
-    "clean": "bun ./build.js clean",
-    "typecheck": "bun ./build.js typecheck"
+    "dev": "bun ./build.js dev",
+    "prod": "bun ./build.js prod"
   },
-  "dependencies": {
-    "htmx.org": "^2.0.10"
-  }
+  "type": "module",
+  "version": "0.1.0"
 }

@@ -5,16 +5,25 @@
 "use strict";
 
 document.addEventListener("click", async (event) => {
+  if (!(event.target instanceof Element)) return;
+
   const link = event.target.closest("a[data-swap]");
-  if (!link) return;
+  if (!(link instanceof HTMLAnchorElement)) return;
 
   event.preventDefault();
 
   const url = new URL(link.href);
+  if (!url.hash) return;
 
-  document.querySelector(url.hash)?.replaceWith(
+  const target = document.querySelector(url.hash);
+  if (!target) return;
+
+  const response = await fetch(url);
+  if (!response.ok) return;
+
+  target.replaceWith(
     ...new DOMParser().parseFromString(
-      await (await fetch(url)).text(),
+      await response.text(),
       "text/html",
     ).body.childNodes,
   );

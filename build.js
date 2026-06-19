@@ -8,7 +8,6 @@ import { $ } from "bun";
 import { rm } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
-// #region constants
 
 /** @type {string} */
 const OUTDIR = "./dist";
@@ -25,9 +24,6 @@ const SERVER_TIMEOUT_MS = 5_000;
 /** @type {number} */
 const SERVER_POLL_MS = 100;
 
-// #endregion
-
-// #region helper functions
 
 function openBrowser() {
   if (process.platform === "darwin") {
@@ -62,17 +58,15 @@ async function waitForServer() {
   throw new Error(`Timed out waiting for server at ${APP_URL}`);
 }
 
+/** @param {string[]} commandNames */
 function errorUsage(commandNames) {
   console.error(`Usage: bun ./build.js ${commandNames.join(" | ")}`);
   process.exit(1);
 }
 
-// #endregion
-
-// #region command functions
 
 function typecheck() {
-  return $`tsc -p tsconfig.json --noEmit`;
+  return $`${Bun.which("tsc")} -p tsconfig.json --noEmit`;
 }
 
 function test() {
@@ -130,9 +124,6 @@ const commandHandlers = Object.freeze({
   typecheck,
 });
 
-// #endregion
-
-// #region main execution
 
 async function main() {
   const commandNames = Object.keys(commandHandlers);
@@ -150,5 +141,3 @@ async function main() {
 }
 
 await main();
-
-// #endregion
