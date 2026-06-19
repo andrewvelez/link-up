@@ -6,11 +6,10 @@
   },
   "license": "MIT",
   "name": "link-up",
-  "private": true,
-  "scripts": {
-    "dev": "bun ./build.js dev",
-    "prod": "bun ./build.js prod"
+  "exports": {
+    ".": "./src/core.js"
   },
+  "private": true,
   "type": "module",
   "version": "0.1.0"
 }

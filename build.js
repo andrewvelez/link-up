@@ -9,19 +9,13 @@ import { rm } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
 
-/** @type {string} */
 const OUTDIR = "./dist";
-/** @type {string} */
 const OUTFILE = `${OUTDIR}/link-up`;
-/** @type {string} */
 const ENTRYPOINT = "./src/core.js";
-/** @type {string} */
 const PORT = Bun.env.PORT ?? "3000";
 const HOST = Bun.env.HOST ?? "127.0.0.1";
 const APP_URL = `http://${HOST}:${PORT}/`;
-/** @type {number} */
 const SERVER_TIMEOUT_MS = 5_000;
-/** @type {number} */
 const SERVER_POLL_MS = 100;
 
 
@@ -37,18 +31,16 @@ function openBrowser() {
   return $`xdg-open ${APP_URL}`.quiet();
 }
 
-function serverIsReady() {
-  return fetch(APP_URL).then(
-    (response) => response.ok,
-    () => false,
-  );
-}
-
 async function waitForServer() {
   const deadline = performance.now() + SERVER_TIMEOUT_MS;
 
   while (performance.now() < deadline) {
-    if (await serverIsReady()) {
+    const serverIsReady = await fetch(APP_URL).then(
+      (response) => response.ok,
+      () => false,
+    );
+
+    if (serverIsReady) {
       return;
     }
 
@@ -84,7 +76,7 @@ async function build() {
   await clean();
   await typecheck();
 
-  const result = await Bun.build({
+  await Bun.build({
     entrypoints: [ENTRYPOINT],
 
     compile: {
@@ -92,10 +84,6 @@ async function build() {
       outfile: OUTFILE,
     },
   });
-
-  if (!result.success) {
-    process.exit(1);
-  }
 }
 
 async function start() {
