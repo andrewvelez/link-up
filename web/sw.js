@@ -1,3 +1,13 @@
+/**
+ * service worker
+ * @author Andrew Velez 2026
+ */
+
+/// <reference lib="webworker" />
+
+// @ts-expect-error This file runs in a service worker, not a window.
+const worker = /** @type {ServiceWorkerGlobalScope} */ (globalThis);
+
 /** @type {string} */
 const CACHE_NAME = "link-up-v1";
 
@@ -36,19 +46,19 @@ async function cacheFirst(request) {
 }
 
 /** @param {ExtendableEvent} event */
-self.addEventListener("install", (event) => {
+worker.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
   );
 });
 
 /** @param {FetchEvent} event */
-self.addEventListener("fetch", (event) => {
+worker.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
   if (
     event.request.method !== "GET" ||
-    url.origin !== location.origin ||
+    url.origin !== worker.location.origin ||
     isApiPath(url.pathname)
   ) {
     return;

@@ -22,9 +22,11 @@ document.addEventListener("click", async (event) => {
   if (!response.ok) return;
 
   target.replaceWith(
-    ...new DOMParser().parseFromString(
-      await response.text(),
-      "text/html",
-    ).body.childNodes,
+    ...Array.from(
+      new DOMParser().parseFromString(
+        await response.text(),
+        "text/html",
+      ).body.childNodes,
+    ),
   );
 });

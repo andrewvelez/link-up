@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@types/bun": "latest",
-    "@types/node": "latest",
     "htmx.org": "^2.0.10"
   },
   "license": "MIT",

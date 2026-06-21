@@ -10,8 +10,8 @@ import { parseArgs } from "node:util";
 
 
 const OUTDIR = "./dist";
-const OUTFILE = `${OUTDIR}/link-up`;
-const ENTRYPOINT = "./src/core.js";
+const OUTFILE = `${OUTDIR}/linkup`;
+const ENTRYPOINT = "./src/server.js";
 const PORT = Bun.env.PORT ?? "3000";
 const HOST = Bun.env.HOST ?? "127.0.0.1";
 const APP_URL = `http://${HOST}:${PORT}/`;
@@ -61,7 +61,7 @@ function typecheck() {
   return $`${Bun.which("tsc")} -p tsconfig.json --noEmit`;
 }
 
-function test() {
+function runTests() {
   return $`bun test`;
 }
 
@@ -72,11 +72,8 @@ function clean() {
   });
 }
 
-async function build() {
-  await clean();
-  await typecheck();
-
-  await Bun.build({
+function compile() {
+  return Bun.build({
     entrypoints: [ENTRYPOINT],
 
     compile: {
@@ -87,7 +84,8 @@ async function build() {
 }
 
 async function start() {
-  const server = Bun.spawn(["bun", ENTRYPOINT], {
+  const server = Bun.spawn([OUTFILE], {
+    env: { ...Bun.env, NODE_ENV: "test" },
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
@@ -104,12 +102,24 @@ async function start() {
   await server.exited;
 }
 
+async function prod() {
+  await clean();
+  await typecheck();
+  await runTests();
+  await compile();
+}
+
+async function test() {
+  await clean();
+  await typecheck();
+  await runTests();
+  await compile();
+  await start();
+}
+
 const commandHandlers = Object.freeze({
-  start,
-  build,
+  prod,
   test,
-  clean,
-  typecheck,
 });
 
 

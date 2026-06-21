@@ -8,6 +8,12 @@ import { routes } from "./routes.js";
 Bun.serve({
   hostname: "127.0.0.1",
   port: 3000,
+  tls: {
+    key: Bun.file("../key.pem"),
+    cert: Bun.file("../cert.pem"),
+  },
+  http3: true,
+  http1: false,
   routes,
   /** @returns {Response} */
   fetch() {
