@@ -12,7 +12,7 @@ import { parseArgs } from "node:util";
 
 const OUTDIR = "./dist";
 const OUTFILE = `${OUTDIR}/linkup`;
-const ENTRYPOINT = "./src/server.js";
+const ENTRYPOINT = "./src/core.js";
 const PORT = Bun.env.PORT ?? "3000";
 const HOST = Bun.env.HOST ?? "127.0.0.1";
 const APP_URL = `http://${HOST}:${PORT}/`;

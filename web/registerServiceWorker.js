@@ -1,5 +1,5 @@
 /**
- * app.js - client side javascript leveraging a service worker for the PWA
+ * registerServiceWorker.js - register the service worker
  * by: Andrew Velez 2026
  */
 

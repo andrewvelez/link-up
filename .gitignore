@@ -35,3 +35,10 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Exclude VSCode settings
 .vscode
+
+# TLS dev certs
+key.pem
+cert.pem
+*.key
+*.crt
+*.pem
