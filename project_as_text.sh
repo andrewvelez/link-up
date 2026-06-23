@@ -3,6 +3,12 @@
 
 main() {
     local root filelist output dirs
+
+    if [[ "$#" -ne 1 ]]; then
+        printf 'Usage: %s PROJECT_ROOT\n' "${0##*/}" >&2
+        return 2
+    fi
+
     root="$(cd -- "$1" && pwd)" || return
     dirs=("${root}/src" "${root}/web")
 
@@ -12,9 +18,11 @@ main() {
     shopt -s nullglob
 
     for dir in "${dirs[@]}"; do
-        for file in "${dir}"/*; do
-            filelist+=("${file}")
-        done
+        if [[ -d "${dir}" ]]; then
+            for file in "${dir}"/*; do
+                [[ -f "${file}" ]] && filelist+=("${file}")
+            done
+        fi
     done
 
     {
