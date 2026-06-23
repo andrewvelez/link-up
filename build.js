@@ -5,7 +5,8 @@
  */
 
 import { $ } from "bun";
-import { rm } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { rmSync } from "node:fs";
 import { parseArgs } from "node:util";
 
 
@@ -57,16 +58,28 @@ function errorUsage(commandNames) {
 }
 
 
+function run(command, args) {
+  const { error, status } = spawnSync(command, args, { stdio: "inherit" });
+
+  if (error) {
+    throw error;
+  }
+
+  if (status) {
+    process.exit(status);
+  }
+}
+
 function typecheck() {
-  return $`${Bun.which("tsc")} -p tsconfig.json --noEmit`;
+  run(Bun.which("tsc") ?? "tsc", ["-p", "tsconfig.json", "--noEmit"]);
 }
 
 function runTests() {
-  return $`bun test`;
+  run(process.execPath, ["test"]);
 }
 
 function clean() {
-  return rm(OUTDIR, {
+  rmSync(OUTDIR, {
     recursive: true,
     force: true,
   });
@@ -103,16 +116,16 @@ async function start() {
 }
 
 async function prod() {
-  await clean();
-  await typecheck();
-  await runTests();
+  clean();
+  typecheck();
+  runTests();
   await compile();
 }
 
 async function test() {
-  await clean();
-  await typecheck();
-  await runTests();
+  clean();
+  typecheck();
+  runTests();
   await compile();
   await start();
 }
