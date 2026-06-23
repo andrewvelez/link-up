@@ -13,7 +13,7 @@ main() {
     dirs=("${root}/src" "${root}/web")
 
     filelist=("${root}/build.js" "${root}/bun.lock" "${root}/bunfig.toml" "${root}/package.json"
-        "${root}/tsconfig.json")
+        "${root}/tsconfig.json" "${root}/project_as_text.sh" "${root}/.gitignore")
 
     shopt -s nullglob
 
