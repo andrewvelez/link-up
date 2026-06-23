@@ -13,3 +13,5 @@
 - Unless necessary, always prefer synchronous APIs over asynchronous.
 - Prefer deleting code when the task remains complete.
 - Prefer the smallest changeset that makes the task complete.
+- Do not over-hedge. Give the direct practical answer first; add caveats only when they materially affect the task.
+- Prefer naming intermediate results when it makes command flow or error handling clearer.

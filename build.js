@@ -58,9 +58,7 @@ function errorUsage(commandNames) {
 }
 
 
-function run(command, args) {
-  const { error, status } = spawnSync(command, args, { stdio: "inherit" });
-
+function handleCommandResult({ error, status }) {
   if (error) {
     throw error;
   }
@@ -71,11 +69,19 @@ function run(command, args) {
 }
 
 function typecheck() {
-  run(Bun.which("tsc") ?? "tsc", ["-p", "tsconfig.json", "--noEmit"]);
+  const result = spawnSync(Bun.which("tsc") ?? "tsc", ["-p", "tsconfig.json", "--noEmit"], {
+    stdio: "inherit",
+  });
+
+  handleCommandResult(result);
 }
 
 function runTests() {
-  run(process.execPath, ["test"]);
+  const result = spawnSync(process.execPath, ["test"], {
+    stdio: "inherit",
+  });
+
+  handleCommandResult(result);
 }
 
 function clean() {
