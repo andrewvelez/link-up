@@ -1,8 +1,13 @@
 {
+  "id": "/app",
   "name": "Link-Up",
   "short_name": "Link-Up",
-  "start_url": "/",
+  "start_url": "/app",
+  "scope": "/app/",
   "display": "standalone",
   "background_color": "#f0f0f0",
-  "theme_color": "#ffffff"
+  "theme_color": "#ffffff",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
 }

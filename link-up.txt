@@ -1,0 +1,509 @@
+```build.js
+#! /usr/bin/env bun
+/**
+ * build.js - build the project in dev, test, prod
+ * by: Andrew Velez 2026
+ */
+
+import { $ } from "bun";
+import { spawnSync } from "node:child_process";
+import { rmSync } from "node:fs";
+import { parseArgs } from "node:util";
+
+
+const OUTDIR = "./dist";
+const OUTFILE = `${OUTDIR}/linkup`;
+const ENTRYPOINT = "./src/core.js";
+const PORT = Bun.env.PORT ?? "3000";
+const HOST = Bun.env.HOST ?? "127.0.0.1";
+const APP_URL = `http://${HOST}:${PORT}/`;
+const SERVER_TIMEOUT_MS = 5_000;
+const SERVER_POLL_MS = 100;
+
+
+function openBrowser() {
+  if (process.platform === "darwin") {
+    return $`open ${APP_URL}`.quiet();
+  }
+
+  if (process.platform === "win32") {
+    return $`cmd /c start "" ${APP_URL}`.quiet();
+  }
+
+  return $`xdg-open ${APP_URL}`.quiet();
+}
+
+async function waitForServer() {
+  const deadline = performance.now() + SERVER_TIMEOUT_MS;
+
+  while (performance.now() < deadline) {
+    const serverIsReady = await fetch(APP_URL).then(
+      (response) => response.ok,
+      () => false,
+    );
+
+    if (serverIsReady) {
+      return;
+    }
+
+    await Bun.sleep(SERVER_POLL_MS);
+  }
+
+  throw new Error(`Timed out waiting for server at ${APP_URL}`);
+}
+
+/** @param {string[]} commandNames */
+function errorUsage(commandNames) {
+  console.error(`Usage: bun ./build.js ${commandNames.join(" | ")}`);
+  process.exit(1);
+}
+
+
+function handleCommandResult({ error, status }) {
+  if (error) {
+    throw error;
+  }
+
+  if (status) {
+    process.exit(status);
+  }
+}
+
+function typecheck() {
+  const result = spawnSync(Bun.which("tsc") ?? "tsc", ["-p", "tsconfig.json", "--noEmit"], {
+    stdio: "inherit",
+  });
+
+  handleCommandResult(result);
+}
+
+function runTests() {
+  const result = spawnSync(process.execPath, ["test"], {
+    stdio: "inherit",
+  });
+
+  handleCommandResult(result);
+}
+
+function clean() {
+  rmSync(OUTDIR, {
+    recursive: true,
+    force: true,
+  });
+}
+
+function compile() {
+  return Bun.build({
+    entrypoints: [ENTRYPOINT],
+
+    compile: {
+      target: "bun-linux-x64",
+      outfile: OUTFILE,
+    },
+  });
+}
+
+async function start() {
+  const server = Bun.spawn([OUTFILE], {
+    env: { ...Bun.env, NODE_ENV: "test" },
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  try {
+    await waitForServer();
+  } catch (error) {
+    server.kill();
+    throw error;
+  }
+
+  await openBrowser();
+  await server.exited;
+}
+
+async function prod() {
+  clean();
+  typecheck();
+  runTests();
+  await compile();
+}
+
+async function test() {
+  clean();
+  typecheck();
+  runTests();
+  await compile();
+  await start();
+}
+
+const commandHandlers = Object.freeze({
+  prod,
+  test,
+});
+
+
+async function main() {
+  const commandNames = Object.keys(commandHandlers);
+
+  const { positionals } = parseArgs({
+    args: Bun.argv.slice(2),
+    allowPositionals: true,
+  });
+
+  if (positionals.length !== 1 || !Object.hasOwn(commandHandlers, positionals[0])) {
+    errorUsage(commandNames);
+  }
+
+  await commandHandlers[positionals[0]]();
+}
+
+await main();
+
+```
+
+```bun.lock
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "link-up",
+      "dependencies": {
+        "htmx.org": "^2.0.10",
+      },
+    },
+  },
+  "packages": {
+    "htmx.org": ["htmx.org@2.0.10", "", {}, "sha512-kdeJe7ZVwaS6QMz/ebBIVtZdpwen6L0OQ5GOhPV9MKBb196TCZeZu4yA7ZIQsaLKv7EpXz+So7KSXNuHXhj7Cw=="],
+  }
+}
+
+```
+
+```bunfig.toml
+[run]
+shell = "bun"
+
+```
+
+```package.json
+{
+  "dependencies": {
+    "@types/bun": "latest",
+    "htmx.org": "^2.0.10"
+  },
+  "license": "MIT",
+  "name": "link-up",
+  "exports": {
+    ".": "./src/core.js"
+  },
+  "private": true,
+  "type": "module",
+  "version": "0.1.0"
+}
+```
+
+```tsconfig.json
+{
+  "compilerOptions": {
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "checkJs": true,
+    "types": [
+      "bun"
+    ],
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": [
+    "src/**/*.js",
+    "web/**/*.js"
+  ],
+  "exclude": [
+    "docs",
+    "dist",
+    "node_modules",
+    "scripts"
+  ]
+}
+
+```
+
+```project_as_text.sh
+#! /usr/bin/env bash
+#  by: Andrew Velez 2026
+
+main() {
+    local root filelist output dirs
+
+    if [[ "$#" -ne 1 ]]; then
+        printf 'Usage: %s PROJECT_ROOT\n' "${0##*/}" >&2
+        return 2
+    fi
+
+    root="$(cd -- "$1" && pwd)" || return
+    dirs=("${root}/src" "${root}/web")
+
+    filelist=("${root}/build.js" "${root}/bun.lock" "${root}/bunfig.toml" "${root}/package.json"
+        "${root}/tsconfig.json" "${root}/project_as_text.sh" "${root}/.gitignore")
+
+    shopt -s nullglob
+
+    for dir in "${dirs[@]}"; do
+        if [[ -d "${dir}" ]]; then
+            for file in "${dir}"/*; do
+                [[ -f "${file}" ]] && filelist+=("${file}")
+            done
+        fi
+    done
+
+    {
+        for filename in "${filelist[@]}"; do
+            printf '```%s\n' "${filename##*/}"
+            bat -p -P "${filename}"
+            printf '\n```\n\n'
+        done
+    } > "link-up.txt"
+
+}
+
+main "$@"
+
+```
+
+```.gitignore
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+_.log
+report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+# Exclude VSCode settings
+.vscode
+
+# TLS dev certs
+key.pem
+cert.pem
+*.key
+*.crt
+*.pem
+```
+
+```core.js
+/**
+ * core.js - the app api layer
+ * by: Andrew Velez 2026
+ */
+
+import { routes } from "./routes.js";
+
+Bun.serve({
+  hostname: "127.0.0.1",
+  port: 3000,
+  tls: {
+    key: Bun.file("./key.pem"),
+    cert: Bun.file("./cert.pem"),
+  },
+  routes,
+  /** @returns {Response} */
+  fetch() {
+    return new Response("Not Found", { status: 404 });
+  },
+});
+
+console.log("Listening on http://127.0.0.1:3000");
+
+```
+
+```routes.js
+/**
+ * all routes defined here
+ * @author Andrew Velez 2026
+ */
+
+import indexHtml from "../web/index.html";
+
+export const routes = {
+  "/": indexHtml,
+};
+```
+
+```index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <title>Link-Up</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <h1>Link-Up</h1>
+
+  <script type="module" src="registerServiceWorker.js"></script>
+</body>
+</html>
+
+```
+
+```manifest.json
+{
+  "name": "Link-Up",
+  "short_name": "Link-Up",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f0f0",
+  "theme_color": "#ffffff"
+}
+
+```
+
+```registerServiceWorker.js
+/**
+ * registerServiceWorker.js - register the service worker
+ * by: Andrew Velez 2026
+ */
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+
+```
+
+```styles.css
+body {
+    font-family: Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    color: #333;
+}
+
+p {
+    color: #666;
+}
+
+```
+
+```sw.js
+/**
+ * service worker
+ * @author Andrew Velez 2026
+ */
+
+const CACHE_NAME = "link-up-v1";
+
+const ASSETS = [
+  "/",
+  "/index.html",
+];
+
+/**
+ * @param {string} pathname
+ * @returns {boolean}
+ */
+function isApiPath(pathname) {
+  return pathname === "/api" || pathname.startsWith("/api/");
+}
+
+/**
+ * @param {Request} request
+ */
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+
+  if (cached) {
+    return cached;
+  }
+
+  const response = await fetch(request);
+
+  if (response.ok) {
+    await cache.put(request, response.clone());
+  }
+
+  return response;
+}
+
+self.addEventListener("install", (event) => {
+  Reflect.get(event, "waitUntil").call(event,
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const request = Reflect.get(event, "request");
+  const url = new URL(request.url);
+
+  if (
+    request.method !== "GET" ||
+    url.origin !== location.origin ||
+    isApiPath(url.pathname)
+  ) {
+    return;
+  }
+
+  Reflect.get(event, "respondWith").call(event, cacheFirst(request));
+});
+
+```
+
