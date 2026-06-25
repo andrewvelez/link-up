@@ -6,9 +6,6 @@
   },
   "license": "MIT",
   "name": "link-up",
-  "exports": {
-    ".": "./src/core.js"
-  },
   "private": true,
   "type": "module",
   "version": "0.1.0"

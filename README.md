@@ -15,9 +15,3 @@ bun ./build.js dev
 ```bash
 bun ./build.js prod
 ```
-
-```bash
-bun ./build.js dev
-```
-
-This project was created using `bun init` in bun v1.3.12. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
