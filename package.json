@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@types/bun": "latest",
+    "bulma": "^1.0.4",
     "htmx.org": "^2.0.10"
   },
   "license": "MIT",
