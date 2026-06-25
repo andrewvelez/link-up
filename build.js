@@ -8,6 +8,7 @@ import { $ } from "bun";
 import { spawnSync } from "node:child_process";
 import { rmSync } from "node:fs";
 import { parseArgs } from "node:util";
+import { ENVIRONMENTS } from "./src/constants.js";
 
 
 const OUTDIR = "./dist";
@@ -91,9 +92,12 @@ function clean() {
   });
 }
 
-function compile() {
+function compile(nodeEnv) {
   return Bun.build({
     entrypoints: [ENTRYPOINT],
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(nodeEnv),
+    },
 
     compile: {
       target: "bun-linux-x64",
@@ -102,9 +106,13 @@ function compile() {
   });
 }
 
+async function verify() {
+  await compile(ENVIRONMENTS.DEV);
+  runTests();
+}
+
 async function start() {
   const server = Bun.spawn([OUTFILE], {
-    env: { ...Bun.env, NODE_ENV: "test" },
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
@@ -124,19 +132,26 @@ async function start() {
 async function prod() {
   clean();
   typecheck();
-  runTests();
-  await compile();
+  await verify();
+  await compile(ENVIRONMENTS.PROD);
+}
+
+async function dev() {
+  clean();
+  typecheck();
+  await verify();
 }
 
 async function test() {
   clean();
   typecheck();
-  runTests();
-  await compile();
+  await verify();
+  await compile(ENVIRONMENTS.TEST);
   await start();
 }
 
 const commandHandlers = Object.freeze({
+  dev,
   prod,
   test,
 });
