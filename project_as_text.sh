@@ -13,7 +13,7 @@ main() {
     dirs=("${root}/src" "${root}/web")
 
     filelist=("${root}/build.js" "${root}/bun.lock" "${root}/bunfig.toml" "${root}/package.json"
-        "${root}/tsconfig.json" "${root}/project_as_text.sh" "${root}/.gitignore")
+        "${root}/tsconfig.json" "${root}/.gitignore")
 
     shopt -s nullglob
 
@@ -31,7 +31,7 @@ main() {
             bat -p -P "${filename}"
             printf '\n```\n\n'
         done
-    } > "link-up.txt"
+    } > "project-source-code.txt"
 
 }
 

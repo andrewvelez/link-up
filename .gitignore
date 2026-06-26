@@ -42,3 +42,5 @@ cert.pem
 *.key
 *.crt
 *.pem
+
+project-source-code.txt
