@@ -37,7 +37,9 @@ async function waitForServer() {
   const deadline = performance.now() + SERVER_TIMEOUT_MS;
 
   while (performance.now() < deadline) {
-    const serverIsReady = await fetch(APP_URL).then(
+    const serverIsReady = await fetch(APP_URL, {
+      tls: { rejectUnauthorized: false },
+    }).then(
       (response) => response.ok,
       () => false,
     );
