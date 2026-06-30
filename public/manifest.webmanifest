@@ -1,0 +1,29 @@
+{
+  "background_color": "#f0f0f0",
+  "description": "A gay dating app.",
+  "display": "standalone",
+  "icons": [
+    {
+      "purpose": "any maskable",
+      "sizes": "192x192",
+      "src": "/icons/linkup-192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any maskable",
+      "sizes": "512x512",
+      "src": "/icons/linkup-512.png",
+      "type": "image/png"
+    }
+  ],
+  "id": "/app",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "name": "Link-Up",
+  "orientation": "any",
+  "scope": "/app/",
+  "short_name": "Link-Up",
+  "start_url": "/app",
+  "theme_color": "#ffffff"
+}

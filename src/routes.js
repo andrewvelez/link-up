@@ -3,8 +3,8 @@
  * @author Andrew Velez 2026
  */
 
-import indexHtml from "../web/index.html";
-import spaHtml from "../web/spa.html";
+import indexHtml from "../public/index.html";
+import spaHtml from "../public/spa.html";
 
 export const routes = {
   "/": indexHtml,
