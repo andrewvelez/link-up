@@ -21,19 +21,7 @@ export const COMMANDS = Object.freeze({
   start
 });
 
-function openBrowser() {
-  if (process.platform === "darwin") {
-    return $`open ${APP_URL}`.quiet();
-  }
-
-  if (process.platform === "win32") {
-    return $`cmd /c start "" ${APP_URL}`.quiet();
-  }
-
-  return $`xdg-open ${APP_URL}`.quiet();
-}
-
-async function waitForServer() {
+async function startServer() {
   const deadline = performance.now() + SERVER_TIMEOUT_MS;
 
   while (performance.now() < deadline) {
@@ -117,14 +105,14 @@ async function startLocalServer() {
           stdout: "inherit",
           stderr: "inherit",
         });
-        await waitForServer();
+        await startServer();
+        await server.exited;
       } catch {
-        server?.kill();
         continue;
+      } finally {
+        server?.kill();
       }
 
-      await openBrowser();
-      await server.exited;
       return;
     }
 
