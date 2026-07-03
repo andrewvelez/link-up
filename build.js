@@ -18,7 +18,7 @@ let port = DEFAULT_PORT;
 
 export const COMMANDS = Object.freeze({
   build,
-  test
+  start
 });
 
 function openBrowser() {
@@ -108,9 +108,9 @@ async function startLocalServer() {
 
     for (let newPort = port; newPort < (port + 10); newPort++) {
       let server;
+      APP_URL.port = String(newPort);
 
       try {
-        APP_URL.port = String(newPort);
         server = Bun.spawn([OUTFILE], {
           env: { ...Bun.env, PORT: String(newPort) },
           stdin: "inherit",
@@ -138,7 +138,7 @@ async function build() {
   runTests();
 }
 
-async function test() {
+async function start() {
   await build();
   await startLocalServer();
 }

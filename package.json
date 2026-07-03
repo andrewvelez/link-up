@@ -7,6 +7,10 @@
   "license": "MIT",
   "name": "link-up",
   "private": true,
+  "scripts": {
+    "build": "bun ./build.js build",
+    "start": "bun ./build.js start"
+  },
   "type": "module",
   "version": "0.1.0"
 }

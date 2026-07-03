@@ -4,9 +4,9 @@
  */
 
 import indexHtml from "../public/index.html";
-import spaHtml from "../public/spa.html";
+import appHtml from "../public/app.html";
 
 export const routes = {
   "/": indexHtml,
-  "/app": spaHtml,
+  "/app": appHtml
 };
