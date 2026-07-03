@@ -31,7 +31,7 @@ main() {
             bat -p -P "${filename}"
             printf '\n```\n\n'
         done
-    } > "project-source-code.txt"
+    } > "linkup-prj-source.txt"
 
 }
 
