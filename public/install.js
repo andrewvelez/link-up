@@ -1,5 +1,14 @@
 // @author Andrew Velez 2026
 
+const appWindow = matchMedia("(display-mode: standalone), (display-mode: minimal-ui)");
+
+function openAppWindow() {
+  if (appWindow.matches) location.replace("/app");
+}
+
+openAppWindow();
+appWindow.addEventListener("change", openAppWindow);
+
 let installPrompt = null;
 
 const installButton = document.querySelector("#install-button");
