@@ -22,7 +22,7 @@
   },
   "name": "Link-Up",
   "orientation": "any",
-  "scope": "/app/",
+  "scope": "/app",
   "short_name": "Link-Up",
   "start_url": "/app",
   "theme_color": "#ffffff"

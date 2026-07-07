@@ -8,5 +8,6 @@ import appHtml from "../public/app.html";
 
 export const routes = {
   "/": indexHtml,
+  "/index": indexHtml,
   "/app": appHtml
 };
