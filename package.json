@@ -8,8 +8,8 @@
   "name": "link-up",
   "private": true,
   "scripts": {
-    "build": "bun ./build.js build",
-    "start": "bun ./build.js start"
+    "build": "bun --bun ./build.js build",
+    "start": "bun --bun --watch ./build.js start"
   },
   "type": "module",
   "version": "0.1.0"
