@@ -4,16 +4,8 @@
 
 import { readdirSync } from "node:fs";
 
-let staticFiles;
-
-export const ASSETS = {
-  get STATIC_FILES() {
-    staticFiles ??= Object.freeze(
-      readdirSync("./public", { recursive: true, withFileTypes: true })
-        .filter(entry => entry.isFile())
-        .map(entry => Bun.file(`${entry.parentPath}/${entry.name}`)),
-    );
-
-    return staticFiles;
-  }
-};
+export const STATIC_FILES = Object.freeze(
+  readdirSync("./public", { recursive: true, withFileTypes: true })
+    .filter(entry => entry.isFile())
+    .map(entry => Bun.file(`${entry.parentPath}/${entry.name}`)),
+);

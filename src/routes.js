@@ -5,31 +5,17 @@
 
 import indexHtml from "../public/index.html";
 import appHtml from "../public/app.html";
-import { readdir } from "node:fs/promises";
-
-/**
- * @param {string} path
- * @param {string} contentType
- */
-function asset(path, contentType) {
-  return () => new Response(Bun.file(path), {
-    headers: {
-      "Content-Type": contentType,
-    },
-  });
-}
-
-const staticFiles = await readdir("./public", { recursive: true });
+import { STATIC_FILES } from "./staticFiles.js";
 
 const staticRoutes = Object.fromEntries(
-  staticFiles.map(staticFile => {
-    const filePath = `./public/${staticFile}`;
-
-    return [
-      `/${staticFile}`,
-      asset(filePath, Bun.file(filePath).type),
-    ];
-  }),
+  STATIC_FILES.map(staticFile => [
+    staticFile.name?.replace(/^\.?\/?public\//, "/"),
+    () => new Response(staticFile, {
+      headers: {
+        "Content-Type": staticFile.type,
+      },
+    }),
+  ]),
 );
 
 export const routes = {
