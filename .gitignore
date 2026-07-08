@@ -33,7 +33,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Finder (MacOS) folder config
 .DS_Store
 
-# Exclude VSCode settings
+# Exclude personal settings
+.codex
+.agents
 .vscode
 
 # TLS dev certs
@@ -42,8 +44,6 @@ cert.pem
 *.key
 *.crt
 *.pem
-
-linkup-prj-source.txt
 
 # removing docs as it contains possible future roadmap info that needs to be kept secret for now
 docs

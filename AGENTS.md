@@ -15,3 +15,4 @@
 - Do not over-hedge. Give the direct practical answer first; add caveats only when they materially affect the task.
 - Prefer naming intermediate results when it makes command flow or error handling clearer.
 - Do not make changes to files without first showing the intended diff and getting approval.
+- Never forget that this app is not a server-client web application.  It is a local-first, client-only web application that is delivered via single request to a server.

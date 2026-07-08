@@ -6,15 +6,15 @@ import { spawnSync } from "node:child_process";
 import { rmSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-const OUTDIR = "./dist";
-const OUTFILE = `${OUTDIR}/linkup`;
-const ENTRYPOINT = "./src/core.js";
-const DEFAULT_PORT = 3000;
-const HOST = Bun.env.HOST ?? "127.0.0.1";
-const APP_URL = new URL(`https://${HOST}:${DEFAULT_PORT}/`);
-const SERVER_TIMEOUT_MS = 5_000;
-const SERVER_POLL_MS = 100;
-let port = DEFAULT_PORT;
+const outdir = "./dist";
+const outfile = `${outdir}/linkup`;
+const entrypoint = "./src/core.js";
+const defaultPort = 3000;
+const host = Bun.env.HOST ?? "127.0.0.1";
+const appUrl = new URL(`https://${host}:${defaultPort}/`);
+const serverTimeoutMs = 5_000;
+const serverPollMs = 100;
+let port = defaultPort;
 
 export const COMMANDS = Object.freeze({
   build,
@@ -22,10 +22,10 @@ export const COMMANDS = Object.freeze({
 });
 
 async function startServer() {
-  const deadline = performance.now() + SERVER_TIMEOUT_MS;
+  const deadline = performance.now() + serverTimeoutMs;
 
   while (performance.now() < deadline) {
-    const serverIsReady = await fetch(APP_URL, {
+    const serverIsReady = await fetch(appUrl, {
       tls: { rejectUnauthorized: false },
     }).then(
       (response) => response.ok,
@@ -36,10 +36,10 @@ async function startServer() {
       return;
     }
 
-    await Bun.sleep(SERVER_POLL_MS);
+    await Bun.sleep(serverPollMs);
   }
 
-  throw new Error(`Timed out waiting for server at ${APP_URL}`);
+  throw new Error(`Timed out waiting for server at ${appUrl}`);
 }
 
 /** @param {string[]} commandNames */
@@ -76,7 +76,7 @@ function runTests() {
 }
 
 function clean() {
-  rmSync(OUTDIR, {
+  rmSync(outdir, {
     recursive: true,
     force: true,
   });
@@ -84,10 +84,10 @@ function clean() {
 
 function compile() {
   return Bun.build({
-    entrypoints: [ENTRYPOINT],
+    entrypoints: [entrypoint],
     compile: {
       target: "bun-linux-x64",
-      outfile: OUTFILE,
+      outfile,
     },
   });
 }
@@ -96,10 +96,10 @@ async function startLocalServer() {
 
     for (let newPort = port; newPort < (port + 10); newPort++) {
       let server;
-      APP_URL.port = String(newPort);
+      appUrl.port = String(newPort);
 
       try {
-        server = Bun.spawn([OUTFILE], {
+        server = Bun.spawn([outfile], {
           env: { ...Bun.env, PORT: String(newPort) },
           stdin: "inherit",
           stdout: "inherit",

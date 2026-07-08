@@ -1,7 +1,7 @@
 // @author Andrew Velez 2026
 
-const CACHE_NAME = "link-up-static-v1";
-const ASSET_PATHS = [
+const cacheName = "link-up-static-v1";
+const assetPaths = [
   "/",
   "/index",
   "/index.html",
@@ -17,11 +17,11 @@ const ASSET_PATHS = [
   "/icons/linkup-512.png",
   "/images/linkup-background.png",
 ];
-const ASSET_SET = new Set(ASSET_PATHS);
+const assetSet = new Set(assetPaths);
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSET_PATHS)),
+    caches.open(cacheName).then(cache => cache.addAll(assetPaths)),
   );
 });
 
@@ -36,7 +36,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  if (ASSET_SET.has(url.pathname)) {
+  if (assetSet.has(url.pathname)) {
     event.respondWith(cacheFirst(event.request));
     return;
   }
@@ -52,7 +52,7 @@ async function cacheFirst(request) {
   if (cachedResponse) return cachedResponse;
 
   const response = await fetch(request);
-  const cache = await caches.open(CACHE_NAME);
+  const cache = await caches.open(cacheName);
   cache.put(request, response.clone());
 
   return response;
