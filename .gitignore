@@ -44,6 +44,3 @@ cert.pem
 *.key
 *.crt
 *.pem
-
-# removing docs as it contains possible future roadmap info that needs to be kept secret for now
-docs

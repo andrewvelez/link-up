@@ -1,5 +1,5 @@
 /**
- * all routes defined here
+ * @summary all routes defined here
  * @author Andrew Velez 2026
  */
 
