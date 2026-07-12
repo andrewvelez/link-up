@@ -9,9 +9,9 @@ bun install
 To run:
 
 ```bash
-bun ./build.js dev
+bun ./build.js build
 ```
 
 ```bash
-bun ./build.js prod
+bun ./build.js start
 ```
