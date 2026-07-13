@@ -14,7 +14,7 @@ main() {
     root="$(cd -- "$1" && pwd)" || return
     dirs=("${root}/src" "${root}/public" "${root}/public/css" "${root}/public/js")
 
-    filelist=("${root}/build.js" "${root}/bun.lock" "${root}/bunfig.toml" "${root}/package.json"
+    filelist=("${root}/AGENTS.md" "${root}/build.js" "${root}/bun.lock" "${root}/bunfig.toml" "${root}/package.json"
         "${root}/tsconfig.json")
 
     shopt -s nullglob
