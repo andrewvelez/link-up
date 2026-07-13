@@ -15,3 +15,76 @@ h1 {
 p {
     color: #666;
 }
+
+.app-page {
+    display: block;
+    min-height: 100vh;
+    height: auto;
+    background: #171717;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3.5rem;
+    padding: 0 0.75rem;
+    background: #171717;
+    color: white;
+}
+
+.app-header img {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.4rem;
+}
+
+.app-header h1 {
+    color: inherit;
+    font-size: 1.25rem;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+}
+
+.profile-card {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #333;
+}
+
+.profile-card > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-summary {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 2rem 0.5rem 0.5rem;
+    background: linear-gradient(transparent, rgb(0 0 0 / 85%));
+    color: white;
+}
+
+.profile-summary h2 {
+    font-size: 0.95rem;
+}
+
+.profile-summary p {
+    display: none;
+    color: inherit;
+}
+
+@media (min-width: 768px) {
+    .profile-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}

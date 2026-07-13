@@ -6,8 +6,16 @@
  */
 
 import indexHtml from "../public/index.html";
-import appHtml from "../public/app.html";
+import { renderAppPage } from "./renderAppPage.js";
 import { STATIC_FILES } from "./staticFiles.js";
+
+async function appPage() {
+  const html = await renderAppPage();
+
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+}
 
 const staticRoutes = Object.fromEntries(
   STATIC_FILES.map(staticFile => [
@@ -25,6 +33,6 @@ export const routes = {
   "/": indexHtml,
   "/index": indexHtml,
   "/index.html": indexHtml,
-  "/app": appHtml,
-  "/app.html": appHtml,
+  "/app": appPage,
+  "/app.html": appPage,
 };
