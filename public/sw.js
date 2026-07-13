@@ -1,4 +1,10 @@
-// @author Andrew Velez 2026
+/**
+ * SPDX-FileCopyrightText: 2026 Andrew Velez
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * @author Andrew Velez
+ * @summary the service worker
+ */
+
 
 const cacheName = "link-up-static-v1";
 const assetPaths = [

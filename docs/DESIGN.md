@@ -186,7 +186,7 @@ Current runtime flow:
 build.js
   clean
   typecheck
-  compile src/core.js into dist/linkup
+  compile src/main.js into dist/linkup
 
 dist/linkup
   start Bun.serve
@@ -208,7 +208,7 @@ The implemented source layout is currently:
 ```text
 build.js
 src/
-  core.js
+  main.js
   routes.js
 public/
   landing page
@@ -217,7 +217,7 @@ public/
   manifest
 ```
 
-`src/core.js` is the local HTTP core. `src/routes.js` currently maps:
+`src/main.js` is the local HTTP entrypoint. `src/routes.js` currently maps:
 
 ```text
 /     -> public landing page

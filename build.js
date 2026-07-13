@@ -8,7 +8,7 @@ import { parseArgs } from "node:util";
 
 const outdir = "./dist";
 const outfile = `${outdir}/linkup`;
-const entrypoint = "./src/core.js";
+const entrypoint = "./src/main.js";
 const defaultPort = 3000;
 const host = Bun.env.HOST ?? "127.0.0.1";
 const appUrl = new URL(`https://${host}:${defaultPort}/`);
