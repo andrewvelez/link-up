@@ -44,3 +44,7 @@ cert.pem
 *.key
 *.crt
 *.pem
+
+# project source text for agents
+project-source.txt
+
