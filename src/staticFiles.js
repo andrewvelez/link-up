@@ -1,6 +1,9 @@
-// @author Andrew Velez 2026
-// @summary this holds constant for all the static files in the app
-// which is generated dynamicall on the first instantiation
+/**
+ * SPDX-FileCopyrightText: 2026 Andrew Velez
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * @author Andrew Velez
+ * @summary this holds constant for all the static files in the app
+ */
 
 import { readdirSync } from "node:fs";
 

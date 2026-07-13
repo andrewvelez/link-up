@@ -1,6 +1,8 @@
 /**
- * @summary all routes defined here
- * @author Andrew Velez 2026
+ * SPDX-FileCopyrightText: 2026 Andrew Velez
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * @author Andrew Velez
+ * @summary routing
  */
 
 import indexHtml from "../public/index.html";

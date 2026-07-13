@@ -1,6 +1,8 @@
 /**
- * core.js - the app api layer
- * by: Andrew Velez 2026
+ * SPDX-FileCopyrightText: 2026 Andrew Velez
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * @author Andrew Velez
+ * @summary this module is for the primary business logic (at a high level)
  */
 
 import { routes } from "./routes.js";

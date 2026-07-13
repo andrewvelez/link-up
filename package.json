@@ -1,8 +1,15 @@
 {
   "dependencies": {
+    "@chainsafe/libp2p-noise": "^17.0.0",
+    "@chainsafe/libp2p-yamux": "^8.0.1",
+    "@libp2p/ping": "^3.1.8",
+    "@libp2p/tcp": "^11.0.23",
+    "@libp2p/websockets": "^10.1.16",
     "@types/bun": "latest",
     "bulma": "^1.0.4",
-    "htmx.org": "^2.0.10"
+    "htmx.org": "^2.0.10",
+    "libp2p": "^3.3.5",
+    "multiaddr": "^10.0.1"
   },
   "license": "MIT",
   "name": "link-up",
