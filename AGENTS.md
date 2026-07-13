@@ -13,4 +13,5 @@
 - Do not over-hedge in the response by adding caveats that do not substantially affect the solution.
 - Prefer naming intermediate results when it makes command flow or error handling clearer.
 - Do not make changes to files without first showing the intended diff and getting approval.
-- Never forget that this app is not a server-client web application and shouldn't be treated that way.
+- Never forget that this app is not a traditional web application.  It is local-first software, as
+  described here. [https://www.inkandswitch.com/essay/local-first/]

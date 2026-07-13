@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
-#  by: Andrew Velez 2026
+#  SPDX-FileCopyrightText: 2026 Andrew Velez
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  @summary concatenates all project files to a single txt suitable for chatgpt
 
 main() {
     local root filelist output dirs
@@ -10,17 +12,19 @@ main() {
     fi
 
     root="$(cd -- "$1" && pwd)" || return
-    dirs=("${root}/src" "${root}/web")
+    dirs=("${root}/src" "${root}/public" "${root}/public/css" "${root}/public/js")
 
     filelist=("${root}/build.js" "${root}/bun.lock" "${root}/bunfig.toml" "${root}/package.json"
-        "${root}/tsconfig.json" "${root}/.gitignore")
+        "${root}/tsconfig.json")
 
     shopt -s nullglob
 
     for dir in "${dirs[@]}"; do
-        if [[ -d "${dir}" ]]; then
+        if [[ -d "${dir}" ]] && [[ "${dir:0:1}" != "." ]]; then
             for file in "${dir}"/*; do
-                [[ -f "${file}" ]] && filelist+=("${file}")
+                if [[ -f "${file}" ]] && [[ "${file:0:1}" != "." ]]; then
+                    filelist+=("${file}")
+                fi
             done
         fi
     done
@@ -31,7 +35,7 @@ main() {
             bat -p -P "${filename}"
             printf '\n```\n\n'
         done
-    } > "linkup-prj-source.txt"
+    } > "project-source.txt"
 
 }
 
