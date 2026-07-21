@@ -6,16 +6,13 @@ Link-Up is intended to be a privacy-centered gay dating and social application w
 
 The central technical goal is to determine whether users can safely contribute meaningful runtime resources so operating cost does not grow like a conventional centralized dating service. This does not remove central services. It narrows their role.
 
-Link-Up is a locally installed application. A compiled Go core owns the application runtime, user data, and peer networking. Wails packages that core with a thin HTML, CSS, and JavaScript interface and connects the two through in-process bindings and events.
+The current direction is:
 
-The formal names for these co-located roles are:
+![Link-Up local-node architecture](link-up-local-node-architecture.png)
 
-- **server′** — the Go application core.
-- **client′** — the HTML, CSS, and JavaScript presentation layer.
+Link-Up is a locally installed application. A persistent Bun process owns the application runtime, user data, and peer networking. It serves a thin HTML, CSS, and JavaScript interface over a private loopback connection to an embedded WebView.
 
-The prime character is U+2032. It marks deliberately transformed server and client roles inside a locally owned application rather than roles separated across a conventional web deployment.
-
-The client′ WebView is the presentation layer, not the application runtime. Wails v3 is the leading application-shell candidate. Its experimental Android and iOS support must be tested and hardened before that choice is considered final.
+The WebView is the presentation layer, not the application runtime. The platform launcher remains to be designed.
 
 ## Product and Installation Model
 
@@ -24,17 +21,17 @@ The public website is the entry, trust, download, recovery, and update surface:
 ```text
 visit link-up.com
 download and install Link-Up
-launch the Wails application
-use the app without exposed browser or transport details
+launch the local Link-Up node and WebView
+use the app without exposed browser or loopback details
 ```
 
 ### Installation
 
-Installation must package the compiled Go core, client′ assets, Wails runtime, and required platform integration as one application.
+Installation must install the local node, its UI assets, and a platform launcher. The launcher starts or connects to the Bun process and opens the application in an embedded WebView.
 
 The application must not depend on a service worker, browser cache, or browser-managed installation lifecycle. A PWA manifest may remain useful for the public website or transitional delivery experiments, but it is not part of the installed application architecture.
 
-The installed application should not expose browser chrome or internal binding and transport details.
+The installed application should not expose browser chrome, loopback URLs, ports, certificates, or node terminology.
 
 The frontend should remain thin:
 
@@ -43,11 +40,11 @@ HTML
 CSS
 small JavaScript modules
 forms and user interaction
-calls through generated Wails bindings
-events exchanged with the Go core
+HTTP requests
+WebSocket events
 ```
 
-The server′ should own:
+The local node should own:
 
 ```text
 application state
@@ -62,15 +59,15 @@ media storage
 communication with Link-Up services
 ```
 
-The compiled Go core is the application host. The WebView may contain temporary presentation state, but browser-managed storage must not be the authoritative home of user data.
+The Bun runtime is the application host. The WebView may contain temporary presentation state, but browser-managed storage must not be the authoritative home of user data.
 
 ## Authority and Network Roles
 
-Link-Up remains locally authoritative and remote-service-light, not serverless.
+Link-Up remains client-heavy and server-light, not serverless.
 
-The server′ is a persistent, user-controlled data and network authority. It owns local computation, storage, encryption, peer discovery, connection management, indexing, presence, pub/sub participation, synchronization, and authorized media or message transfer.
+The local node is a persistent, user-controlled data and network authority. It owns local computation, storage, encryption, peer discovery, connection management, indexing, presence, pub/sub participation, synchronization, and authorized media or message transfer.
 
-The client′ and its browser engine are intentionally limited to presentation and user interaction. Browser restrictions must not determine Link-Up's storage model, transport selection, connection lifetime, background behavior, or network policy.
+The browser engine is intentionally limited to rendering and user interaction. Browser restrictions must not determine Link-Up's storage model, transport selection, connection lifetime, background behavior, or network policy.
 
 Remote Link-Up services remain necessary for functions that require shared authority or reliable public reachability:
 
@@ -84,7 +81,7 @@ Remote Link-Up services remain necessary for functions that require shared autho
 - Durable reconciliation and fallback.
 - Network and cost measurements.
 
-The remote service should be the referee, rendezvous point, and fallback. It should not become the default engine for work that local cores can safely perform.
+The remote service should be the referee, rendezvous point, and fallback. It should not become the default engine for work that local nodes can safely perform.
 
 ## Presence and Profile Model
 
@@ -124,7 +121,7 @@ Locality should also guide rendezvous, routing hints, static-data caching, backu
 
 ## Data Model
 
-Authoritative user data must live in a user-owned encrypted vault managed by the server′. This includes identity, keys, profiles, messages, pictures, video, settings, and application history.
+Authoritative user data must live in a user-owned encrypted vault managed by the local node. This includes identity, keys, profiles, messages, pictures, video, settings, and application history.
 
 SQLite is the current candidate for structured data. Media may be stored as encrypted files referenced by the database. The exact vault layout, backup model, and key-management design remain undecided.
 
@@ -150,9 +147,9 @@ That principle now applies primarily to static internal data, authorized user-ow
 
 ## Peer Communication
 
-The Go server′ owns peer communication. Its transport model may include TCP, WebSocket, WebRTC, relays, or other libp2p-compatible transports as implementation experiments justify.
+The Bun local node owns peer communication. Its transport model may include TCP, WebSocket, WebRTC, relays, or other libp2p-compatible transports as implementation experiments justify.
 
-The server′ must retain fine-grained control over peer discovery, connection lifetimes, location-based search and indexing, online-status checks, pub/sub propagation, bandwidth limits, backoff, relay selection, and privacy policy.
+The node must retain fine-grained control over peer discovery, connection lifetimes, location-based search and indexing, online-status checks, pub/sub propagation, bandwidth limits, backoff, relay selection, and privacy policy.
 
 Peer communication must not become unrestricted broadcast. Access should be controlled through encrypted, signed, scoped, expiring capabilities and envelopes. Peers may transport authorized data, but transport does not grant authority or permission.
 
@@ -163,15 +160,13 @@ The exact division between direct delivery, relay, mailbox fallback, and durable
 The current implementation direction is:
 
 ```text
-Wails v3 application shell
-compiled Go server′
-in-process Wails bindings and events
-HTML, CSS, and JavaScript client′
-system WebView
-Linux, Windows, macOS, Android, and iOS targets
+Bun.js local application runtime
+Bun.serve loopback HTTP and WebSocket interface
+compiled local executable
+embedded system WebView
 encrypted user-owned storage
 SQLite
-Go-compatible peer-networking components, with libp2p a leading candidate
+libp2p
 plain JavaScript
 JSDoc only where useful
 tsc/checkJs for static checking
@@ -182,19 +177,17 @@ no React
 no TypeScript source
 ```
 
-Go is the intended application-core language because Wails can package it with the web frontend and expose direct JavaScript bindings without a localhost server. Business logic, storage, networking, cryptography, permissions, and application authority should live in Go whenever practical.
+Bun is the current implementation of the local node because its runtime provides HTTP, SQLite, filesystem, networking, packaging, and JavaScript ecosystem support. The architecture must keep the UI-to-node protocol explicit so the local node can be replaced without rewriting the UI.
 
-Wails v3 is the leading shell candidate because it supplies WebView integration, asset packaging, bindings, events, build tooling, and experimental Android and iOS support. Link-Up should test the existing mobile implementation and contribute required fixes upstream where practical.
+The embedded WebView and platform launcher remain undecided. A framework should not be introduced unless it provides a clear benefit over a small platform-specific launcher.
 
-The language and deployment architecture of remote Link-Up services remain open.
-
-The same application core may later be compiled to WebAssembly for a restricted browser or PWA build. That build would remain subject to browser limits and is not the primary installed-application architecture.
+Go remains a possible future choice for remote, long-lived control-plane services if operational needs justify it. No decision has been made to introduce it.
 
 Htmx remains available as a possible UI tool, but the current repository does not yet establish a final frontend interaction or rendering model.
 
 ## Current Repository State
 
-The repository is an early Bun-based local-node and UI-shell prototype that predates the Wails direction.
+The repository is an early local-node and UI-shell prototype.
 
 Current runtime flow:
 
@@ -242,7 +235,7 @@ public/
 
 The separate routes currently establish a landing surface and an application surface. The browser assets contain a minimal application shell, styling, manifest, and service-worker experiment.
 
-The manifest, service worker, Bun server, loopback routes, and compiled Bun executable reflect earlier architecture experiments. They remain useful evidence and prototyping work, but they are not the intended Wails production architecture.
+The manifest and service worker reflect the superseded PWA architecture and should be removed or separated from the installed application. The existing Bun server is now the foundation of the intended runtime rather than only a development server.
 
 ## Work Completed So Far
 
@@ -263,43 +256,33 @@ The project has established:
 
 No application data model, identity system, geocell implementation, peer transport, encrypted-vault layer, moderation system, or remote authority service has been implemented in the current source tree.
 
-No Wails project, Go application core, generated bindings, or mobile Wails build has yet been added to the current source tree.
-
 ## Development Goals
 
-The next architectural work should validate Wails v3 and establish the smallest complete server′/client′ application without prematurely migrating all existing prototype behavior.
+The next architectural work should move from the executable shell toward the smallest complete local-node application.
 
 Likely areas of work are:
 
-1. Build a small Wails v3 proof of concept using the same vanilla-JavaScript client′ on Linux and Android.
-2. Verify bindings, events, lifecycle behavior, storage, permissions, packaging, and representative native capabilities.
-3. Identify mobile gaps and determine whether they can be fixed locally and contributed upstream.
-4. Define the boundary and data contracts between the client′ and server′.
-5. Define the encrypted user vault, SQLite boundaries, media storage, and key ownership in Go.
-6. Establish the Go peer-networking core and experiment with discovery, presence, pub/sub, and location-based indexing.
-7. Define the minimum account bootstrap and recovery relationship with `link-up.com`.
-8. Define presence, visibility, and saved-profile capability semantics.
-9. Define the H3-based privacy-preserving location flow.
-10. Build a minimal rendezvous and signaling path.
-11. Prove one authorized peer-to-peer interaction with a clear fallback path.
-12. Add block, report, and revocation behavior before broad discovery.
-13. Measure what work peers perform and what remote cost is avoided.
+1. Define the private loopback HTTP/WebSocket contract between the WebView and local node.
+2. Define the encrypted user vault, SQLite boundaries, media storage, and key ownership.
+3. Establish the libp2p node and experiment with discovery, presence, pub/sub, and location-based indexing.
+4. Design the minimum platform launcher and WebView lifecycle without prematurely selecting a framework.
+5. Define the minimum account bootstrap and recovery relationship with `link-up.com`.
+6. Define presence, visibility, and saved-profile capability semantics.
+7. Define the H3-based privacy-preserving location flow.
+8. Build a minimal rendezvous and signaling path.
+9. Prove one authorized peer-to-peer interaction with a clear fallback path.
+10. Add block, report, and revocation behavior before broad discovery.
+11. Measure what work peers perform and what remote cost is avoided.
 
-Desktop and Android can be used for initial validation. iOS device and distribution verification will require macOS, Xcode, and Apple signing infrastructure.
-
-The MVP should prove more than packaging or a dating UI. It should test whether the Wails mobile foundation is viable and whether an installed Link-Up core can safely perform meaningful application and network work while remote services retain shared authority and safety controls.
+The MVP should prove more than packaging or a dating UI. It should test whether an installed Link-Up node can safely perform meaningful application and network work while remote services retain shared authority and safety controls.
 
 ## Decisions Still Open
 
 The existing discussions do not settle:
 
-- Whether Wails v3 mobile is sufficiently complete and stable for Link-Up.
-- Which missing mobile capabilities must be implemented or contributed upstream.
-- The exact Wails binding and event contracts between client′ and server′.
-- The exact platform installation, signing, update, and recovery model.
-- Whether a Go/WASM browser or PWA fallback should be maintained.
-- The Go SQLite implementation and encrypted-vault and media-storage schema.
-- The Go peer-networking stack and transport composition.
+- The exact platform installation, launch, and update model.
+- The exact loopback HTTP/WebSocket protocol.
+- The encrypted-vault and media-storage schema.
 - The identity and key-ownership model.
 - The remote service language and deployment architecture.
 - The H3 resolution and density thresholds.
@@ -309,6 +292,7 @@ The existing discussions do not settle:
 - Media-transfer, storage, and retention rules.
 - The exact saved-profile capability lifecycle.
 - The frontend rendering approach and the role of htmx.
+- Update signing, distribution, and recovery details.
 - The MVP's numerical cost and peer-contribution success criteria.
 
 These should remain open until each can be decided from a concrete product requirement, threat model, or implementation experiment.
@@ -316,16 +300,14 @@ These should remain open until each can be decided from a concrete product requi
 ## Working Architecture Statement
 
 ```text
-Link-Up is a locally installed Wails application with a web-native client′.
+Link-Up is a locally installed application with a web-native UI.
 
 The website brings users into the network.
-The compiled Go server′ owns business logic, the encrypted user vault, peer networking, and application authority.
-The HTML, CSS, and JavaScript client′ provides presentation and user interaction.
-Wails packages both roles and connects them through in-process bindings and events.
+The Bun local node owns the runtime, encrypted user vault, and peer networking.
+An embedded WebView provides the presentation layer.
 Remote services provide shared authority, safety, rendezvous, and fallback.
 Profiles exist as encrypted, permissioned live presence.
 Peers communicate directly only when authorized.
 Location organizes discovery without exposing unnecessary precision.
-Android and iPhone support are mandatory.
-The MVP must prove the Wails mobile foundation and measure whether local cores materially reduce central cost.
+The MVP must measure whether local nodes materially reduce central cost.
 ```
