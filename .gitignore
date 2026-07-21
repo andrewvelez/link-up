@@ -36,7 +36,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Exclude personal settings
 .codex
 .agents
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # TLS dev certs
 key.pem
