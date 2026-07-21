@@ -126,6 +126,16 @@ bun run start
 
 No complete application data model, identity system, geocell implementation, peer workflow, encrypted storage layer, moderation system, or remote authority service has been implemented.
 
+### Testing
+
+Tests are organized by scope:
+
+- `test/Specs/` contains browser-driven UI specifications.
+- `test/Behaviors/` contains service and application behavior tests.
+- `test/Units/` contains isolated unit tests.
+
+Current test counts are tracked in `test/TEST_PYRAMID.md`.
+
 ## Development Priorities
 
 1. **Complete:** Make the existing PWA shell functional and testable.

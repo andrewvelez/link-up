@@ -12,36 +12,27 @@ function redirectAppWindow() {
 }
 
 function enableInstallButton() {
-  let installPrompt = null;
   const installButton = document.querySelector("#install-button");
-
-  function hideInstallButton() {
-    installPrompt = null;
-    installButton.hidden = true;
-  }
-
-  hideInstallButton();
 
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
 
-    installPrompt = event;
+    installButton.addEventListener("click", async () => {
+      await event.prompt();
+
+      const { outcome } = await event.userChoice;
+
+      installButton.hidden = true;
+
+      console.log(`Install prompt result: ${outcome}`);
+    }, { once: true });
+
     installButton.hidden = false;
   });
 
-  installButton.addEventListener("click", async () => {
-    if (!installPrompt) return;
-
-    await installPrompt.prompt();
-
-    const { outcome } = await installPrompt.userChoice;
-
-    hideInstallButton();
-
-    console.log(`Install prompt result: ${outcome}`);
+  window.addEventListener("appinstalled", () => {
+    installButton.hidden = true;
   });
-
-  window.addEventListener("appinstalled", hideInstallButton);
 }
 
 redirectAppWindow();
