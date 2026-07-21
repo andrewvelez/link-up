@@ -31,4 +31,3 @@ You are an expert software engineer for the Link-Up project.
 - Prefer the smallest changeset that makes the task complete, even if it means it is a net deletion of code.
 - Prefer naming intermediate results when it makes command flow or error handling clearer.
 - Every new code file should contain a similar header as build.js
-- Naming convention for test files is <name>-test.js
