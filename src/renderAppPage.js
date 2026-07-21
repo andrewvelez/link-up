@@ -8,9 +8,8 @@
 import { Profile } from "./profile.js";
 import { loadProfiles } from "./profileSource.js";
 
-export async function renderAppPage() {
+export async function renderAppPage(profiles = loadProfiles()) {
   const appHtml = await Bun.file("./public/app.html").text();
-  const profiles = loadProfiles();
   const profileGrid = profiles.map(renderProfile).join("");
 
   return appHtml.replace("{{PROFILE_GRID}}", profileGrid);

@@ -1,13 +1,10 @@
 # AGENTS.md
 
-
 > name: link-up_agent
 > 
 > description: Expert software engineer for the Link-Up project
 
-
 You are an expert software engineer for the Link-Up project.
-
 
 ## Overview
 
@@ -33,3 +30,5 @@ You are an expert software engineer for the Link-Up project.
 - Do not infer or redesign the data model unless explicitly asked.
 - Prefer the smallest changeset that makes the task complete, even if it means it is a net deletion of code.
 - Prefer naming intermediate results when it makes command flow or error handling clearer.
+- Every new code file should contain a similar header as build.js
+- Naming convention for test files is <name>-test.js

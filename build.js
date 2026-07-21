@@ -1,5 +1,10 @@
 #! /usr/bin/env bun
-// @author Andrew Velez 2026
+/**
+ * SPDX-FileCopyrightText: 2026 Andrew Velez
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * @author Andrew Velez
+ * @summary routing
+ */
 
 import { $ } from "bun";
 import { spawnSync } from "node:child_process";
@@ -18,6 +23,7 @@ let port = defaultPort;
 
 export const COMMANDS = Object.freeze({
   build,
+  test,
   start
 });
 
@@ -68,11 +74,11 @@ function typecheck() {
 }
 
 function runTests() {
-  // const result = spawnSync(process.execPath, ["test"], {
-  //   stdio: "inherit",
-  // });
+  const result = spawnSync(process.execPath, ["test"], {
+    stdio: "inherit",
+  });
 
-  // handleCommandResult(result);
+  handleCommandResult(result);
 }
 
 function clean() {
@@ -124,6 +130,10 @@ async function build() {
   typecheck();
   await compile();
   runTests();
+}
+
+async function test() {
+  await build();
 }
 
 async function start() {
