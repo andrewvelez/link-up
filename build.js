@@ -3,11 +3,9 @@
  * SPDX-FileCopyrightText: 2026 Andrew Velez
  * SPDX-License-Identifier: GPL-3.0-or-later
  * @author Andrew Velez
- * @summary routing
+ * @summary the build file for the project
  */
 
-import { $ } from "bun";
-import { spawnSync } from "node:child_process";
 import { rmSync } from "node:fs";
 import { parseArgs } from "node:util";
 
@@ -19,13 +17,6 @@ const host = Bun.env.HOST ?? "127.0.0.1";
 const appUrl = new URL(`https://${host}:${defaultPort}/`);
 const serverTimeoutMs = 5_000;
 const serverPollMs = 100;
-let port = defaultPort;
-
-export const COMMANDS = Object.freeze({
-  build,
-  test,
-  start
-});
 
 async function startServer() {
   const deadline = performance.now() + serverTimeoutMs;
@@ -54,31 +45,20 @@ function errorUsage(commandNames) {
   process.exit(1);
 }
 
-
-function handleCommandResult({ error, status }) {
-  if (error) {
-    throw error;
-  }
-
-  if (status) {
-    process.exit(status);
-  }
-}
-
 function typecheck() {
-  const result = spawnSync(Bun.which("tsc") ?? "tsc", ["-p", "tsconfig.json", "--noEmit"], {
-    stdio: "inherit",
+  const result = Bun.spawnSync([Bun.which("tsc") ?? "tsc", "-p", "tsconfig.json", "--noEmit"], {
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
   });
-
-  handleCommandResult(result);
 }
 
 function runTests() {
-  const result = spawnSync(process.execPath, ["test"], {
-    stdio: "inherit",
+  const result = Bun.spawnSync([process.execPath, "test"], {
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
   });
-
-  handleCommandResult(result);
 }
 
 function clean() {
@@ -99,61 +79,88 @@ function compile() {
 }
 
 async function startLocalServer() {
+  const portListener = Bun.spawnSync([
+    "ss",
+    "-H",
+    "-ltnp",
+    `sport = :${defaultPort}`,
+  ]).stdout.toString();
 
-    for (let newPort = port; newPort < (port + 10); newPort++) {
-      let server;
-      appUrl.port = String(newPort);
+  if (portListener) {
+    const processDetails = portListener.match(
+      /users:\(\(\"(bun|linkup)\",pid=(\d+)/,
+    );
 
-      try {
-        server = Bun.spawn([outfile], {
-          env: { ...Bun.env, PORT: String(newPort) },
-          stdin: "inherit",
-          stdout: "inherit",
-          stderr: "inherit",
-        });
-        await startServer();
-        await server.exited;
-      } catch {
-        continue;
-      } finally {
-        server?.kill();
-      }
-
-      return;
+    if (!processDetails) {
+      throw new Error(`Port ${defaultPort} is already in use`);
     }
 
-    throw new Error("Unable to start local server");
+    process.kill(Number(processDetails[2]), "SIGTERM");
+    await Bun.sleep(serverPollMs);
+  }
+
+  const server = Bun.spawn([outfile], {
+    env: { ...Bun.env, PORT: String(defaultPort) },
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  try {
+    await startServer();
+    await server.exited;
+  } finally {
+    server.kill();
+  }
 }
 
-async function build() {
-  clean();
-  typecheck();
-  await compile();
-  runTests();
-}
+//region " BUN BUILD SCRIPTS "
 
-async function test() {
-  await build();
-}
+// The build scripts don't call each other, they call the build-parts.
 
-async function start() {
-  await build();
-  await startLocalServer();
-}
+const commands = Object.freeze({
+
+  // production build for deployment
+  async build() {
+    clean();
+    typecheck();
+    await compile();
+    runTests();
+  },
+
+  // test build for CI automation
+  async test() {
+    clean();
+    typecheck();
+    await compile();
+    runTests();
+  },
+
+  // dev build for local development/testing
+  async start() {
+    typecheck();
+    await compile();
+    runTests();
+    await startLocalServer();
+  }
+
+});
+
+//endregion " BUN BUILD SCRIPTS "
 
 async function main() {
-  const commandNames = Object.keys(COMMANDS);
-
   const { positionals } = parseArgs({
     args: Bun.argv.slice(2),
     allowPositionals: true,
   });
 
-  if (positionals.length !== 1 || !Object.hasOwn(COMMANDS, positionals[0])) {
-    errorUsage(commandNames);
+  const commandName = positionals[0];
+
+  if (positionals.length !== 1 || !Object.hasOwn(commands, commandName)) {
+    errorUsage(Object.keys(commands));
   }
 
-  await COMMANDS[positionals[0]]();
+  await commands[commandName]();
 }
 
 await main();

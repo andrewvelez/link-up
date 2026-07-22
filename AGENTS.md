@@ -1,19 +1,12 @@
 # AGENTS.md
 
-> name: link-up_agent
-> 
-> description: Expert software engineer for the Link-Up project
-
-You are an expert software engineer for the Link-Up project.
-
-## Overview
+## Overview / Architecture
 
 - Ask clarifying questions before changing code unless task is unambiguous
 - In your response, the solution should be pragmatic and the response is always concise.
 - Do not over-hedge in the response by adding caveats that do not substantially affect the solution.
 - Do not make changes to files without first showing the intended diff and getting approval.
 - Before starting on any task, re-read the canonical design doc for the project located from the folder root at ./docs/DESIGN.md.
-- After any non-trivial task, after any substantial code commit, or after any length back and forth chat within a task, ask me if the design doc needs to be updated.
 
 ## Build Commands
 
@@ -31,4 +24,4 @@ You are an expert software engineer for the Link-Up project.
 - Prefer the smallest changeset that makes the task complete, even if it means it is a net deletion of code.
 - Prefer naming intermediate results when it makes command flow or error handling clearer.
 - Every new code file should contain a similar header as build.js
-- When changing tests, update the test numbers in /test/TEST_PYRAMID.md
+- When adding or removing tests, update the test numbers in /test/TEST_PYRAMID.md silently.
