@@ -18,7 +18,7 @@ const appUrl = new URL(`https://${host}:${defaultPort}/`);
 const serverTimeoutMs = 5_000;
 const serverPollMs = 100;
 
-async function startServer() {
+async function waitForLocalServer() {
   const deadline = performance.now() + serverTimeoutMs;
 
   while (performance.now() < deadline) {
@@ -78,7 +78,7 @@ function compile() {
   });
 }
 
-async function startLocalServer() {
+async function useOrStartLocalServer() {
   const portListener = Bun.spawnSync([
     "ss",
     "-H",
@@ -87,16 +87,8 @@ async function startLocalServer() {
   ]).stdout.toString();
 
   if (portListener) {
-    const processDetails = portListener.match(
-      /users:\(\(\"(bun|linkup)\",pid=(\d+)/,
-    );
-
-    if (!processDetails) {
-      throw new Error(`Port ${defaultPort} is already in use`);
-    }
-
-    process.kill(Number(processDetails[2]), "SIGTERM");
-    await Bun.sleep(serverPollMs);
+    console.log(`Server assumed to be running at ${appUrl}`);
+    return;
   }
 
   const server = Bun.spawn([outfile], {
@@ -107,7 +99,7 @@ async function startLocalServer() {
   });
 
   try {
-    await startServer();
+    await waitForLocalServer();
     await server.exited;
   } finally {
     server.kill();
@@ -141,7 +133,7 @@ const commands = Object.freeze({
     typecheck();
     await compile();
     runTests();
-    await startLocalServer();
+    await useOrStartLocalServer();
   }
 
 });
