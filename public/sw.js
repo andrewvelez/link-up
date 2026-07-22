@@ -6,7 +6,7 @@
  */
 
 
-const cacheName = "link-up-static-v1";
+const cacheName = "link-up-static-__CACHE_VERSION__";
 const assetPaths = [
   "/",
   "/index",
@@ -27,12 +27,22 @@ const assetSet = new Set(assetPaths);
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(cacheName).then(cache => cache.addAll(assetPaths)),
+    caches.open(cacheName)
+      .then(cache => cache.addAll(assetPaths))
+      .then(() => self.skipWaiting()),
   );
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => Promise.all(
+        cacheNames
+          .filter(name => name.startsWith("link-up-static-") && name !== cacheName)
+          .map(name => caches.delete(name)),
+      ))
+      .then(() => clients.claim()),
+  );
 });
 
 self.addEventListener("fetch", event => {

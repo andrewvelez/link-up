@@ -12,6 +12,7 @@ import { parseArgs } from "node:util";
 const outdir = "./dist";
 const outfile = `${outdir}/linkup`;
 const entrypoint = "./src/main.js";
+const appVersion = (await Bun.file("./package.json").json()).version;
 const defaultPort = 3000;
 const host = Bun.env.HOST ?? "127.0.0.1";
 const appUrl = new URL(`https://${host}:${defaultPort}/`);
@@ -68,9 +69,17 @@ function clean() {
   });
 }
 
-function compile() {
+/** @param {boolean} [development] */
+function compile(development = false) {
+  const cacheVersion = development
+    ? `${appVersion}-${Date.now()}`
+    : appVersion;
+
   return Bun.build({
     entrypoints: [entrypoint],
+    define: {
+      "Bun.env.LINK_UP_CACHE_VERSION": JSON.stringify(cacheVersion),
+    },
     compile: {
       target: "bun-linux-x64",
       outfile,
@@ -131,7 +140,7 @@ const commands = Object.freeze({
   // dev build for local development/testing
   async start() {
     typecheck();
-    await compile();
+    await compile(true);
     runTests();
     await useOrStartLocalServer();
   }

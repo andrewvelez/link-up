@@ -20,11 +20,19 @@ async function appPage() {
 const staticRoutes = Object.fromEntries(
   STATIC_FILES.map(staticFile => [
     staticFile.name?.replace(/^\.?\/?public\//, "/"),
-    () => new Response(staticFile, {
+    async () => new Response(
+      staticFile.name?.endsWith("/sw.js")
+        ? (await staticFile.text()).replace(
+          "__CACHE_VERSION__",
+          Bun.env.LINK_UP_CACHE_VERSION ?? "development",
+        )
+        : staticFile,
+      {
       headers: {
         "Content-Type": staticFile.type,
       },
-    }),
+      },
+    ),
   ]),
 );
 

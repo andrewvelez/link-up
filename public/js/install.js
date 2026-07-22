@@ -12,7 +12,13 @@ function redirectAppWindow() {
 }
 
 function enableInstallButton() {
+  const installPrompt = document.querySelector("#install-prompt");
   const installButton = document.querySelector("#install-button");
+  const firefoxInstallInstructions = document.querySelector("#firefox-install-instructions");
+
+  if (navigator.userAgent.includes("Firefox/") && navigator.userAgent.includes("Linux")) {
+    firefoxInstallInstructions.hidden = false;
+  }
 
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
@@ -28,9 +34,11 @@ function enableInstallButton() {
     }, { once: true });
 
     installButton.hidden = false;
+    installPrompt.hidden = false;
   });
 
   window.addEventListener("appinstalled", () => {
+    installPrompt.hidden = true;
     installButton.hidden = true;
   });
 }

@@ -18,7 +18,7 @@ describe("PWA routes", () => {
   test.each([
     ["/app", "text/html", 'class="profile-grid"'],
     ["/manifest.webmanifest", "application/manifest+json", '"name": "Link-Up"'],
-    ["/sw.js", "text/javascript", 'const cacheName = "link-up-static-v1"'],
+    ["/sw.js", "text/javascript", 'const cacheName = "link-up-static-development"'],
     ["/css/styles.css", "text/css", ".profile-grid"],
     ["/icons/linkup-192.png", "image/png", null],
   ])("serves %s", async (path, contentType, expectedContent) => {

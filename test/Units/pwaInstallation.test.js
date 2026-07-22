@@ -17,6 +17,8 @@ describe("PWA installation", () => {
     let beforeInstallPromptHandler;
     let clickHandlerAttached = false;
     let hidden = true;
+    const installPrompt = { hidden: true };
+    const firefoxInstallInstructions = { hidden: true };
 
     const installButton = {
       /** @param {string} eventName */
@@ -35,8 +37,11 @@ describe("PWA installation", () => {
     const browserContext = {
       /** @param {string} selector */
       querySelector(selector) {
-        expect(selector).toBe("#install-button");
-        return installButton;
+        return {
+          "#install-prompt": installPrompt,
+          "#install-button": installButton,
+          "#firefox-install-instructions": firefoxInstallInstructions,
+        }[selector];
       },
     };
     const appWindow = {
@@ -60,6 +65,7 @@ describe("PWA installation", () => {
       document: browserContext,
       location: { replace() {} },
       matchMedia: () => appWindow,
+      navigator: { userAgent: "Chromium" },
       window: windowContext,
     });
 
@@ -71,5 +77,38 @@ describe("PWA installation", () => {
 
     expect(clickHandlerAttached).toBeTrue();
     expect(hidden).toBeFalse();
+    expect(installPrompt.hidden).toBeFalse();
+    expect(firefoxInstallInstructions.hidden).toBeTrue();
+  });
+
+  test("shows installation guidance in Firefox on Linux", async () => {
+    const installScript = await Bun.file(
+      new URL("../../public/js/install.js", import.meta.url),
+    ).text();
+    const installPrompt = { hidden: true };
+    const installButton = { hidden: true, addEventListener() {} };
+    const firefoxInstallInstructions = { hidden: true };
+
+    runInNewContext(installScript, {
+      console,
+      document: {
+        /** @param {string} selector */
+        querySelector(selector) {
+          return {
+            "#install-prompt": installPrompt,
+            "#install-button": installButton,
+            "#firefox-install-instructions": firefoxInstallInstructions,
+          }[selector];
+        },
+      },
+      location: { replace() {} },
+      matchMedia: () => ({ matches: false, addEventListener() {} }),
+      navigator: { userAgent: "Mozilla/5.0 (X11; Linux x86_64; rv:147.0) Gecko/20100101 Firefox/147.0" },
+      window: { addEventListener() {} },
+    });
+
+    expect(installPrompt.hidden).toBeTrue();
+    expect(installButton.hidden).toBeTrue();
+    expect(firefoxInstallInstructions.hidden).toBeFalse();
   });
 });

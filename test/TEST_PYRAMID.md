@@ -29,7 +29,7 @@ In this project, we map the three layers to Specs, Behaviors, and Units.
 | :-------- | :-------------: |
 | Spec Tests | 0 |
 | Behavior Tests | 7 |
-| Unit Tests | 3 |
+| Unit Tests | 4 |
 
 
 <br/>
