@@ -136,20 +136,10 @@ Tests are organized by scope:
 
 Current test counts are tracked in `test/TEST_PYRAMID.md`.
 
-## Development Priorities
-
-1. **Complete:** Make the existing PWA shell functional and testable.
-2. Define the smallest useful profile, presence, and discovery flow.
-3. Choose and test browser storage and encryption boundaries.
-4. Connect one browser-compatible peer transport to the application.
-5. Add the minimum rendezvous and signaling service.
-6. Prove one authorized peer interaction with a clear fallback path.
-7. Add block, report, and revocation behavior before broad discovery.
-8. Measure client contribution and avoided server cost.
-
-The MVP should test the architecture, not only the interface. It should measure useful client work, reliability, and server cost.
-
 ## Open Decisions
+
+Detailed development priorities and completion criteria are maintained in
+[`ROADMAP.md`](./ROADMAP.md).
 
 - Browser storage, encrypted data, backup, and key ownership.
 - Identity and account recovery.

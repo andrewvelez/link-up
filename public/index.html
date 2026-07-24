@@ -1,3 +1,5 @@
+<!-- SPDX-FileCopyrightText: 2026 Andrew Velez -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!DOCTYPE html>
 <html data-theme="dark">
 
@@ -11,6 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script type="module" src="js/registerServiceWorker.js"></script>
   <script type="module" src="js/install.js"></script>
+  <script type="module" src="https://unpkg.com/browserux-pwa-ui/dist/browserux-pwa-ui.esm.js"></script>
 </head>
 
 <body>
@@ -28,6 +31,7 @@
       </p>
     </div>
   </section>
+  <browserux-pwa-ui lang="en" no-update></browserux-pwa-ui>
 </body>
 
 </html>

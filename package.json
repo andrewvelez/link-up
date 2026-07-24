@@ -6,6 +6,7 @@
     "@libp2p/tcp": "^11.0.24",
     "@libp2p/websockets": "^10.1.17",
     "@types/bun": "latest",
+    "browserux-pwa-ui": "^1.1.0",
     "bulma": "^1.0.4",
     "htmx.org": "^2.0.10",
     "libp2p": "^3.3.6",
