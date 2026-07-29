@@ -1,16 +1,26 @@
-<!--VITE PLUS START-->
+# AGENTS.md
 
-# Using Vite+, the Unified Toolchain for the Web
+## Overview / Architecture
 
-This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown, Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management, package management, and frontend tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, and it invokes Vite through `vp dev` and `vp build`. Run `vp help` to print a list of commands and `vp <command> --help` for information about a specific command.
+- Ask clarifying questions before changing code unless the task is unambiguous.
+- Keep responses pragmatic and concise.
+- Do not make changes without first showing the intended diff and getting approval.
+- If necessary for a task, re-read the markdown design/roadmap docs in `linkup2/docs/`.
 
-Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.dev/guide/.
+## Build Commands
 
-## Review Checklist
+- Install dependencies: `vp install`
+- Check formatting and linting: `vp check`
+- Build the SPA for production: `vp build`
+- Run the SPA during development: `vp dev`
+- Run the Tauri application during development: `vp run tauri dev`
 
-- [ ] Run `vp install` after pulling remote changes and before getting started.
-- [ ] Run `vp check` and `vp test` to format, lint, type check and test changes.
-- [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
-- [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
+## Code Style
 
-<!--VITE PLUS END-->
+- Use vanilla JavaScript with JavaScript-focused JSDoc; do not introduce TypeScript.
+- JSDoc annotations may only use real JavaScript/runtime types when they add useful checking.
+- Do not add broad placeholder annotations such as `@param {*} value` or `@returns {*} `.
+- Do not infer or redesign the data model unless explicitly asked.
+- Prefer the smallest changeset that makes the task complete.
+- Prefer naming intermediate results when it makes command flow or error handling clearer.
+- Every new code file should contain a similar header as `src/main.js`.
