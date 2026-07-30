@@ -3,31 +3,7 @@
 // Link-Up application entry point.
 
 import { WebUI } from "@webui-dev/bun-webui";
-
-const applicationHtml = `
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Link-Up</title>
-    <script src="webui.js"></script>
-  </head>
-  <body>
-    <main>
-      <h1>Link-Up</h1>
-      <button id="get-status" type="button">Get status</button>
-      <output id="status">Waiting</output>
-    </main>
-    <script>
-      document.querySelector("#get-status").addEventListener("click", async () => {
-        const status = await webui.call("getStatus");
-        document.querySelector("#status").textContent = status;
-      });
-    </script>
-  </body>
-</html>
-`;
+import applicationHtml from "./web/index.html" with { type: "text" };
 
 const applicationWindow = new WebUI();
 
