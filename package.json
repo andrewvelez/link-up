@@ -2,5 +2,12 @@
   "name": "link-up",
   "module": "index.js",
   "type": "module",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "bun build ./index.js --compile --outfile ./dist/link-up",
+    "dev": "bun run ./index.js"
+  },
+  "dependencies": {
+    "@webui-dev/bun-webui": "2.5.7"
+  }
 }

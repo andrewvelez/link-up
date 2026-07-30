@@ -1,0 +1,17 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "link-up",
+      "dependencies": {
+        "@webui-dev/bun-webui": "2.5.7",
+      },
+    },
+  },
+  "packages": {
+    "@webui-dev/bun-webui": ["@webui-dev/bun-webui@2.5.7", "", { "dependencies": { "adm-zip": "^0.5.16" } }, "sha512-xrKnmgEn97G1acLeVvhw4IeAx/FFPSe+3gm0AbBVLMxD/VcDLyvpBcA8+ItxkINrztDjWesJ731R84JArlIs9Q=="],
+
+    "adm-zip": ["adm-zip@0.5.18", "", {}, "sha512-ufJnssQGbxzLNS1Ho9bCtX4rQKCCvoVuDLHoJyc3F9dOGDB4BkWs2Ci0kv53lqocAEQ/Cbi+I2XCsNYGqVYqng=="],
+  }
+}

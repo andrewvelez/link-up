@@ -2,4 +2,36 @@
 // Copyright (c) 2026 Andrew Velez
 // Link-Up application entry point.
 
-console.log("Hello via Bun!");
+import { WebUI } from "@webui-dev/bun-webui";
+
+const applicationHtml = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Link-Up</title>
+    <script src="webui.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Link-Up</h1>
+      <button id="get-status" type="button">Get status</button>
+      <output id="status">Waiting</output>
+    </main>
+    <script>
+      document.querySelector("#get-status").addEventListener("click", async () => {
+        const status = await webui.call("getStatus");
+        document.querySelector("#status").textContent = status;
+      });
+    </script>
+  </body>
+</html>
+`;
+
+const applicationWindow = new WebUI();
+
+applicationWindow.bind("getStatus", () => "Link-Up is running");
+
+await applicationWindow.show(applicationHtml);
+await WebUI.wait();
