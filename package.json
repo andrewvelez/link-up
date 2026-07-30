@@ -1,24 +1,12 @@
 {
   "name": "link-up",
-  "version": "0.0.0",
-  "private": true,
+  "module": "index.ts",
   "type": "module",
-  "scripts": {
-    "ready": "vp check && vp run -r test && vp run -r build",
-    "dev": "vp run website#dev"
-  },
+  "private": true,
   "devDependencies": {
-    "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "@types/bun": "latest"
   },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "11.17.0",
-      "onFail": "download"
-    }
-  },
-  "engines": {
-    "node": ">=22.18.0"
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }

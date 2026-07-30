@@ -1,29 +1,15 @@
-# Vite+ Monorepo Starter
+# link-up
 
-A starter for creating a Vite+ monorepo.
-
-## Development
-
-- Check everything is ready:
+To install dependencies:
 
 ```bash
-vp run ready
+bun install
 ```
 
-- Run the tests:
+To run:
 
 ```bash
-vp run -r test
+bun run index.ts
 ```
 
-- Build the monorepo:
-
-```bash
-vp run -r build
-```
-
-- Run the development server:
-
-```bash
-vp run dev
-```
+This project was created using `bun init` in bun v1.3.14. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
