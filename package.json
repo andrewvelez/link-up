@@ -8,6 +8,7 @@
     "dev": "bun run ./index.js"
   },
   "dependencies": {
+    "@cucumber/cucumber": "^13.2.0",
     "@webui-dev/bun-webui": "2.5.7"
   }
 }
