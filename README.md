@@ -1,33 +1,44 @@
 # link-up
 
-To install dependencies:
+<details>
+  <summary>To install dependencies:</summary>
 
 ```bash
 bun install
 ```
+</details>
 
-To check everything is ready:
+<details>
+  <summary>To check everything is ready:</summary>
 
 ```bash
 bun ./build.js ready
 ```
+</details>
 
-To run the Cucumber tests:
+<details>
+  <summary>To run the tests:</summary>
 
 ```bash
 bun ./build.js test
 ```
+</details>
 
-To build the application:
+<details>
+  <summary>To build the application:</summary>
 
 ```bash
 bun ./build.js build
 ```
+</details>
 
-To run the application in development:
+<details>
+  <summary>To run the application in development:</summary>
 
 ```bash
 bun ./build.js dev
 ```
+</details>
+
 
 This project was created using `bun init` in bun v1.3.14. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

@@ -1,15 +1,33 @@
+#! /usr/bin/env bun
 /**
  *  SPDX-License-Identifier: MIT
  *  Copyright (c) 2026 Andrew Velez
  *  Link-Up application entry point.
  */
 
-import { WebUI } from "@webui-dev/bun-webui";
-import applicationHtml from "./web/index.html" with { type: "text" };
+const server = Bun.serve({
+  port: 3000,
 
-const applicationWindow = new WebUI();
+  async fetch(request) {
+    const url = new URL(request.url);
 
-applicationWindow.bind("getStatus", () => "Link-Up is running");
+    if (request.method === "GET" && url.pathname === "/api/status") {
+      return Response.json({ status: "ok" });
+    }
 
-await applicationWindow.show(applicationHtml);
-await WebUI.wait();
+    if (request.method === "POST" && url.pathname === "/api/message") {
+      const body = await request.json();
+
+      return Response.json({
+        received: body,
+      });
+    }
+
+    return Response.json(
+      { error: "Not found" },
+      { status: 404 },
+    );
+  },
+});
+
+console.log(`API listening on ${server.url}`);
