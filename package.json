@@ -3,10 +3,6 @@
   "module": "index.js",
   "type": "module",
   "private": true,
-  "scripts": {
-    "build": "bun build ./index.js --compile --outfile ./dist/link-up",
-    "dev": "bun run ./index.js"
-  },
   "dependencies": {
     "@cucumber/cucumber": "^13.2.0",
     "@webui-dev/bun-webui": "2.5.7"

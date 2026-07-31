@@ -2,7 +2,7 @@
  *  SPDX-License-Identifier: MIT
  *  Copyright (c) 2026 Andrew Velez
  *  Link-Up application entry point.
- * /
+ */
 
 import { WebUI } from "@webui-dev/bun-webui";
 import applicationHtml from "./web/index.html" with { type: "text" };

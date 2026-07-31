@@ -11,10 +11,10 @@
 
 ## Build Commands
 
-- Check everything is ready: `vp run ready`
-- Run the tests: `vp run -r test`
-- Build the monorepo: `vp run -r build`
-- Run the development server: `vp run dev`
+- Check everything is ready: `bun ./build.js ready`
+- Run the tests: `bun ./build.js test`
+- Build the application: `bun ./build.js build`
+- Run the application in development: `bun ./build.js dev`
 
 
 ## Code Style
