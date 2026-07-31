@@ -1,65 +1,84 @@
 # Link-Up Project Design Doc July 2026
 
-## Background
+## Architecture
 
-The original design doc described a Bun.js PWA with a strong preference to be fully P2P if possible. The web UI app also should be local first. The GUI will be rendered by a chromeless browser and the data stored and managed locally. To be fully serverless, it would be necessary to cache the full app at first hit and keep the cache indefinitely unless a versioned cache-buster was used. Designs previous to that were for a Bun.js single file executable for portability reasons.
+Link-Up uses the JavaScript Core Pattern. The Link-Up web application is a
+single-page application that owns the domain rules, state, workflows, and user
+interface. It runs on the Web Platform in a browser or WebView.
 
-## Current Use Cases
-
-These are the use cases in priority.
-
-1. Android mobile device (or tablet)
-2. iPhone mobile device (or iPad)
-3. MacOS desktop
-4. Windows desktop
-5. Linux desktop
-
-As of right now, it is unclear where mobile web fits, so it is not included.
-
-## Challenges
-
-Bun.js only made sense when it was being used as the web app runtime. The benefits of Bun.js came from its API, JavaScriptCore, and additional optimizations. A fully P2P app would not be running on a Node.js/Bun.js style event loop model. The app would be closer to a single HTML file for an SPA. This uses the JavaScript engine in the browser and loses all the benefits of Bun.js.
-
-The technological pièce de résistance is that the app is P2P, locally stored, and served directly from the user’s device. From that goal, a shared SPA inside native application containers is crucial. Packaging the SPA as a single HTML file is a useful deployment choice. This leads to Tauri 2 with Vite+.
-
-## New Design
-
-The app is an SPA delivered in a single file with assets embedded. This is done with a Vite-compatible single-file build plugin used through Vite+. The frontend application is delivered as a self-contained HTML file. In installed mode, it runs alongside the Tauri host, its configuration, permissions, plugins, and platform packaging files. The native app containers are provided by Tauri 2.
+The browser or WebView is the user-interface runtime. Bun-WebUI is a
+replaceable adapter that creates that runtime for the installed application. It
+is not the Link-Up application core and does not own Link-Up domain logic.
 
 ```text
-Browser version
-└── dist/index.html
-    Runs directly on domain.com
-
-Installed version
-└── Tauri embeds dist/index.html
-    Runs inside the native WebView
+Link-Up JavaScript SPA
+└── WebUI adapter
+    └── Bun-WebUI
+        └── installed browser or WebView
 ```
 
-Capabilities of SPA modes:
+The adapter uses Bun-WebUI's command bridge for fast communication between the
+SPA and its installed host. Link-Up operations exposed across that boundary
+must be narrowly scoped rather than providing general access to privileged
+host capabilities.
+
+## Web Application
+
+The web application has two pages:
+
+- `web/index.html` is the PWA landing page. It introduces Link-Up and provides
+  the entry point for opening or installing the application.
+- `web/app.html` runs the main Link-Up SPA.
+
+The same SPA is used whether Link-Up runs in a regular browser, an installed
+browser, or a WebView created through the WebUI adapter.
+
+## Project Structure
 
 ```text
-Shared SPA
-├── Browser mode
-│   ├── IndexedDB
-│   ├── OPFS
-│   ├── browser geolocation
-│   └── browser networking
-│
-└── Tauri mode
-    ├── Tauri filesystem
-    ├── SQLite
-    ├── native notifications
-    └── other Tauri plugins
+features/
+└── Cucumber specifications and step definitions
+
+src/
+├── WebUI/
+├── Network/
+├── Data/
+└── other Link-Up domains as they are introduced
+
+web/
+├── index.html
+└── app.html
 ```
 
-Calls to Tauri APIs must sit behind platform adapters. The browser build cannot execute Tauri plugin calls, but the rest of the JavaScript application can be identical.
+Code under `src/` is organized by domain. Ports are stable JavaScript
+contracts, and environment-specific adapters implement those contracts.
+Operating systems, devices, storage, networks, services, and native hosts stay
+at these replaceable edges.
+
+The JavaScript core must not import native bridges, infrastructure SDKs, or
+platform packages directly. An adapter is selected when the application starts
+and domain code communicates through its contract.
+
+## Local Authority
+
+Link-Up is local-first and peer-to-peer. Its essential business logic executes
+locally, and its authoritative user data remains under the user's control.
+Remote systems may provide discovery, relaying, synchronization, or other
+network capabilities, but they are not the location of the application.
+
+The local UI boundary is distinct from the external peer boundary:
+
+```text
+SPA ↔ local adapter ↔ browser or WebView
+
+Link-Up peer ↔ untrusted network ↔ Link-Up peer
+```
 
 ## Initial Product Features
 
 ### Profiles
 
-Users can create and update a Link-Up profile. A user’s own profile is stored
+Users can create and update a Link-Up profile. A user's own profile is stored
 locally using the storage available in the browser or installed app.
 
 Users can share their profiles with other Link-Up users and view profiles that
@@ -69,7 +88,7 @@ been decided.
 ### Messaging
 
 Users can send and receive private messages with other Link-Up users. Message
-history is stored locally on the user’s device.
+history is stored locally on the user's device.
 
 The installed app can use native notifications to tell a user when a new
 message arrives. How users connect, how messages reach an offline user, and

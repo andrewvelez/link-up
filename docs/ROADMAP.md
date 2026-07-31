@@ -28,14 +28,23 @@ a. As a user, I can open Link-Up in a supported web browser without installing i
 Each sprint represents approximately one week of estimated work, not a required
 delivery schedule.
 
-1. **Deliver the Android Application** — Package and verify the single-page
-   featureless shell prototype on Android phones and tablets. Covers user story 2.
-2. **Deliver the Desktop Applications** — Package and verify the single-page
-   featureless shell prototype on macOS, Windows, and Linux. Covers user story 1.
-3. **Build the Local Profile** — Create and update a profile, store it locally,
+1. **Create the WebUI Adapter** — Create a Bun-WebUI adapter that can open the
+   Link-Up web application in an installed browser or WebView. This is technical
+   groundwork and does not complete a user story by itself.
+2. **Build the PWA Shell** — Create the landing page and the page that runs the
+   main Link-Up SPA. This is technical groundwork for user stories 1, 2, 3,
+   and 6.
+3. **Organize the JavaScript Core** — Establish the initial domain boundaries
+   for WebUI, networking, data, and later Link-Up capabilities. This is
+   technical groundwork and does not complete a user story by itself.
+4. **Deliver the Desktop Applications** — Package and verify the featureless
+   Link-Up shell on macOS, Windows, and Linux. Covers user story 1.
+5. **Build the Local Profile** — Create and update a profile, store it locally,
    and restore it after restarting Link-Up. Covers user stories 4 and 5.
-4. **Unify Browser and Installed Modes** — Provide the same profile and local
-   persistence behavior through the browser and Tauri platform adapters. Covers
-   user stories 4, 5, and 6.
-5. **Deliver the Apple Mobile Application** — Package and verify the single-page
-   featureless shell prototype on iPhones and iPads. Covers user story 3.
+6. **Unify Browser and Installed Modes** — Provide the same profile and local
+   persistence behavior through browser and installed adapters. Covers user
+   stories 4, 5, and 6.
+7. **Deliver the Android Application** — Package and verify the Link-Up shell
+   on Android phones and tablets. Covers user story 2.
+8. **Deliver the Apple Mobile Application** — Package and verify the Link-Up
+   shell on iPhones and iPads. Covers user story 3.

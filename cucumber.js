@@ -5,10 +5,8 @@
  */
 
 export default {
-  default: {
-    paths: ["features/**/*.feature"],
-    import: ["features/step_definitions/**/*.js"],
-    format: ["progress"],
-    strict: true,
-  },
+  paths: ["features/**/*.feature"],
+  import: ["features/step_definitions/**/*.js"],
+  format: ["progress"],
+  strict: true,
 };
