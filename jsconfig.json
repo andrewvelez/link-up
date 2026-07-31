@@ -1,0 +1,24 @@
+{
+  // SPDX-License-Identifier: MIT
+  // Copyright (c) 2026 Andrew Velez
+  // JavaScript type-checking configuration for Link-Up.
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "lib": ["ESNext", "DOM"]
+  },
+  "include": [
+    "*.js",
+    "src/**/*.js",
+    "features/**/*.js"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}
