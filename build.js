@@ -25,7 +25,9 @@ function runCucumber() {
 async function build() {
   await Bun.build({
     entrypoints: ["./src/app.js"],
-    compile: true,
+    compile: {
+      outfile: "./bin/link-up"
+    },
     minify: true,
     format: "esm",
     sourcemap: "linked",
