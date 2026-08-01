@@ -1,7 +1,8 @@
+#! /usr/bin/env bun
 /**
- * SPDX-License-Identifier: MIT
- * Copyright (c) 2026 Andrew Velez
- * Link-Up build, test, and development commands.
+ * @license SPDX-License-Identifier: MIT
+ * @author Andrew Velez
+ * @desc Link-Up build, test, and development commands.
  */
 
 const cucumberExecutable = "./node_modules/@cucumber/cucumber/bin/cucumber.js";
@@ -23,10 +24,12 @@ function runCucumber() {
 
 async function build() {
   await Bun.build({
-    entrypoints: ["./index.js"],
-    compile: {
-      outfile: "./dist/link-up",
-    },
+    entrypoints: ["./src/app.js"],
+    compile: true,
+    minify: true,
+    format: "esm",
+    sourcemap: "linked",
+    bytecode: true
   });
 }
 

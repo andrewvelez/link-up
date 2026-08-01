@@ -25,4 +25,5 @@
 - Do not infer or redesign the data model unless explicitly asked.
 - Prefer the smallest changeset that makes the task complete.
 - Prefer naming intermediate results when it makes command flow or error handling clearer.
-- Every new file should contain a header with the license tag, author name/year, and description.
+- Every new file should contain a valid header annotations with the MIT license tag, author name/year, and description.
+- Do not add dependency injection to objects or other code tricks just to satsify tests. Regular code shouldn't be modified solely for tests unless their is a benefit for the regular code as well.

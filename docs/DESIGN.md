@@ -22,6 +22,12 @@ SPA and its installed host. Link-Up operations exposed across that boundary
 must be narrowly scoped rather than providing general access to privileged
 host capabilities.
 
+### Link-Up UI Architecture Diagram
+<img src="./link-up-model-view-adapter.svg" width="800" />
+
+### Link-Up Domain Objects Diagram
+<img src="./ports-adapters-10-spokes.png" width="800" />
+
 ## Web Application
 
 The web application has two pages:
