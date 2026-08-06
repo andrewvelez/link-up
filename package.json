@@ -1,6 +1,6 @@
 {
   "name": "link-up",
-  "module": "index.js",
+  "module": "./src/app.js",
   "type": "module",
   "private": true,
   "dependencies": {

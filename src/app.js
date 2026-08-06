@@ -1,7 +1,7 @@
 #! /usr/bin/env bun
 /**
  * @license SPDX-License-Identifier: MIT
- * @author Andrew Velez
+ * @author Andrew Velez 2026
  * @desc Link-Up application lifecycle entry point.
  */
 
