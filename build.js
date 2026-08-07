@@ -42,9 +42,30 @@ function runCucumber() {
   }
 }
 
+/**
+ * Start runs the build, then runs the executable for development.
+ */
+async function start() {
+  await build();
+}
+
+/**
+ * Testing runs the build, then runs the tests.
+ */
+async function test() {
+  await build();
+  runCucumber();
+}
+
+/**
+ * This is the production build.
+ */
 async function build() {
   await Bun.build({
-    entrypoints: ["./src/app.js"],
+    entrypoints: [
+      "./web/index.html",
+      "./src/app.js"
+    ],
     compile: {
       outfile: "./bin/link-up"
     },
@@ -56,24 +77,10 @@ async function build() {
   });
 }
 
-async function dev() {
-  await import("./index.js");
-}
-
-function test() {
-  runCucumber();
-}
-
-async function ready() {
-  test();
-  await build();
-}
-
 const commands = Object.freeze({
-  build,
-  dev,
-  ready,
+  start,
   test,
+  build
 });
 
 const command = process.argv[2];

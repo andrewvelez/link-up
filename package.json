@@ -6,5 +6,10 @@
   "dependencies": {
     "@cucumber/cucumber": "^13.2.0",
     "@webui-dev/bun-webui": "2.5.7"
+  },
+  "scripts": {
+    "start": "bun run --bun ./build.js start",
+    "test": "bun run --bun ./build.js test",
+    "build": "bun run --bun ./build.js build"
   }
 }
