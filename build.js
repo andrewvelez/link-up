@@ -7,6 +7,26 @@
 
 const cucumberExecutable = "./node_modules/@cucumber/cucumber/bin/cucumber.js";
 
+const stripInternalHtmlCommentsPlugin = {
+  name: "strip-internal-html-comments",
+  setup(builder) {
+    builder.onLoad({ filter: /\.html$/ }, async ({ path }) => {
+      const html = await Bun.file(path).text();
+      const contents = new HTMLRewriter()
+        .onDocument({
+          comments(comment) {
+            if (comment.text.endsWith("!")) {
+              comment.remove();
+            }
+          },
+        })
+        .transform(html);
+
+      return { contents, loader: "text" };
+    });
+  },
+};
+
 function runCucumber() {
   const testResult = Bun.spawnSync(
     [process.execPath, cucumberExecutable, "--config", "./cucumber.js"],
@@ -31,7 +51,8 @@ async function build() {
     minify: true,
     format: "esm",
     sourcemap: "linked",
-    bytecode: true
+    bytecode: true,
+    plugins: [stripInternalHtmlCommentsPlugin],
   });
 }
 

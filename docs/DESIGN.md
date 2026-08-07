@@ -2,42 +2,58 @@
 
 ## Architecture
 
-Link-Up uses the JavaScript Core Pattern. The Link-Up web application is a
-single-page application that owns the domain rules, state, workflows, and user
-interface. It runs on the Web Platform in a browser or WebView.
+The smallest and most simple decision in architecture is typically the right one.
+
+For the Link-Up project, JavaScript is "good enough". I believe most technical decisions should be made to "good enough".  In all domains, "good enough" should include code that is correct.  In certain domains, "good enough" might mean "feature complete" (think NASA), or "safety features complete" (think a bank).  For this app, the simple decision is JavaScript, which is "good enough".
+
+
+### Frontend / Backend
+---
+
+This app is local-first software and a P2P networked application.  The intended goal, for financial reasons and authority reasons, is for the app to run without centralized servers.  The "frontend web" will be htmx and possibly hyperscript, therefore, this app will also strive to be a hypermedia-driven application (HDA).
+
+1. #### Genesis:
+
+    > *"thesis: MPA - multi-page application*
+    > 
+    > *antithesis: SPA - single-page application*
+    > 
+    > *synthesis: HDA - hypermedia-driven application*
+    > 
+    > *— @htmx_org"*
+
+
+#### Local-First
+
+I like to think there are two definitions of "local-first".  First, the *soft* definition:  Local-first software keeps data on the local client machine and uses servers as redundant backups or replication to other clients.  Then, there's the *hard* definition:  Local-first software keeps all user's data with the user.  The user defines where and when that data can be shared.  This app is using the second definition.
+
+#### Server/Client & P2P
+
+Without conflating terminology, this app is server-less (not a server/client model).  The network this app will run on will likely be P2P.  This app is locally served via Bun.js and a WebView UI.
+
+### WebView UI
 
 The browser or WebView is the user-interface runtime. Bun-WebUI is a
 replaceable adapter that creates that runtime for the installed application. It
 is not the Link-Up application core and does not own Link-Up domain logic.
 
 ```text
-Link-Up JavaScript SPA
+Link-Up hypermedia-driven web application
 └── WebUI adapter
     └── Bun-WebUI
         └── installed browser or WebView
 ```
 
 The adapter uses Bun-WebUI's command bridge for fast communication between the
-SPA and its installed host. Link-Up operations exposed across that boundary
-must be narrowly scoped rather than providing general access to privileged
-host capabilities.
+web application and its installed host. Link-Up operations exposed across that
+boundary must be narrowly scoped rather than providing general access to
+privileged host capabilities.
 
 ### Link-Up UI Architecture Diagram
 <img src="./link-up-model-view-adapter.svg" width="800" />
 
 ### Link-Up Domain Objects Diagram
 <img src="./ports-adapters-10-spokes.png" width="800" />
-
-## Web Application
-
-The web application has two pages:
-
-- `web/index.html` is the PWA landing page. It introduces Link-Up and provides
-  the entry point for opening or installing the application.
-- `web/app.html` runs the main Link-Up SPA.
-
-The same SPA is used whether Link-Up runs in a regular browser, an installed
-browser, or a WebView created through the WebUI adapter.
 
 ## Project Structure
 
@@ -75,12 +91,12 @@ network capabilities, but they are not the location of the application.
 The local UI boundary is distinct from the external peer boundary:
 
 ```text
-SPA ↔ local adapter ↔ browser or WebView
+Link-Up web application ↔ local adapter ↔ browser or WebView
 
 Link-Up peer ↔ untrusted network ↔ Link-Up peer
 ```
 
-## Initial Product Features
+## Product Features
 
 ### Profiles
 
