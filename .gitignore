@@ -35,3 +35,9 @@ bin
 !.vscode/
 !.vscode/settings.json
 !.vscode/extensions.json
+
+# leave the vscode specifics out of source control
+*.code-workspace
+
+# don't put into source control the competitor analysis parts
+docs/competitor-analysis
