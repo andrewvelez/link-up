@@ -1,27 +1,65 @@
 <!--
-  SPDX-License-Identifier: UNLICENSED
+  SPDX-License-Identifier: MIT
   Copyright (c) 2026 Andrew Velez
-  Link-Up browser interface.
+  Link-Up landing page. Installable entry point; the hypermedia application
+  itself lives at /app.html.
 !-->
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Link-Up</title>
-    <script src="webui.js"></script>
-  </head>
-  <body>
-    <main>
-      <h1>Link-Up</h1>
-      <button id="get-status" type="button">Get status</button>
-      <output id="status">Waiting</output>
-    </main>
-    <script>
-      document.querySelector("#get-status").addEventListener("click", async () => {
-        const status = await webui.call("getStatus");
-        document.querySelector("#status").textContent = status;
-      });
-    </script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Link-Up</title>
+<meta name="description" content="A local-first, hypermedia-driven application. Your data stays on your device.">
+<meta name="theme-color" content="#10201C">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wordmark">
+    <span class="wordmark__glyph" aria-hidden="true"></span>
+    <span class="wordmark__text">LINK&#8209;UP</span>
+  </div>
+
+  <div class="bar__status">
+    <span id="net-pill" class="pill" data-state="unknown">
+      <span class="pill__dot" aria-hidden="true"></span>
+      <span id="net-pill-text">Checking network</span>
+    </span>
+    <button id="install" class="btn btn--ghost" hidden>Install app</button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <h1 class="hero__title">Your data<br>stays yours.</h1>
+    <p class="hero__lede">
+      Link-Up is local-first: no server holds the authoritative copy of your
+      data. Once installed, the app is served by a service worker on this
+      device — it works the same with or without a network.
+    </p>
+    <p class="hero__claim">
+      Install it, then turn off your network. It keeps working.
+    </p>
+    <div class="hero__actions">
+      <a class="btn" href="/app.html">Open Link-Up</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>Link-Up · local-first · hypermedia-driven</span>
+  <span id="foot-scope" class="mono muted"></span>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/app.js"></script>
+</body>
 </html>

@@ -137,22 +137,29 @@ Link-Up currently keeps Bun-WebUI behind a small host adapter:
 | Link-Up code | Upstream operation |
 | --- | --- |
 | [`bind()`](../../src/WebUI/BunWebUIAdapter.js) | `WebUI.prototype.bind()` |
+| [`setRootFolder()`](../../src/WebUI/BunWebUIAdapter.js) | `WebUI.prototype.setRootFolder()` |
 | [`open()`](../../src/WebUI/BunWebUIAdapter.js) | `WebUI.prototype.show()` |
 | [`wait()`](../../src/WebUI/BunWebUIAdapter.js) | `WebUI.wait()` |
-| [`getStatus`](../../src/app.js) | A Link-Up operation registered with `bind()` |
-| [`webui.call("getStatus")`](../../web/index.html) | The browser asking the Bun host to run that operation |
 
-This matches Link-Up's [design](../DESIGN.md): Bun-WebUI is a replaceable host
-adapter, not the application core. Domain code should not import Bun-WebUI
-directly merely because an upstream method is available.
+This matches Link-Up's [design](../DESIGN.md): Bun-WebUI is a replaceable,
+optional desktop-packaging adapter, not the application core. `bind()` is
+exported but currently unused — no operation is registered, because the
+service worker under `web/` serves the application uniformly whether it runs
+in a browser or inside this window, so no domain logic needs to cross the
+Bun-WebUI bridge. Add a bound operation only when a genuine native-only
+capability is needed.
 
-The current prototype opens `web/index.html`. The design reserves that file
-for the PWA landing page and `web/app.html` for the main SPA; `web/app.html`
-does not exist yet. Treat the current import as prototype wiring, not the final
-page split.
+[`src/app.js`](../../src/app.js) calls `setRootFolder("./web")` then
+`open("app.html")`: the window serves Link-Up's whole static PWA bundle
+(`web/app.html`, `web/index.html`, `web/sw.js`, `web/manifest.webmanifest`,
+`web/vendor/`, `web/icons/`) from disk, and opens straight into the
+hypermedia SPA — the same entry point the installed PWA's manifest
+`start_url` uses. This relies on `setRootFolder`'s path resolving relative to
+the process's working directory; running the compiled executable from
+somewhere other than the repository root is not yet verified to work.
 
-One current prototype detail matters when reading the code: Link-Up's `open()`
-calls `webUI.show(page)` without returning its promise. The upstream method is
+One current detail matters when reading the code: Link-Up's `open()` calls
+`webUI.show(page)` without returning its promise. The upstream method is
 asynchronous, so the current adapter does not propagate browser-start or
 connection failures to `src/app.js`. This guide documents the upstream
 `await hostWindow.show(...)` behavior; it does not silently redefine `open()`.
@@ -393,7 +400,7 @@ string. WebUI interprets it as one of these forms:
 
 ### Embedded HTML with Bun
 
-Link-Up currently uses a Bun text import:
+A Bun text import is available as an alternative to serving a folder:
 
 ```js
 import applicationHtml from "../web/index.html" with { type: "text" };
@@ -403,15 +410,21 @@ await hostWindow.show(applicationHtml);
 
 This keeps the HTML authorable as HTML while giving Bun-WebUI an inline string.
 Bun can embed that string into a compiled executable. Relative CSS, JavaScript,
-images, and other resources still need to be served or embedded separately.
+images, and other resources still need to be served or embedded separately —
+which is why this pattern does not work for Link-Up's PWA bundle: a service
+worker must be registered from a real fetchable URL, and cannot be inlined or
+bundled into one HTML string. Link-Up does not use this pattern.
 
 ### Serving a folder
+
+This is what Link-Up currently does, via
+[`setRootFolder()`](../../src/WebUI/BunWebUIAdapter.js):
 
 ```js
 const hostWindow = new WebUI();
 
 hostWindow.setRootFolder("./web");
-await hostWindow.show("index.html");
+await hostWindow.show("app.html");
 await WebUI.wait();
 ```
 

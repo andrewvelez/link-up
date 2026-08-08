@@ -1,0 +1,148 @@
+<!--
+  SPDX-License-Identifier: MIT
+  Copyright (c) 2026 Andrew Velez
+  Link-Up hypermedia application shell. htmx talks to /api/*; the service
+  worker (sw.js) answers those requests locally from IndexedDB.
+!-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Link-Up</title>
+<meta name="description" content="A hypermedia-driven, local-first application. Runs entirely on this device.">
+<meta name="theme-color" content="#10201C">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <a class="wordmark" href="/index.html" style="text-decoration:none; color:inherit;">
+    <span class="wordmark__glyph" aria-hidden="true"></span>
+    <span class="wordmark__text">LINK&#8209;UP</span>
+  </a>
+
+  <div class="bar__status">
+    <span id="net-pill" class="pill" data-state="unknown">
+      <span class="pill__dot" aria-hidden="true"></span>
+      <span id="net-pill-text">Checking network</span>
+    </span>
+    <button id="install" class="btn btn--ghost" hidden>Install app</button>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero">
+    <h1 class="hero__title">Hello,<br>local world.</h1>
+    <p class="hero__lede">
+      Everything below is generated on this device. The shell came out of the
+      cache, the fragments came out of a service worker, and the notes you write
+      are stored in a database that never leaves this device.
+    </p>
+    <p class="hero__claim">
+      There is no origin server involved after the first load. Turn off your
+      network and keep using it.
+    </p>
+  </section>
+
+  <section class="grid" aria-label="Live proof">
+
+    <article class="panel panel--wide">
+      <h2 class="panel__title">This device, right now</h2>
+      <div id="diagnostics"
+           class="panel__body"
+           hx-get="/api/diagnostics"
+           hx-trigger="load, refresh-diagnostics from:body"
+           hx-swap="innerHTML">
+        <p class="muted">Reading local state…</p>
+      </div>
+    </article>
+
+    <article class="panel">
+      <h2 class="panel__title">Notes on this device</h2>
+
+      <form class="composer"
+            hx-post="/api/notes"
+            hx-target="#notes"
+            hx-swap="innerHTML">
+        <label class="sr-only" for="note-input">Write a note</label>
+        <input id="note-input" name="text" type="text" maxlength="140" autocomplete="off"
+               placeholder="Write something, then pull the plug" required>
+        <button type="submit" class="btn">Save</button>
+      </form>
+
+      <p class="hint">Press <kbd>/</kbd> to jump to the field.</p>
+
+      <div id="notes"
+           class="notes"
+           hx-get="/api/notes"
+           hx-trigger="load"
+           hx-swap="innerHTML">
+        <p class="muted">Opening local database…</p>
+      </div>
+    </article>
+
+  </section>
+
+  <section id="ledger" class="ledger" aria-labelledby="ledger-title">
+    <div class="ledger__head">
+      <h2 id="ledger-title" class="panel__title">Request ledger</h2>
+      <button id="ledger-clear" class="btn btn--ghost btn--sm" type="button">
+        Clear
+      </button>
+    </div>
+    <p class="ledger__note">
+      Every hypermedia request this page makes, and what answered it. Nothing here
+      should ever say “network”.
+    </p>
+    <div class="ledger__table" role="table" aria-label="Requests and their handlers">
+      <div class="ledger__row ledger__row--head" role="row">
+        <span role="columnheader">Time</span>
+        <span role="columnheader">Request</span>
+        <span role="columnheader">Answered by</span>
+        <span role="columnheader">Took</span>
+      </div>
+      <div id="ledger-rows"></div>
+      <p id="ledger-empty" class="muted ledger__empty">No requests recorded yet.</p>
+    </div>
+  </section>
+
+  <section class="test">
+    <h2 class="panel__title">Prove it to yourself</h2>
+    <ol class="steps">
+      <li>Load this page once while the dev server is running.</li>
+      <li>Install it: use the address-bar install icon, or the button in the header.</li>
+      <li>Stop the server entirely.</li>
+      <li>Open the installed app from your launcher. It still works, and so does everything on this page.</li>
+    </ol>
+    <button id="about-updates-toggle" class="btn btn--ghost btn--sm" type="button">
+      About updates
+    </button>
+    <div id="update-help" class="disclosure">
+      <p>
+        The cache is keyed by a version string in <code>sw.js</code>. Change it, reload
+        once while the server is running, and the new shell replaces the old one on the
+        next launch. That is your entire release process.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>Link-Up · local-first · hypermedia-driven</span>
+  <span id="foot-scope" class="mono muted"></span>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/vendor/htmx.min.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

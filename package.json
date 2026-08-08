@@ -10,6 +10,7 @@
   "scripts": {
     "start": "bun run --bun ./build.js start",
     "test": "bun run --bun ./build.js test",
-    "build": "bun run --bun ./build.js build"
+    "build": "bun run --bun ./build.js build",
+    "dev": "bun run --bun ./build.js dev"
   }
 }

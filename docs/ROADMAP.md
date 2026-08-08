@@ -31,20 +31,37 @@ delivery schedule.
 1. **Create the WebUI Adapter** — Create a Bun-WebUI adapter that can open the
    Link-Up web application in an installed browser or WebView. This is technical
    groundwork and does not complete a user story by itself.
-2. **Build the PWA Shell** — Create the landing page and the page that runs the
-   main Link-Up SPA. This is technical groundwork for user stories 1, 2, 3,
-   and 6.
+2. **Build the PWA Shell** — Create the landing page (`web/index.html`) and
+   the hypermedia SPA (`web/app.html`), a service worker that precaches the
+   shell and serves `/api/*` requests locally from IndexedDB, and a web app
+   manifest so the application is installable. Covers technical groundwork
+   for user stories 1, 2, 3, and 6, and for the not-yet-accepted
+   browser-without-installing story.
 3. **Organize the JavaScript Core** — Establish the initial domain boundaries
-   for WebUI, networking, data, and later Link-Up capabilities. This is
-   technical groundwork and does not complete a user story by itself.
-4. **Deliver the Desktop Applications** — Package and verify the featureless
-   Link-Up shell on macOS, Windows, and Linux. Covers user story 1.
+   for WebUI, networking, data, and later Link-Up capabilities. The local-data
+   domain now lives primarily in `web/sw.js` on the browser side; the `src/`
+   domain boundaries stay reserved for Bun-side, native-only concerns and
+   remain unpopulated until a genuine native-only capability needs them. This
+   is technical groundwork and does not complete a user story by itself.
+4. **Deliver the Desktop Applications** — Package and verify the Link-Up
+   shell on macOS, Windows, and Linux, and verify that installability,
+   offline operation, and the service worker's local API all behave
+   correctly inside a Bun-WebUI-hosted window on each platform (not yet
+   verified as of the PWA-shell change). Covers user story 1.
 5. **Build the Local Profile** — Create and update a profile, store it locally,
    and restore it after restarting Link-Up. Covers user stories 4 and 5.
 6. **Unify Browser and Installed Modes** — Provide the same profile and local
    persistence behavior through browser and installed adapters. Covers user
    stories 4, 5, and 6.
-7. **Deliver the Android Application** — Package and verify the Link-Up shell
-   on Android phones and tablets. Covers user story 2.
-8. **Deliver the Apple Mobile Application** — Package and verify the Link-Up
-   shell on iPhones and iPads. Covers user story 3.
+7. **Verify the Android Experience** — The PWA install path (sprint 2) already
+   delivers an installable Link-Up on Android Chrome; this sprint verifies
+   install, icons, and offline behavior on Android phones and tablets and
+   addresses platform-specific gaps. Covers user story 2.
+8. **Verify the Apple Mobile Experience** — The PWA install path (sprint 2)
+   already delivers an installable Link-Up on iOS/iPadOS Safari; this sprint
+   verifies install, icons, and offline behavior on iPhones and iPads,
+   accounting for iOS-specific constraints: Safari is the only browser with
+   reliable install support, there is no automatic install prompt (an
+   instructions overlay is needed), and installs attempted from inside
+   in-app browsers such as Instagram or Facebook generally fail. Covers user
+   story 3.

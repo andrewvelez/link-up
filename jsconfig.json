@@ -15,7 +15,9 @@
   "include": [
     "*.js",
     "src/**/*.js",
-    "features/**/*.js"
+    "features/**/*.js",
+    "web/**/*.js",
+    "scripts/**/*.js"
   ],
   "exclude": [
     "dist",
