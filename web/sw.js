@@ -1,16 +1,12 @@
 /*
  * SPDX-License-Identifier: MIT
- * Copyright (c) 2026 Andrew Velez
+ * @author Andrew Velez
  * Link-Up service worker.
  *
  * Two jobs:
  *   1. Precache the whole shell so the app never needs the network again.
  *   2. Act as the local hypermedia server for /api/* — parse the request,
  *      read or write IndexedDB, and answer with an HTML fragment for htmx.
- *
- * Job 2 is the interesting one. htmx does not care that there is no
- * server; it cares that something returns hypermedia. That something
- * is this file.
  */
 
 const VERSION = 'v1';

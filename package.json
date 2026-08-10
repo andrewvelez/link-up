@@ -1,11 +1,9 @@
 {
   "name": "link-up",
-  "module": "./src/app.js",
   "type": "module",
   "private": true,
   "dependencies": {
-    "@cucumber/cucumber": "^13.2.0",
-    "@webui-dev/bun-webui": "2.5.7"
+    "@cucumber/cucumber": "^13.2.0"
   },
   "scripts": {
     "start": "bun run --bun ./build.js start",

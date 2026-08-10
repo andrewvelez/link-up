@@ -16,7 +16,7 @@ This document is for outlining the roadmap as it is known currently.
 10. As a user, Link-Up can connect directly to other Link-Up users when a direct connection is available.
 11. As a user, I can send a private message to another Link-Up user.
 12. As a user, I can receive private messages from another Link-Up user.
-13. As a user of the installed app, I can receive native notifications from Link-Up.
+13. As a user of the installed PWA, I can receive system notifications from Link-Up.
 14. As a user of the installed app, I can receive a notification when a new message arrives.
 
 ### _Not yet accepted as a user story._
@@ -28,36 +28,25 @@ a. As a user, I can open Link-Up in a supported web browser without installing i
 Each sprint represents approximately one week of estimated work, not a required
 delivery schedule.
 
-1. **Create the WebUI Adapter** — Create a Bun-WebUI adapter that can open the
-   Link-Up web application in an installed browser or WebView. This is technical
-   groundwork and does not complete a user story by itself.
-2. **Build the PWA Shell** — Create the landing page (`web/index.html`) and
-   the hypermedia SPA (`web/app.html`), a service worker that precaches the
+1. **Build the PWA Shell** — Create the landing page (`web/index.html`) and
+   the hypermedia application (`web/app.html`), a service worker that precaches the
    shell and serves `/api/*` requests locally from IndexedDB, and a web app
    manifest so the application is installable. Covers technical groundwork
    for user stories 1, 2, 3, and 6, and for the not-yet-accepted
    browser-without-installing story.
-3. **Organize the JavaScript Core** — Establish the initial domain boundaries
-   for WebUI, networking, data, and later Link-Up capabilities. The local-data
-   domain now lives primarily in `web/sw.js` on the browser side; the `src/`
-   domain boundaries stay reserved for Bun-side, native-only concerns and
-   remain unpopulated until a genuine native-only capability needs them. This
-   is technical groundwork and does not complete a user story by itself.
-4. **Deliver the Desktop Applications** — Package and verify the Link-Up
-   shell on macOS, Windows, and Linux, and verify that installability,
-   offline operation, and the service worker's local API all behave
-   correctly inside a Bun-WebUI-hosted window on each platform (not yet
-   verified as of the PWA-shell change). Covers user story 1.
-5. **Build the Local Profile** — Create and update a profile, store it locally,
+2. **Verify the Desktop PWA** — Verify the Link-Up PWA on macOS, Windows, and
+   Linux, including installation, offline operation, and the service worker's
+   local API in supported desktop browsers. Covers user story 1.
+3. **Build the Local Profile** — Create and update a profile, store it locally,
    and restore it after restarting Link-Up. Covers user stories 4 and 5.
-6. **Unify Browser and Installed Modes** — Provide the same profile and local
-   persistence behavior through browser and installed adapters. Covers user
+4. **Unify Browser and Installed Modes** — Provide the same profile and local
+   persistence behavior in a browser tab and as an installed PWA. Covers user
    stories 4, 5, and 6.
-7. **Verify the Android Experience** — The PWA install path (sprint 2) already
+5. **Verify the Android Experience** — The PWA install path (sprint 1) already
    delivers an installable Link-Up on Android Chrome; this sprint verifies
    install, icons, and offline behavior on Android phones and tablets and
    addresses platform-specific gaps. Covers user story 2.
-8. **Verify the Apple Mobile Experience** — The PWA install path (sprint 2)
+6. **Verify the Apple Mobile Experience** — The PWA install path (sprint 1)
    already delivers an installable Link-Up on iOS/iPadOS Safari; this sprint
    verifies install, icons, and offline behavior on iPhones and iPads,
    accounting for iOS-specific constraints: Safari is the only browser with

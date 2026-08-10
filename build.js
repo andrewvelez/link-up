@@ -5,10 +5,13 @@
  * @desc Link-Up build, test, and development commands.
  */
 
+import { cp, rm } from "node:fs/promises";
+
 const cucumberExecutable = "./node_modules/@cucumber/cucumber/bin/cucumber.js";
 
 const WEB_ROOT = "./web";
-const DEV_PORT = 8080;
+const DIST_ROOT = "./dist";
+const PORT = 8080;
 
 const MIME_TYPES = {
   html: "text/html; charset=utf-8",
@@ -42,10 +45,11 @@ function runCucumber() {
 }
 
 /**
- * Start runs the build, then runs the executable for development.
+ * Start runs the build, then serves the production files.
  */
 async function start() {
   await build();
+  serveStatic(DIST_ROOT, "production");
 }
 
 /**
@@ -57,43 +61,19 @@ async function test() {
 }
 
 /**
- * This is the production build. It compiles the Bun-side desktop adapter
- * (`src/app.js`) into a native executable. The PWA bundle under `./web`
- * ships as sibling static files served via `hostWindow.setRootFolder()`
- * (see `src/WebUI/BunWebUIAdapter.js`) rather than being embedded into the
- * executable, because a service worker must be registered from a real
- * fetchable URL and cannot be inlined or bundled.
- *
- * This does not verify that the service worker, install, or offline
- * behavior work correctly inside a Bun-WebUI-hosted window — only that the
- * desktop adapter opens the same shell the browser installs. That
- * verification is separate, unstarted follow-up work.
+ * This is the production build. It copies the PWA files into `./dist`.
  */
 async function build() {
-  await Bun.build({
-    entrypoints: [
-      "./src/app.js"
-    ],
-    compile: {
-      outfile: "./bin/link-up"
-    },
-    minify: true,
-    format: "esm",
-    sourcemap: "linked",
-    bytecode: true,
-  });
+  await rm(DIST_ROOT, { recursive: true, force: true });
+  await cp(WEB_ROOT, DIST_ROOT, { recursive: true });
 }
 
 /**
- * Dev serves `./web` as static files, unbuilt, so the PWA can be loaded,
- * installed, and iterated on without a compile step. Modeled on the
- * proof-of-concept's dev server: sw.js and the manifest must not be cached
- * by the browser's HTTP cache, or version bumps and install silently do
- * nothing.
+ * Serve a directory as a PWA, falling back to its application shell.
  */
-async function dev() {
+function serveStatic(root, mode) {
   Bun.serve({
-    port: DEV_PORT,
+    port: PORT,
     hostname: "127.0.0.1",
 
     async fetch(req) {
@@ -103,10 +83,10 @@ async function dev() {
       if (path === "/" || path.endsWith("/")) path += "index.html";
       if (path.includes("..")) return new Response("No.", { status: 400 });
 
-      const file = Bun.file(WEB_ROOT + path);
+      const file = Bun.file(root + path);
 
       if (!(await file.exists())) {
-        const shell = Bun.file(WEB_ROOT + "/index.html");
+        const shell = Bun.file(root + "/index.html");
         return new Response(shell, {
           status: 200,
           headers: { "Content-Type": MIME_TYPES.html, "Cache-Control": "no-cache" },
@@ -124,7 +104,17 @@ async function dev() {
     },
   });
 
-  console.log(`Link-Up dev server -> http://localhost:${DEV_PORT}`);
+  console.log(`Link-Up ${mode} server -> http://localhost:${PORT}`);
+}
+
+/**
+ * Dev serves `./web` as static files, unbuilt, so the PWA can be loaded,
+ * installed, and iterated on without a compile step. sw.js and the manifest
+ * must not be cached by the browser's HTTP cache, or version bumps and install
+ * silently do nothing.
+ */
+function dev() {
+  serveStatic(WEB_ROOT, "dev");
   console.log("Load it once, install it, then stop this server and reopen the app.");
 }
 

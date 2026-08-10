@@ -6,7 +6,6 @@
       "name": "link-up",
       "dependencies": {
         "@cucumber/cucumber": "^13.2.0",
-        "@webui-dev/bun-webui": "2.5.7",
       },
     },
   },
@@ -46,10 +45,6 @@
     "@teppeis/multimaps": ["@teppeis/multimaps@3.0.0", "", {}, "sha512-ID7fosbc50TbT0MK0EG12O+gAP3W3Aa/Pz4DaTtQtEvlc9Odaqi0de+xuZ7Li2GtK4HzEX7IuRWS/JmZLksR3Q=="],
 
     "@types/normalize-package-data": ["@types/normalize-package-data@2.4.4", "", {}, "sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA=="],
-
-    "@webui-dev/bun-webui": ["@webui-dev/bun-webui@2.5.7", "", { "dependencies": { "adm-zip": "^0.5.16" } }, "sha512-xrKnmgEn97G1acLeVvhw4IeAx/FFPSe+3gm0AbBVLMxD/VcDLyvpBcA8+ItxkINrztDjWesJ731R84JArlIs9Q=="],
-
-    "adm-zip": ["adm-zip@0.5.18", "", {}, "sha512-ufJnssQGbxzLNS1Ho9bCtX4rQKCCvoVuDLHoJyc3F9dOGDB4BkWs2Ci0kv53lqocAEQ/Cbi+I2XCsNYGqVYqng=="],
 
     "ansi-regex": ["ansi-regex@6.2.2", "", {}, "sha512-Bq3SmSpyFHaWjPk8If9yc6svM8c56dB5BAtW4Qbw5jHTwwXXcTLoRMkpDJp6VL0XzlWaCHTXrkFURMYmD0sLqg=="],
 
