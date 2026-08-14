@@ -1,44 +1,32 @@
-# link-up
+# Link-Up
 
-<details>
-  <summary>To install dependencies:</summary>
+Link-Up is a hard local-first Tauri 2 application with a vanilla HTML, CSS,
+and JavaScript frontend. Tauri loads the static frontend from `src/` in the
+platform webview; the Rust/Tauri host lives in `src-tauri/`.
 
-```bash
-bun install
-```
-</details>
+## Prerequisites
 
-<details>
-  <summary>To check everything is ready:</summary>
+- Install the [Tauri 2 prerequisites](https://v2.tauri.app/start/prerequisites/).
+- Install Node.js and npm.
 
-```bash
-bun ./build.js ready
-```
-</details>
-
-<details>
-  <summary>To run the tests:</summary>
+## Install dependencies
 
 ```bash
-bun ./build.js test
+npm install
 ```
-</details>
 
-<details>
-  <summary>To build the application:</summary>
+## Run in development
 
 ```bash
-bun ./build.js build
+npm run tauri dev
 ```
-</details>
 
-<details>
-  <summary>To run the application in development:</summary>
+## Build the application
 
 ```bash
-bun ./build.js dev
+npm run tauri build
 ```
-</details>
 
+## Tests
 
-This project was created using `bun init` in bun v1.3.14. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Automated tests are not configured for the Tauri architecture yet.

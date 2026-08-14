@@ -1,7 +1,4 @@
 {
-  // SPDX-License-Identifier: MIT
-  // Copyright (c) 2026 Andrew Velez
-  // JavaScript type-checking configuration for Link-Up.
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,

@@ -2,13 +2,14 @@
   "name": "link-up",
   "type": "module",
   "private": true,
+  "version": "0.5.0",
   "dependencies": {
     "@cucumber/cucumber": "^13.2.0"
   },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  },
   "scripts": {
-    "start": "bun run --bun ./build.js start",
-    "test": "bun run --bun ./build.js test",
-    "build": "bun run --bun ./build.js build",
-    "dev": "bun run --bun ./build.js dev"
+    "tauri": "tauri"
   }
 }

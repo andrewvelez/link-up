@@ -4,136 +4,130 @@
 
 The smallest and most simple decision in architecture is typically the right one.
 
-For the Link-Up project, JavaScript is "good enough". I believe most technical decisions should be made to "good enough".  In all domains, "good enough" should include code that is correct.  In certain domains, "good enough" might mean "feature complete" (think NASA), or "safety features complete" (think a bank).  For this app, the simple decision is JavaScript, which is "good enough".
+For the Link-Up frontend, vanilla HTML, CSS, and JavaScript are "good enough".
+"Good enough" still means correct. In some domains it may mean feature complete
+(think NASA), or safety-feature complete (think a bank). Link-Up uses a small,
+framework-free frontend and the Rust host required by Tauri.
 
+### Application Runtime
 
-### Frontend / Backend
----
+Link-Up is a mobile-first Tauri 2 application using the hard local-first model
+described below. Tauri packages the application and renders its frontend in the
+platform webview. Authoritative user data and essential application logic remain
+on the user's device. Peer-to-peer networking is a means of exchanging data,
+but data sovereignty — not eliminating every server — is the architectural goal.
 
-Link-Up is a mobile-first, installable web application delivered as a PWA. It
-uses the hard local-first model described below: authoritative user data and
-essential application logic remain on the user's device. Peer-to-peer
-networking is a means of exchanging data, but data sovereignty — not
-eliminating every server — is the architectural goal.
+The frontend is plain HTML, CSS, and JavaScript under `src/`. It uses the DOM and
+standard browser APIs without a frontend framework, TypeScript, or a bundler.
+Tauri's `frontendDist` points directly to this directory.
 
-The frontend uses htmx; Link-Up does not use hyperscript. Small in-page
-behaviors that don't warrant a full hypermedia round-trip are implemented as
-plain JavaScript event listeners. Link-Up is a hypermedia-driven application
-(HDA).
-
-1. #### Genesis:
-
-    > *"thesis: MPA - multi-page application*
-    > 
-    > *antithesis: SPA - single-page application*
-    > 
-    > *synthesis: HDA - hypermedia-driven application*
-    > 
-    > *— @htmx_org"*
-
+The Rust/Tauri host lives under `src-tauri/`. It owns the native application
+lifecycle and provides explicitly registered Tauri commands and capabilities
+when the frontend needs native access. The division of domain logic and local
+persistence between the frontend and Rust host has not yet been decided.
 
 #### Local-First
 
-I like to think there are two definitions of "local-first".  First, the *soft* definition:  Local-first software keeps data on the local client machine and uses servers as redundant backups or replication to other clients.  Then, there's the *hard* definition:  Local-first software keeps all user's data with the user.  The user defines where and when that data can be shared.  This app is using the second definition.
+I like to think there are two definitions of "local-first". First, the *soft*
+definition: local-first software keeps data on the local client machine and uses
+servers as redundant backups or replication to other clients. Then there is the
+*hard* definition: local-first software keeps all users' data with the users.
+The user defines where and when that data can be shared. This app uses the
+second definition.
 
 #### Network Infrastructure & P2P
 
 Link-Up's authoritative user data and essential logic remain on the user's
-device. Browser peer connections require signalling, and some connections
-require a TURN relay. Link-Up therefore accepts remote signalling and relay
-infrastructure. Discovery, synchronization, and push delivery may also rely on
-remote services as those designs are resolved. These systems must not become
-the authoritative home of the application or its data.
+device. Peer connections may require signalling, and some connection designs
+may require relays. Link-Up therefore accepts remote signalling and relay
+infrastructure. Discovery, synchronization, and notification delivery may also
+rely on remote services as those designs are resolved. These systems must not
+become the authoritative home of the application or its data.
 
-Direct WebRTC connections expose peer IP addresses. Whether Link-Up permits
-direct connections or requires TURN-relay-only connections for privacy remains
-open and must be resolved before peer networking ships.
+The peer transport has not yet been selected. If direct peer connections are
+used, their privacy implications and whether relay-only connections are required
+must be resolved before peer networking ships.
 
-Locally, Link-Up is served by a service worker acting as a local
-hypermedia server (see Local Hypermedia Server, below): it answers the
-frontend's htmx requests with HTML fragments backed by on-device storage, so
-local UI and data workflows behave the same way whether or not a network is
-reachable.
+### Tauri Application Boundary
 
-### Local Hypermedia Server
+Tauri bundles the frontend assets and loads them in the platform webview. Normal
+UI behavior remains in the vanilla JavaScript frontend. Operations that require
+native access cross the explicit Tauri IPC boundary into registered Rust
+commands with scoped capabilities.
 
-htmx needs something that answers `fetch()` requests with HTML fragments; it
-does not require that something to be a process listening on a socket.
-Link-Up's service worker (`web/sw.js`) is that something: it precaches the
-application shell on install, then intercepts same-origin `/api/*` requests,
-reads and writes the user's data in IndexedDB, and returns HTML fragments —
-including htmx response headers such as `HX-Trigger` — exactly as a remote
-server would. Every other request is served from the cache, with in-scope
-navigations falling back to the cached shell. The PWA shell must first be
-delivered from a trustworthy web origin. Once installed and cached, the service
-worker can serve it offline while browser storage remains intact. Because
-browsers may evict Cache API and IndexedDB data, Link-Up must request persistent
-storage where supported and provide a user-controlled export path.
+Link-Up's local UI runs from its bundled assets and explicit IPC boundary; it
+does not depend on a network service. The persistence mechanism, ownership
+boundary, schema, and user-controlled export path have not yet been decided.
 
 ### Current Proof-of-Concept Boundary
 
-The current proof of concept covers the installable PWA shell and local
-hypermedia layer only. Peer discovery, signalling, relaying, WebRTC,
-cryptographic identity, encryption, and offline delivery are not implemented
-or validated by it.
+The current proof of concept covers the Tauri application shell, direct loading
+of the vanilla frontend, and an example frontend-to-Rust command. Link-Up's
+product workflows, local persistence, peer discovery, signalling, relaying,
+peer transport, cryptographic identity, encryption, and offline delivery are
+not implemented or validated by it.
 
-### PWA UI
+### Tauri UI
 
-The browser is Link-Up's user-interface runtime. The same web application runs
-in a browser tab or as an installed PWA on mobile and desktop. The service
-worker answers local hypermedia requests in both modes.
+The platform webview is Link-Up's user-interface runtime. The frontend handles
+presentation and ordinary in-page behavior; the Rust host provides the Tauri
+lifecycle and explicitly exposed native capabilities.
 
 ```text
-Link-Up hypermedia-driven web application
-└── browser or installed PWA
-    └── page ↔ service worker ↔ on-device storage
+Link-Up Tauri application
+├── platform webview: HTML + CSS + JavaScript
+└── webview ↔ Tauri IPC ↔ Rust host
 ```
 
 ## Project Structure
 
 ```text
-features/
-└── Cucumber specifications and step definitions
-
-web/
-├── index.html          landing/install page
-├── app.html             hypermedia application (htmx)
-├── app.js                shared client script: SW lifecycle, install prompt, in-page behavior
-├── sw.js                 service worker: precache + local hypermedia router
+src/
+├── index.html
+├── main.js
 ├── styles.css
-├── manifest.webmanifest
-├── vendor/
-│   └── htmx.min.js       vendored, not npm-installed
-└── icons/
+└── assets/
+
+src-tauri/
+├── Cargo.toml
+├── tauri.conf.json
+├── capabilities/
+└── src/
+    ├── main.rs
+    └── lib.rs
 ```
 
-Application code currently lives under `web/`. The service worker owns the
-local hypermedia routes and on-device persistence; page scripts own browser UI
-behavior and the PWA installation lifecycle.
+The vanilla frontend lives under `src/` and is loaded directly through Tauri's
+`frontendDist`. Native configuration, commands, capabilities, and integrations
+live under `src-tauri/`.
 
 ## Local Authority
 
-Link-Up is hard local-first. Its essential business logic executes
-locally, and its authoritative user data remains under the user's control.
-Remote systems can provide discovery, signalling, relaying, synchronization,
-or other network capabilities, but they remain non-authoritative
+Link-Up is hard local-first. Its essential business logic executes locally, and
+its authoritative user data remains under the user's control. Remote systems
+can provide discovery, signalling, relaying, synchronization, notification
+delivery, or other network capabilities, but they remain non-authoritative
 infrastructure. Peer-to-peer describes one way Link-Up devices exchange data;
 it does not define the local-first guarantee.
 
-The local UI boundary is distinct from the external peer boundary:
+The local application boundary is distinct from the external peer boundary:
 
 ```text
-Link-Up page ↔ service worker ↔ on-device storage
+Tauri webview ↔ explicit IPC ↔ Rust host/native capabilities ↔ on-device storage
 
 Link-Up peer ↔ untrusted network and signalling/relay infrastructure ↔ Link-Up peer
 ```
+
+The persistence implementation and its ownership across this boundary remain
+open decisions.
 
 ## Product Features
 
 ### Profiles
 
 Users can create and update a Link-Up profile. A user's own profile is stored
-locally using the storage available in the browser or installed app.
+locally on the device by the installed Tauri application. The persistence
+mechanism has not yet been decided.
 
 Users can share their profiles with other Link-Up users and view profiles that
 other users share with them. The information included in a profile has not yet
@@ -144,7 +138,6 @@ been decided.
 Users can send and receive private messages with other Link-Up users. Message
 history is stored locally on the user's device.
 
-The installed web app can show system notifications. Receiving a new-message
-notification while the PWA is closed requires push infrastructure. How users
-connect, how messages reach an offline user, and how messages are encrypted
-have not yet been decided.
+The Tauri application can integrate with platform notifications. How messages
+or notifications reach a user while the application is not running, how users
+connect, and how messages are encrypted have not yet been decided.

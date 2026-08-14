@@ -8,7 +8,6 @@
 import { cp, rm } from "node:fs/promises";
 
 const cucumberExecutable = "./node_modules/@cucumber/cucumber/bin/cucumber.js";
-
 const WEB_ROOT = "./web";
 const DIST_ROOT = "./dist";
 const PORT = 8080;
