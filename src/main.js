@@ -1,12 +1,34 @@
-const { invoke } = window.__TAURI__.core;
+const invoke = window.__TAURI__?.core?.invoke;
+const isTauri = typeof invoke === "function";
 
 let greetInputEl;
 let greetMsgEl;
 
 async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsgEl.textContent = await invoke("greet", { name: greetInputEl.value });
+  const name = greetInputEl.value;
+
+  greetMsgEl.textContent = isTauri
+    ? await invoke("greet", { name })
+    : `Hello, ${name}!`;
 }
+
+function registerServiceWorker() {
+  if (isTauri || !("serviceWorker" in navigator)) return;
+
+  let reloading = false;
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+
+  navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch((error) => {
+    console.error("Service worker registration failed.", error);
+  });
+}
+
+registerServiceWorker();
 
 window.addEventListener("DOMContentLoaded", () => {
   greetInputEl = document.querySelector("#greet-input");

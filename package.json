@@ -10,6 +10,10 @@
     "@tauri-apps/cli": "^2"
   },
   "scripts": {
+    "build": "bun run --bun ./build.js build",
+    "dev": "bun run --bun ./build.js dev",
+    "start": "bun run --bun ./build.js start",
+    "test": "bun run --bun ./build.js test",
     "tauri": "tauri"
   }
 }

@@ -2,26 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
+    <meta name="theme-color" content="#396cd8" />
+    <meta
+      name="description"
+      content="A hard local-first application available as a Tauri app and an installable PWA."
+    />
+    <title>Link-Up</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.js" defer></script>
   </head>
 
   <body>
     <main class="container">
-      <h1>Welcome to Tauri</h1>
+      <h1>Welcome to Link-Up</h1>
 
       <div class="row">
         <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
+          <img src="./assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
         </a>
         <a
           href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
           target="_blank"
         >
           <img
-            src="/assets/javascript.svg"
+            src="./assets/javascript.svg"
             class="logo vanilla"
             alt="JavaScript logo"
           />
