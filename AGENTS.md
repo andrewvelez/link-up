@@ -11,20 +11,16 @@
 
 ## Architecture
 
-- Link-Up is a Tauri 2 application whose shared frontend is also installable as a browser PWA.
-- The frontend lives in `src/` and uses vanilla JavaScript, HTML, and CSS without a frontend framework or TypeScript. Bun bundles it into generated `dist/` assets.
-- Tauri embeds `dist/`; Bun is build-time tooling, not a packaged runtime or sidecar.
-- The Rust/Tauri host lives in `src-tauri/`. Expose native capabilities through narrow, explicit Tauri commands and capabilities, and feature-detect them so the frontend remains browser-compatible.
+- Link-Up is a Tauri 2 application.
+- The frontend lives in `src/` and uses vanilla JavaScript, HTML, and CSS without a frontend framework, TypeScript, or a bundler.
+- The Rust/Tauri host lives in `src-tauri/`. Expose native capabilities to the frontend through narrow, explicit Tauri commands and capabilities.
 
 ## Build Commands
 
-- Install dependencies: `bun install`
-- Run the browser/PWA frontend in development: `bun run dev`
-- Build the browser/PWA frontend: `bun run build`
-- Preview the production browser/PWA frontend: `bun run start`
-- Run the Tauri application in development: `bun run tauri dev`
-- Build the Tauri application: `bun run tauri build`
-- Cucumber is wired but currently has no scenarios; do not claim automated test coverage.
+- Install dependencies: `npm install`
+- Build the application: `npm run tauri build`
+- Run the application in development: `npm run tauri dev`
+- Automated tests are not configured for the Tauri architecture yet; do not claim test coverage.
 
 ## Coding Style
 

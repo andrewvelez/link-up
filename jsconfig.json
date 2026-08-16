@@ -12,7 +12,7 @@
   "include": [
     "*.js",
     "features/**/*.js",
-    "src/**/*.js",
+    "web/**/*.js",
     "scripts/**/*.js"
   ],
   "exclude": [

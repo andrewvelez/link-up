@@ -12,23 +12,19 @@ framework-free frontend and the Rust host required by Tauri.
 ### Application Runtime
 
 Link-Up is a mobile-first Tauri 2 application using the hard local-first model
-described below. Its shared frontend is also distributed as an installable
-browser PWA. Both forms use the same generated frontend assets. Authoritative
-user data and essential application logic remain on the user's device.
-Peer-to-peer networking is a means of exchanging data, but data sovereignty —
-not eliminating every server — is the architectural goal.
+described below. Tauri packages the application and renders its frontend in the
+platform webview. Authoritative user data and essential application logic remain
+on the user's device. Peer-to-peer networking is a means of exchanging data,
+but data sovereignty — not eliminating every server — is the architectural goal.
 
 The frontend is plain HTML, CSS, and JavaScript under `src/`. It uses the DOM and
-standard browser APIs without a frontend framework or TypeScript. Bun bundles
-the source into `dist/` at build time. Bun is not a runtime dependency of either
-the packaged Tauri application or the installed PWA.
+standard browser APIs without a frontend framework, TypeScript, or a bundler.
+Tauri's `frontendDist` points directly to this directory.
 
 The Rust/Tauri host lives under `src-tauri/`. It owns the native application
 lifecycle and provides explicitly registered Tauri commands and capabilities
-when the frontend needs native access. Native capabilities must be feature-
-detected so the same frontend remains usable in a browser. The division of
-domain logic and local persistence between the frontend and Rust host has not
-yet been decided.
+when the frontend needs native access. The division of domain logic and local
+persistence between the frontend and Rust host has not yet been decided.
 
 #### Local-First
 
@@ -54,61 +50,43 @@ must be resolved before peer networking ships.
 
 ### Tauri Application Boundary
 
-Tauri embeds the Bun-generated `dist/` assets and loads them in the platform
-webview. Normal UI behavior remains in the vanilla JavaScript frontend.
-Operations that require native access cross the explicit Tauri IPC boundary
-into registered Rust commands with scoped capabilities.
+Tauri bundles the frontend assets and loads them in the platform webview. Normal
+UI behavior remains in the vanilla JavaScript frontend. Operations that require
+native access cross the explicit Tauri IPC boundary into registered Rust
+commands with scoped capabilities.
 
 Link-Up's local UI runs from its bundled assets and explicit IPC boundary; it
 does not depend on a network service. The persistence mechanism, ownership
 boundary, schema, and user-controlled export path have not yet been decided.
 
-### Browser PWA Boundary
-
-The browser distribution serves the same `dist/` assets over HTTPS. Its web app
-manifest defines the installable application metadata, and its service worker
-precaches the generated application shell for offline use. Browser delivery uses
-standard Web APIs and cannot invoke Tauri commands. The current manifest and
-worker are scoped to an HTTPS origin's root (`/`). Hosting provider, deployment
-workflow, update policy, and browser-versus-Tauri feature parity remain open
-decisions.
-
 ### Current Proof-of-Concept Boundary
 
-The current proof of concept covers the Tauri application shell, Bun's shared
-frontend bundle, the installable/offline PWA shell, and an example frontend-to-
-Rust command with a browser-safe fallback. Link-Up's product workflows, local
-persistence, peer discovery, signalling, relaying, peer transport,
-cryptographic identity, encryption, and offline message delivery are not
-implemented or validated by it.
+The current proof of concept covers the Tauri application shell, direct loading
+of the vanilla frontend, and an example frontend-to-Rust command. Link-Up's
+product workflows, local persistence, peer discovery, signalling, relaying,
+peer transport, cryptographic identity, encryption, and offline delivery are
+not implemented or validated by it.
 
-### Shared Frontend and Tauri UI
+### Tauri UI
 
-The frontend handles presentation and ordinary in-page behavior in both
-delivery modes. A browser loads it as a PWA; the Tauri platform webview loads it
-with the Tauri lifecycle and explicitly exposed native capabilities.
+The platform webview is Link-Up's user-interface runtime. The frontend handles
+presentation and ordinary in-page behavior; the Rust host provides the Tauri
+lifecycle and explicitly exposed native capabilities.
 
 ```text
-src/ ── Bun bundler ──> dist/
-                       ├── HTTPS browser origin ↔ service worker ↔ installed PWA
-                       └── Tauri webview ↔ explicit IPC ↔ Rust host
+Link-Up Tauri application
+├── platform webview: HTML + CSS + JavaScript
+└── webview ↔ Tauri IPC ↔ Rust host
 ```
 
 ## Project Structure
 
 ```text
-build.js
-
 src/
 ├── index.html
 ├── main.js
-├── manifest.webmanifest
 ├── styles.css
-├── sw.js
-├── icons/
 └── assets/
-
-dist/                       generated by Bun
 
 src-tauri/
 ├── Cargo.toml
@@ -119,10 +97,9 @@ src-tauri/
     └── lib.rs
 ```
 
-The vanilla frontend lives under `src/`. `build.js` invokes Bun to generate
-`dist/`, including the browser manifest, service worker, and offline asset list.
-Tauri's `frontendDist` points to `dist/`. Native configuration, commands,
-capabilities, and integrations live under `src-tauri/`.
+The vanilla frontend lives under `src/` and is loaded directly through Tauri's
+`frontendDist`. Native configuration, commands, capabilities, and integrations
+live under `src-tauri/`.
 
 ## Local Authority
 
@@ -136,9 +113,7 @@ it does not define the local-first guarantee.
 The local application boundary is distinct from the external peer boundary:
 
 ```text
-Browser PWA ↔ standard Web APIs ↔ browser-managed local capabilities
-
-Tauri webview ↔ explicit IPC ↔ Rust host/native capabilities
+Tauri webview ↔ explicit IPC ↔ Rust host/native capabilities ↔ on-device storage
 
 Link-Up peer ↔ untrusted network and signalling/relay infrastructure ↔ Link-Up peer
 ```
@@ -151,8 +126,8 @@ open decisions.
 ### Profiles
 
 Users can create and update a Link-Up profile. A user's own profile is stored
-locally on the device by the installed Link-Up application. The persistence
-mechanism and browser-versus-Tauri ownership boundary have not yet been decided.
+locally on the device by the installed Tauri application. The persistence
+mechanism has not yet been decided.
 
 Users can share their profiles with other Link-Up users and view profiles that
 other users share with them. The information included in a profile has not yet
