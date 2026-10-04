@@ -40,3 +40,8 @@ dist-ssr
 
 # don't put into source control the competitor analysis parts
 docs/competitor-analysis
+
+# ReScript compiler output
+*.res.js
+lib/
+.rescript/

@@ -1,0 +1,242 @@
+# Link-Up Project Design
+
+## Architecture
+
+Keep it simple.  Don't repeat yourself.
+
+Link-Up is a local-first, mobile-first Progressive Web App (PWA). Its user interface is framework-free ReScript, HTML, CSS, and standard browser and PWA APIs. The browser is the PWA runtime; Bun installs dependencies, runs project tasks, stages browser assets, and compiles the application host. The working-prototype design favors peer-to-peer exchange wherever practical while preserving the hard local-first authority boundary described below.
+
+### Application and Deployment Runtime
+
+Link-Up is a mobile-first Progressive Web App (PWA) written in ReScript using the hard local-first model described below. It runs in supported browsers and as an installed PWA. Authoritative user data and essential application logic remain on the user's device. Peer-to-peer networking is a means of exchanging data, but data sovereignty — not eliminating every server — is the architectural goal.
+
+The production deployment artifact is `dist/link-up`, a full-stack executable for VPS deployment. It embeds the completed PWA assets and serves them through its local HTTP routes. Its current host listens on `127.0.0.1` with an operating-system-assigned port (`port: 0`) and logs the selected URL at startup; any public VPS-facing proxy or TLS arrangement is outside this project's current design.
+
+All shipped application source lives under `src/`, organized by responsibility: `web/` contains the browser application, including third-party assets under `web/external/`, and `server/` contains the executable host. The build copies `web/` into `dist/`, preserving its directory layout for browser asset URLs. `dist/` is generated build output and is never edited directly.
+
+#### Local-First
+
+My two definitions of "local-first". First, the *soft* definition: local-first software keeps data on the local client machine and uses servers as redundant backups or replication to other clients. Then there is the *hard* definition: local-first software keeps all users' data with the users. The user defines where and when that data can be shared. This app will attempt to use the second definition.
+
+#### Network Infrastructure and P2P
+
+Link-Up's authoritative user data and essential logic remain on the user's device. Peer connections may require signalling, and some connection designs may require relays. Link-Up therefore accepts remote signalling and relay infrastructure. Discovery, synchronization, and notification delivery may also rely on remote services as those designs are resolved. These systems must not become the authoritative home of the application or its data.
+
+Peer-to-peer operation is an architectural preference rather than a requirement to eliminate all backend infrastructure. When a backend is necessary, it may replicate or synchronize data without replacing the user's local definitive copy.
+
+The peer transport has not yet been selected. If direct peer connections are used, their privacy implications and whether relay-only connections are required must be resolved before peer networking ships.
+
+### PWA Application Boundary
+
+Link-Up runs within the browser security model. Its UI, essential application logic, and authoritative user data remain local. Browser and installed-PWA capabilities use standard Web APIs and must account for platform support.
+
+The completed PWA is intended to provide its local interface without depending on a remote application service. Local application data will be stored in IndexedDB through [Dexie](https://dexie.org/). The schema, data lifecycle, and user-controlled export path have not yet been decided.
+
+### Application Initialization
+
+`src/web/js/AppInitialization.res` defines the shared browser entry point. Bun bundles its compiled JavaScript into `dist/js/appInitialization.js`, loaded by Home and About. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
+
+### Service-Worker Cache Design
+
+Link-Up uses [Workbox precaching](https://developer.chrome.com/docs/workbox/modules/workbox-precaching) to make application resources available offline. The build bundles Workbox into the service worker and injects an asset manifest containing URLs and content revisions. The service worker passes this manifest to `precacheAndRoute(self.__WB_MANIFEST)`.
+
+During installation, Workbox downloads new or changed resources and reuses unchanged cached resources. During activation, it removes precache entries that are absent from the current manifest. Requests matching the precache use Workbox's cache-first behavior: cached responses are served first, with a network fallback if a required cache entry is missing. Requests outside the precache use the network unless another service-worker route handles them. The initial page load uses the network while the service worker installs.
+
+The `version` property in `package.json` is the authoritative semantic application version. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.js` and uses the service-worker update lifecycle to install and activate changed builds.
+
+The manifest has one stable start URL, `/`. Server routes handle `/` and `/Default.html` with temporary HTTP redirects: Unknown users go to About, and Known or Authenticated users go to Home. Redirect responses are not cached. Authentication is isolated behind the asynchronous `getAuthenticationState(request)` API in `src/server/Authentication.res`; it returns a state, while routes select the page. Authentication is not implemented, so the current state always resolves to Unknown, regardless of existing cookies. Authenticated status requires online authorization. The service worker sends startup navigation to the server and serves cached About if the network request fails. Explicit Home and About navigation remains on the requested page.
+
+### PWA User Interface
+
+The web platform is Link-Up's user-interface runtime. ReScript compiles application behavior to JavaScript, HTML and CSS provide presentation, and supported browser APIs provide local storage, networking, installation, and notification capabilities as those parts of the design are implemented.
+
+```text
+Link-Up PWA
+├── ReScript application behavior (compiled to JavaScript)
+├── HTML and CSS user interface
+└── browser APIs → local persistence and networking
+```
+
+## Build and Delivery
+
+`bun run build` performs these stages in order:
+
+1. Compile the ReScript source, build tooling, and tests into adjacent `.res.js` ES modules.
+2. Delete `dist/` and copy the PWA pages, manifest, and static assets from `src/web/`.
+3. Remove copied ReScript source and generated modules from the deployment assets.
+4. Bundle `src/web/js/AppInitialization.res.js` into `dist/js/appInitialization.js`.
+5. Bundle `src/web/ServiceWorker.res.js` and Workbox into `dist/sw.bundle.js`.
+6. Inject the revisioned asset manifest to produce `dist/sw.js`, then remove the intermediate bundle.
+7. Compile `src/server/Server.res.js` and its embedded assets into `dist/link-up`.
+
+`tools/Build.res` defines the build commands. Typed bindings in `src/bindings/`
+connect ReScript to Bun, Node-compatible APIs, the DOM, and Workbox. HTML, CSS,
+JSON, icons, and vendored third-party assets retain their native formats.
+Generated JavaScript and `dist/` are ignored by Git and are never edited directly.
+
+`bun run start` builds and starts `src/server/Server.res.js` for local development.
+Neither `build` nor `start` runs tests.
+
+**Before production deployment, run `bun run test`.** It compiles ReScript, builds
+`dist/link-up`, runs the compiled ReScript test suite, and propagates the test
+runner's exit code. A compilation or build failure stops the command. Deploy the
+resulting executable only when the command succeeds. None of these commands
+deploys the executable.
+
+## Project Structure
+
+```text
+.
+├── bun.lock
+├── package.json
+├── rescript.json
+├── link-up.code-workspace
+├── docs/                         product design and reference assets
+├── tools/
+│   └── Build.res                 build, test, and start commands
+├── src/
+│   ├── bindings/
+│   │   ├── Browser.res
+│   │   ├── BunRuntime.res
+│   │   ├── Http.res
+│   │   ├── Node.res
+│   │   └── Workbox.res
+│   ├── web/
+│   │   ├── about.html
+│   │   ├── home.html
+│   │   ├── manifest.json
+│   │   ├── ServiceWorker.res
+│   │   ├── js/AppInitialization.res
+│   │   ├── icons/
+│   │   ├── external/
+│   │   └── styles/global.css
+│   └── server/
+│       ├── Authentication.res
+│       ├── EmbeddedAssets.res
+│       ├── Routes.res
+│       └── Server.res
+├── test/                         ReScript tests and test bindings
+└── dist/                         generated deployment assets
+    └── link-up                   standalone executable
+```
+
+## Local Authority
+
+Link-Up is hard local-first. Its essential business logic executes locally, and its authoritative user data remains under the user's control. Remote systems can provide discovery, signalling, relaying, synchronization, notification delivery, or other network capabilities, but they remain non-authoritative infrastructure. Peer-to-peer describes one way Link-Up devices exchange data; it does not define the local-first guarantee.
+
+User-owned data, including profile data and images, has its definitive copy on the user's device. This data must remain encrypted. It may be replicated elsewhere when required for sharing or search without displacing the local definitive copy.
+
+Application data that is not user-owned is also stored locally first. It may be synchronized with a backend when it is not shipped as static data. Geographic reference data changes slowly enough to be shipped statically; when its size makes that impractical, it can be segmented by locality and cached on demand.
+
+The local application boundary is distinct from the external peer boundary:
+
+```text
+Link-Up PWA ↔ Dexie ↔ IndexedDB on-device storage
+
+Link-Up peer ↔ untrusted network and signalling/relay infrastructure ↔ Link-Up peer
+```
+
+Dexie is the selected wrapper for IndexedDB. The integration between local application storage and Converse's message persistence remains an open decision.
+
+## Product Features
+
+### Locality
+
+#### Design Constraints
+
+Link-Up provides U.S. geolocation and locality-aware search without metered geographic infrastructure. The geographic critical path must cost $0 to use; commercial free tiers do not meet that requirement because location is a universal feature whose usage grows with application activity.
+
+Geographic reference data and real-time user location are separate concerns. Administrative boundaries, place names, counties, ZIP Code Tabulation Areas, and similar facts are static or change slowly. User coordinates, indexed-cell membership, and nearby-user search results are dynamic and may change continuously, including while a user travels by car. Locality-aware search is therefore primarily a dynamic indexing and search problem, not a real-time geodata-fetching problem. Static geographic data is downloaded, indexed, and cached instead of repeatedly fetched through metered requests.
+
+#### Zero-Cost Components
+
+| Need | Component | Purpose |
+| --- | --- | --- |
+| Obtain current coordinates | Browser `navigator.geolocation` | Provides device coordinates after user permission without an application API charge |
+| Geographic grid | [`h3-js`](https://h3geo.org/docs/) | Converts coordinates to hierarchical cells and finds neighboring cells |
+| Distance and geometry | [Turf.js](https://turfjs.org/) | Performs distance, bounding-box, buffer, and point-in-polygon calculations locally |
+| U.S. boundaries | [Census TIGER/Line files](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) | Supplies places, counties, county subdivisions, roads, ZCTAs, and other geographic boundaries |
+| Place-name index | [Census Gazetteer files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html) | Supplies geographic identifiers, names, areas, and representative coordinates |
+| Additional geographic names | [USGS GNIS](https://www.usgs.gov/us-board-on-geographic-names/download-gnis-data) | Supplies populated-place and geographic-feature names as public-domain data |
+| Optional lookup fallback | [Census Geocoder](https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html) | Converts U.S. addresses or coordinates to Census geography without a usage charge |
+| Optional boundary fallback | [TIGERweb REST](https://tigerweb.geo.census.gov/tigerwebmain/TIGERweb_restmapservice.html) | Provides hosted queries against Census geographic layers |
+| Optional map rendering | [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) or [Leaflet](https://leafletjs.com/) | Renders maps but does not itself provide production map tiles |
+
+The Census APIs are optional fallbacks. Essential locality search continues to function without them.
+
+#### Search and Locality Resolution
+
+The browser obtains a device position after the user grants permission and converts its latitude and longitude to an H3 cell. Nearby-user search queries the current and neighboring cells to obtain a coarse candidate set, then uses Turf or a direct great-circle calculation to determine exact or approximate distances before filtering and ordering the results.
+
+Each active user requires only an ephemeral location record resembling:
+
+```js
+{
+  userId,
+  latitude,
+  longitude,
+  cell,
+  updatedAt
+}
+```
+
+Changing a user's location updates that record; it does not rebuild the geographic index.
+
+Locality labels use a separate, cached path. If an H3-cell-to-locality mapping is already cached, the app returns it. Otherwise, the app resolves the cell against local Census data, caches the mapping, and returns the resulting label. The user's search origin may change more frequently than a locality label, so a city or census-designated-place label is recomputed only after the user enters a different relevant geographic area.
+
+![Locality search and label-resolution flow](locality-diagram.png)
+
+A durable locality-data pipeline:
+
+1. Downloads current Census boundary and Gazetteer files during a build or maintenance process.
+2. Converts them into a compact application-specific spatial index, potentially split by state or region.
+3. Resolves coordinates against that local index.
+4. Caches mappings such as `H3 cell -> locality`, because users in the same cell will usually receive the same result.
+5. Uses the Census Geocoder only for missing or ambiguous cases.
+
+This makes locality resolution an occasional cache-fill operation instead of an API request for every user or position update.
+
+#### Location Updates
+
+Link-Up does not write a new server location for every GPS event. It coalesces updates according to meaningful changes:
+
+- Ignore small movements consistent with GPS jitter.
+- Update the indexed record after the user crosses an H3 boundary or moves a configured minimum distance.
+- Refresh periodically so an unchanged position does not become stale.
+- Increase the movement threshold at driving speed.
+- Expire location records that have not been refreshed within the accepted time window.
+
+#### Density and Location Privacy
+
+H3's hierarchy supports density-adaptive search and configurable location privacy. Approximate average cell areas are:
+
+| Resolution | Average area |
+| ---: | ---: |
+| 6 | 36.1 km² |
+| 7 | 5.16 km² |
+| 8 | 0.74 km² |
+| 9 | 0.105 km² |
+
+The application can index at a relatively fine resolution and use parent cells when it needs a wider search area or stronger privacy. H3 cells provide proximity indexing; Census boundaries provide human-readable locality labels.
+
+A user's profile location must remain useful for locality search while exposing only the precision the user permits. The privacy amount is configurable. The initial policy model supports two modes: users who choose locality privacy are represented at city-level precision, while users who choose precise location may be represented within a few meters. The design must not expose a more precise profile location than the selected mode permits.
+
+#### Excluded Critical-Path Services
+
+The public OpenStreetMap Nominatim service is not a universal production dependency. Its public-service policy limits an application to one request per second, prohibits client-side autocomplete, requires caching and attribution, and permits access to be withdrawn. The standard OpenStreetMap tile service is also best-effort and prohibits bulk or offline downloading.
+
+Commercial providers with free monthly quotas are also excluded from the critical path. Their cost becomes nonzero after usage crosses the provider's threshold, making application growth a billing risk.
+
+The resulting locality architecture is unmetered: coordinates originate on the user's device; H3 indexes changing locations; local computation performs proximity searches and distance calculations; downloaded Census and USGS data supplies slow-changing locality information; cached mappings prevent repeated lookups; and public government APIs serve only as optional fallbacks.
+
+### Profiles
+
+Users can create and update a Link-Up profile. A user's own profile is stored locally on the device by the Link-Up PWA using Dexie over IndexedDB.
+
+Users can share their profiles with other Link-Up users and view profiles that other users share with them. The information included in a profile has not yet been decided.
+
+### Messaging
+
+Users can send and receive private messages with other Link-Up users using [Converse](https://conversejs.org/docs/), the selected browser XMPP library. Message history is stored locally on the user's device. XMPP messaging infrastructure must preserve the local-authority boundary described above.
+
+The installed PWA can integrate with platform notifications where supported. How messages or notifications reach a user while Link-Up is not active, the XMPP server and connection configuration, and how messages are encrypted have not yet been decided.
