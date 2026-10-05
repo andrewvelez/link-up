@@ -1,19 +1,17 @@
 {
   "id": "./",
   "scope": "./",
-  "name": "Link-Up",
+  "name": "Link-up",
   "display": "standalone",
   "start_url": "/",
-  "short_name": "Link-Up",
+  "short_name": "Link-up",
   "theme_color": "#E1477E",
   "description": "A local-first Progressive Web App.",
   "orientation": "any",
   "background_color": "#E1477E",
   "related_applications": [],
   "prefer_related_applications": false,
-  "display_override": [
-    "window-controls-overlay"
-  ],
+  "display_override": ["window-controls-overlay"],
   "icons": [
     {
       "src": "icons/icon_512.png",
@@ -50,12 +48,7 @@
       "short_name": "About",
       "description": "Open the about page",
       "url": "./about.html",
-      "icons": [
-        {
-          "src": "icons/192x192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "icons/192x192.png", "sizes": "192x192" }]
     }
   ]
 }

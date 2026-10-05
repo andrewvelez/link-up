@@ -15,22 +15,10 @@
   > `bun install`
 
 * Bundle project for production deployment
-  > `bun run build`
+  > `bun run build` **or** `bun build.js build`
 
 * Build project and run all tests (tests are WIP)
-  > `bun run test`
+  > `bun run test` **or** `bun build.js test`
 
 * Build project and start local dev server
-  > `bun run start`
-
-* Compile ReScript only
-  > `bun run res:build`
-
-* Watch ReScript source changes
-  > `bun run res:watch`
-
-* Format ReScript source
-  > `bun run res:format`
-
-Application code, build tooling, and tests are authored in ReScript. Generated
-`.res.js` files and `dist/` are build output; edit the `.res` sources instead.
+  > `bun run start` **or** `bun build.js start`

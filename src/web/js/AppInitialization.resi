@@ -1,1 +1,0 @@
-/* This browser entry point initializes the page and exports no public API. */

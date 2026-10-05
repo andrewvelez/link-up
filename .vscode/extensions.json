@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "ms-edgedevtools.vscode-edge-devtools",
-    "PWABuilder.pwa-studio",
-    "chenglou92.rescript-vscode"
+    "PWABuilder.pwa-studio"
   ]
 }

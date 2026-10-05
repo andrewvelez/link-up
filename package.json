@@ -1,21 +1,17 @@
 {
   "name": "link-up",
   "version": "1.0.0",
-  "description": "A local-first Progressive Web App written in ReScript.",
+  "description": "A local-first Progressive Web App.",
   "license": "MIT",
   "author": "Andrew Velez <andrewvelez@outlook.com>",
   "type": "module",
   "scripts": {
-    "res:build": "rescript",
-    "res:watch": "rescript watch",
-    "res:format": "rescript format",
-    "build": "rescript && bun tools/Build.res.js build",
-    "test": "rescript && bun tools/Build.res.js test",
-    "start": "rescript && bun tools/Build.res.js start",
-    "clean": "rescript clean"
+    "build": "bun build.js build",
+    "test": "bun build.js test",
+    "start": "bun build.js start"
   },
   "devDependencies": {
-    "rescript": "^12.3.1"
+    "@types/bun": "latest"
   },
   "private": true,
   "dependencies": {
@@ -24,8 +20,6 @@
     "h3-js": "^4.5.0",
     "htmx.org": "4.0.0-beta6",
     "workbox-build": "^7.4.1",
-    "workbox-precaching": "^7.4.1",
-    "workbox-routing": "^7.4.1",
-    "workbox-strategies": "^7.4.1"
+    "workbox-precaching": "^7.4.1"
   }
 }

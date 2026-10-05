@@ -1,10 +1,10 @@
-# Link-Up Locality Design
+# Link-up Locality Design
 
 <!-- Author: Andrew Velez <andrewvelez@outlook.com> -->
 
 ## Purpose and constraints
 
-Link-Up's location model supports U.S. locality-aware discovery through **geocells**: small discovery regions used for rendezvous, profile discovery, caching, message-routing hints, abuse detection, and local network organization.
+Link-up's location model supports U.S. locality-aware discovery through **geocells**: small discovery regions used for rendezvous, profile discovery, caching, message-routing hints, abuse detection, and local network organization.
 
 The geographic infrastructure must cost **$0 to use**. Commercial free tiers do not meet that requirement because location is a universal feature whose usage grows with application activity. The essential geographic search and locality-resolution paths should use device coordinates, local computation, and downloaded reference data, with public government APIs available only as optional fallbacks.
 
@@ -21,7 +21,7 @@ A geocell is a social proximity unit, not merely a fixed map tile. It should rep
 
 The guiding rule is:
 
-> A geocell is the smallest Link-Up discovery region that contains enough visible active users to feel immediately local without becoming noisy.
+> A geocell is the smallest Link-up discovery region that contains enough visible active users to feel immediately local without becoming noisy.
 
 The conceptual location hierarchy is:
 
