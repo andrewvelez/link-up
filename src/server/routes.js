@@ -5,7 +5,7 @@
  */
 
 import about from "../../dist/about.html" with { type: "file" };
-import appInitialization from "../../dist/js/appInitialization.js" with { type: "file" };
+import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
 import home from "../../dist/home.html" with { type: "file" };
 import manifest from "../../dist/manifest.json" with { type: "file" };
 import serviceWorker from "../../dist/sw.js" with { type: "file" };
