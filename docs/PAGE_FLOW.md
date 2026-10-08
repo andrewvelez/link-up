@@ -1,27 +1,45 @@
 # App navigation flows
 
-> Caveat on user authentication status; the 3 states are Unknown, Known, and Authenticated
+User states are Unknown, Known, and Authenticated. Until authentication is implemented, all users resolve to Unknown, regardless of cookies.
+
+## Startup routing
+
+The PWA’s stable start URL is `/`. The server redirects `/` and `/Default.html` without displaying a Default page:
+
+- Unknown users redirect to `/about.html`.
+- Known and Authenticated users redirect to `/home.html`.
+
+Startup redirects are not cached. Offline startup serves cached About; authenticated status requires online authorization. All users can access About directly. Direct navigation to About or Home stays on that page.
+
+The following install, authentication, and roster flows are planned.
 
 ## Unregistered unknown users
 
-Landing page is '/about'.  This serves as a marketing page selling the utility of the app.  This page also shows the PWA install/upgrade prompts if needed.  A "More Info" link will load another page for 1) displaying more device-specific instructions as needed and 2) at a minimum, describing more PWA instruction for users unfamiliar with PWAs.  The "More Info" page could do double duty as a PWA install page, again with the detailed instructions for specific devices as needed.
-
-> /about -> /install
+About explains the app’s benefits and shows PWA install/upgrade prompts when needed. A "More Info" link opens device-specific instructions and an introduction to PWAs. This page could also serve as the install page.
 
 ## Registered or previously seen users
 
-The "Home" page is the 'user's' home page.  This is the page that doesn't sell the user on the app but allows the user to authenticate.  Messaging is differnt here because we already know the user.  Like a typical login screen, it is a combo login/signup component. Special care is needed around the wording because we are going to assume users who are recognized (via cookie) have seen the /about page already.  There may be a backref to /about in the case where a user want to know more "about us".
-
-> /home -> [authenticate] -> /roster
+Home offers login/signup, with wording that assumes users recognized by a cookie have already seen About. It may link back to About for users who want more information.
 
 ## Main location-aware app
 
-An authenticated user drops to the "roster" page.  It's the lineup of who's "up to bat", i.e. looking to connect.  The page will be hot swappable between a map view and a list view.
+After authentication on Home, users reach the roster of people looking to connect, with switchable map and list views.
 
-> /about -> /install -> /home -> [authenticate] -> /roster
+## Flow summary
 
-> /about -> /home -> [authenticate] -> /roster
+Startup routing:
 
-> /home -> [authenticate] -> /roster
+```text
+/ or /Default.html
+  +-> [Unknown]                -> /about.html
+  +-> [Known or Authenticated] -> /home.html
+```
 
-> /home -> /about
+Planned install and authentication flows:
+
+```text
+/about -> /install -> /home -> [authenticate online] -> /roster
+/about -> /home -> [authenticate online] -> /roster
+/home -> [authenticate online] -> /roster
+/home -> /about
+```

@@ -1,6 +1,6 @@
 /**
- * @author Andrew Velez 2026
- * @license SPDX-License-Identifier: MIT
+ * @author Andrew Velez
+ * @license MIT
  * @description Defines routes for the PWA files embedded in the executable.
  */
 
