@@ -34,7 +34,7 @@ The completed PWA is intended to provide its local interface without depending o
 
 ### Application Initialization
 
-`src/web/js/appInitialization.js` is the shared browser entry point loaded by Home and About. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
+`src/web/js/appInit.js` is the shared browser entry point loaded by Login, Home, About, and Search. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
 
 ### Service-Worker Cache Design
 
@@ -44,7 +44,9 @@ During installation, Workbox downloads new or changed resources and reuses uncha
 
 The `version` property in `package.json` is the authoritative semantic application version. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.js` and uses the service-worker update lifecycle to install and activate changed builds.
 
-The manifest has one stable start URL, `/`. Server routes handle `/` and `/Default.html` with temporary HTTP redirects: Unknown users go to About, and Known or Authenticated users go to Home. Redirect responses are not cached. Authentication is isolated behind the asynchronous `getAuthenticationState(request)` API in `src/server/authentication.js`; it returns a state, while routes select the page. Authentication is not implemented, so the current state always resolves to Unknown, regardless of existing cookies. Authenticated status requires online authorization. The service worker sends startup navigation to the server and serves cached About if the network request fails. Explicit Home and About navigation remains on the requested page.
+The manifest has one stable start URL, `/`, which directly serves the login file `default.html`. The filename is not exposed as a page URL. Home and Search use shared `requireAuthentication` handling in `src/server/authentication.js`: unauthorized requests redirect to `/`, and protected responses are not cached. Authentication is not implemented, so every user currently resolves to Unknown regardless of cookies. The authenticated startup redirect described in `PAGE_FLOW.md` is deferred until authentication is implemented.
+
+The service worker sends startup navigation to the server and serves cached `/` if the network request fails. The build maps the login file's precache URL to `/` and excludes Home and Search from precaching, so their requests must reach the server's authentication check. About remains publicly accessible and precached.
 
 ### PWA User Interface
 
@@ -87,12 +89,14 @@ Bare `bun test` runs the test suite without the build step provided by `bun run 
 ├── src/
 │   ├── web/
 │   │   ├── about.html
+│   │   ├── default.html
 │   │   ├── home.html
+│   │   ├── search.html
 │   │   ├── manifest.json
 │   │   ├── sw.js
 │   │   ├── icons/
 │   │   ├── js/
-│   │   │   └── appInitialization.js
+│   │   │   └── appInit.js
 │   │   ├── external/
 │   │   │   ├── htmx.min.js
 │   │   │   └── pico.cyan.min.css

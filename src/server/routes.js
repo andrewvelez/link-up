@@ -6,6 +6,8 @@
 
 import about from "../../dist/about.html" with { type: "file" };
 import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
+import login from "../../dist/default.html" with { type: "file" };
+import search from "../../dist/search.html" with { type: "file" };
 import home from "../../dist/home.html" with { type: "file" };
 import manifest from "../../dist/manifest.json" with { type: "file" };
 import serviceWorker from "../../dist/sw.js" with { type: "file" };
@@ -21,62 +23,31 @@ import icon512Named from "../../dist/icons/icon_512.png" with { type: "file" };
 import styles from "../../dist/styles/global.css" with { type: "file" };
 import picoStyles from "../../dist/external/pico.cyan.min.css" with { type: "file" };
 
-import { AuthenticationState, getAuthenticationState } from "./authentication.js";
+import { requireAuthentication } from "./authentication.js";
 
 /**
  * @description Serves an embedded file for GET and HEAD requests.
  * @param {string} path The embedded file path.
+ * @param {boolean} [requiresAuthentication=false] Whether the route requires authentication.
  * @returns {Object} A Bun route with GET and HEAD handlers.
  */
-function asset(path) {
-  return {
-    GET: () => new Response(Bun.file(path)),
-    HEAD: () => new Response(Bun.file(path)),
-  };
-}
-
-/**
- * @description Selects the startup page for a supported authentication state.
- * @param {import("./authentication.js").AuthenticationStateValue} state The authentication state.
- * @returns {string} The page filename relative to the application root.
- * @throws {Error} If the authentication state is unsupported.
- */
-export function getStartPage(state) {
-  if (state === AuthenticationState.Unknown) {
-    return "about.html";
-  } else if (state === AuthenticationState.Known || state === AuthenticationState.Authenticated) {
-    return "home.html";
-  } else {
-    throw new Error("Unsupported authentication state.");
+function asset(path, requiresAuthentication = false) {
+  let handler = () => new Response(Bun.file(path));
+  if (requiresAuthentication) {
+    handler = requireAuthentication(handler);
   }
+  return { GET: handler, HEAD: handler };
 }
-
-/**
- * @description Redirects startup requests using the server authentication API.
- * @param {Request} request The incoming startup request.
- * @returns {Promise<Response>} A temporary redirect to the selected page.
- */
-async function redirectStartup(request) {
-  const state = await getAuthenticationState(request);
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: `/${getStartPage(state)}`,
-      "Cache-Control": "no-store",
-    },
-  });
-}
-
-const startup = { GET: redirectStartup, HEAD: redirectStartup };
 
 export const routes = {
-  "/": startup,
-  "/Default.html": startup,
-  "/home": asset(home),
-  "/home.html": asset(home),
+  "/": asset(login),
+  "/home": asset(home, true),
+  "/home.html": asset(home, true),
+  "/search": asset(search, true),
+  "/search.html": asset(search, true),
   "/about": asset(about),
   "/about.html": asset(about),
-  "/js/appInitialization.js": asset(appInitialization),
+  "/js/appInit.js": asset(appInitialization),
   "/manifest.json": asset(manifest),
   "/icons/192x192.png": asset(icon192),
   "/icons/24x24.png": asset(icon24),

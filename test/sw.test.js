@@ -37,8 +37,9 @@ afterEach(() => {
 describe("service worker", () => {
   test("passes the injected manifest to Workbox precaching", async () => {
     const manifest = [
-      { revision: "app-revision", url: "js/appInitialization.js" },
+      { revision: "app-revision", url: "js/appInit.js" },
       { revision: "about-revision", url: "about.html" },
+      { revision: "login-revision", url: "/" },
     ];
 
     globalThis.self = { __WB_MANIFEST: manifest };
@@ -50,15 +51,16 @@ describe("service worker", () => {
       directoryIndex: "",
     });
     expect(registerRoute).toHaveBeenCalledTimes(1);
-    expect(PrecacheFallbackPlugin).toHaveBeenCalledWith({ fallbackURL: "/about.html" });
+    expect(PrecacheFallbackPlugin).toHaveBeenCalledWith({ fallbackURL: "/" });
     const [matches, strategy] = registerRoute.mock.calls[0];
     expect(strategy.options.plugins).toHaveLength(1);
-    expect(strategy.options.plugins[0].options.fallbackURL).toBe("/about.html");
+    expect(strategy.options.plugins[0].options.fallbackURL).toBe("/");
     for (const [path, mode, expected] of [
       ["/", "navigate", true],
-      ["/Default.html", "navigate", true],
+      ["/default.html", "navigate", false],
       ["/about.html", "navigate", false],
       ["/home.html", "navigate", false],
+      ["/search.html", "navigate", false],
       ["/", "cors", false],
     ]) {
       expect(matches({ request: { mode }, url: new URL(path, "https://example.test") })).toBe(expected);

@@ -1,45 +1,30 @@
-# App navigation flows
+# App pages and user navigation page flow
 
 User states are Unknown, Known, and Authenticated. Until authentication is implemented, all users resolve to Unknown, regardless of cookies.
 
-## Startup routing
+## '/default.html' login page
 
-The PWA’s stable start URL is `/`. The server redirects `/` and `/Default.html` without displaying a Default page:
+The '/default.html' page is the domain's default page. The PWA’s stable start URL is '/'. The default page '/default.html' is the same as '/'. This is the page the user is on when not logged into the app.  The default page contains the login form.  It may also link to the about page.
 
-- Unknown users redirect to `/about.html`.
-- Known and Authenticated users redirect to `/home.html`.
+- Authenticated users redirect to '/home.html' from '/default.html'.
+- All other users remain on '/default.html'.
 
-Startup redirects are not cached. Offline startup serves cached About; authenticated status requires online authorization. All users can access About directly. Direct navigation to About or Home stays on that page.
+## '/home.html' logged-in landing page
 
-The following install, authentication, and roster flows are planned.
+The '/home.html' page is the authenticated user's home page. Newly authenticated or already logged-in users can be redirected from the default page to the home page.  The home page will be everything an authenticated user's needs, includes links to various other pages like: change profile, men online, log out, etc.
 
-## Unregistered unknown users
+## '/about.html' is the app's instructional page
 
-About explains the app’s benefits and shows PWA install/upgrade prompts when needed. A "More Info" link opens device-specific instructions and an introduction to PWAs. This page could also serve as the install page.
+The '/about.html' page can serve as the app's introductory instructional page.  It contains info about **Link-up**, about PWAs, and space permitting - device specific info.
 
-## Registered or previously seen users
+## '/search.html' is the app's profile search page
 
-Home offers login/signup, with wording that assumes users recognized by a cookie have already seen About. It may link back to About for users who want more information.
+The '/search.html' page is the app's profile search page, which is also known as a roster of profiles, or currently online profiles.  This will likely be the most used page so its features are more dynamic.
 
-## Main location-aware app
+## Example page navigation flows
 
-After authentication on Home, users reach the roster of people looking to connect, with switchable map and list views.
+- User is unauthenticated or not logged-in.
+> /default.html -> [authenticate via login form] -> /home.html
 
-## Flow summary
-
-Startup routing:
-
-```text
-/ or /Default.html
-  +-> [Unknown]                -> /about.html
-  +-> [Known or Authenticated] -> /home.html
-```
-
-Planned install and authentication flows:
-
-```text
-/about -> /install -> /home -> [authenticate online] -> /roster
-/about -> /home -> [authenticate online] -> /roster
-/home -> [authenticate online] -> /roster
-/home -> /about
-```
+- User is already logged-in and starts on '/'
+> /default.html -> ["server-side" redirect] -> /home.html

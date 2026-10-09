@@ -26,3 +26,23 @@ export const AuthenticationState = Object.freeze({
 export async function getAuthenticationState(request) {
   return AuthenticationState.Unknown;
 }
+
+/**
+ * @description Applies authentication to a protected request handler.
+ * @param {(request: Request) => Response | Promise<Response>} handler The protected handler.
+ * @returns {(request: Request) => Promise<Response>} The authenticated handler.
+ */
+export function requireAuthentication(handler) {
+  return async (request) => {
+    const state = await getAuthenticationState(request);
+    if (state !== AuthenticationState.Authenticated) {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "/", "Cache-Control": "no-store" },
+      });
+    }
+    const response = await handler(request);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
+  };
+}

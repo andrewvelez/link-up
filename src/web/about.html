@@ -14,34 +14,28 @@
 
     <link rel="icon" href="./icons/icon_24.png" type="image/png">
     <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./external/pico.cyan.min.css">
+    <link rel="stylesheet" href="./styles/global.css">
     <script src="./external/htmx.min.js"></script>
     <script type="module" src="./js/appInit.js"></script>
   </head>
 
   <body>
-    <header class="app-header">
-      <a class="brand" href="./">Link-up</a>
-      <nav aria-label="Primary navigation">
-        <a href="./home.html">Home</a>
-        <a href="./about.html" aria-current="page">About</a>
-      </nav>
-    </header>
-
-    <main id="app" tabindex="-1">
-      <section class="page" aria-labelledby="about-heading">
-        <div class="card">
-          <h1 id="about-heading">About Link-up</h1>
-          <p>
-            Link-up keeps authoritative user data and essential application
-            logic on the user&rsquo;s device.
-          </p>
-          <p>
-            Product workflows, persistence, and peer networking remain open
-            design work.
-          </p>
-        </div>
+    <main id="app" class="container" tabindex="-1">
+      <h1>About Link-up</h1>
+      <p>Link-up is being built to help men find and connect with people nearby,
+        while keeping control of their own data.</p>
+      <a href="/">Log in</a>
+      <section aria-labelledby="pwa-heading">
+        <h2 id="pwa-heading">Using the app</h2>
+        <p>Link-up is a web app: open it in your browser, or add it to your
+          device for an app-like experience. Installation is optional.</p>
+        <p>On iPhone or iPad, open Safari’s Share menu and choose Add to Home
+          Screen. On Android, look for Install app or Add to Home screen in
+          your browser menu. On desktop, look for an install icon in the
+          address bar or an installation option in the browser menu.</p>
+        <p>Available options depend on your browser and device. The cached
+          introduction works offline; signing in requires a connection.</p>
       </section>
     </main>
   </body>

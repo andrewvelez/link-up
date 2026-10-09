@@ -41,6 +41,8 @@ async function bundleManifest() {
   const { warnings } = await injectManifest({
     globDirectory: "./dist",
     globPatterns: ["**/*.{html,js,json,css,svg,png}"],
+    globIgnores: ["home.html", "search.html"],
+    modifyURLPrefix: { "default.html": "/" },
     swSrc: "./dist/sw.bundle.js",
     swDest: "./dist/sw.js",
   });

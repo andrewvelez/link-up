@@ -33,7 +33,7 @@ builds before testing. None of these commands deploys the executable.
 
 ## Current implementation status
 
-The current checkout contains minimal home and about pages, a web app manifest,
+The current checkout contains login, home, about, and search pages, a web app manifest,
 browser service-worker registration, a service worker, automated tests, and the
 full-stack executable build pipeline. Build output is generated in `dist/`.
 

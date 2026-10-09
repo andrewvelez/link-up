@@ -5,7 +5,7 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
   <head>
-    <title>Home</title>
+    <title>Log in</title>
     <meta charset="utf-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1">
     <meta name="theme-color" content="#181818">
@@ -20,16 +20,18 @@
 
   <body>
     <main id="app" class="container" tabindex="-1">
-      <h1>Home</h1>
-      <nav aria-label="Home navigation">
-        <ul>
-          <li><a href="./search.html">Men online</a></li>
-          <li><a href="./about.html">About Link-up</a></li>
-        </ul>
-      </nav>
-      <button type="button" disabled>Change profile</button>
-      <button type="button" disabled>Log out</button>
-      <button id="share-button" type="button" hidden>Share Link-up</button>
+      <h1>Log in to Link-up</h1>
+      <form aria-describedby="login-note">
+        <fieldset disabled>
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password">
+          <button type="button" disabled>Log in</button>
+        </fieldset>
+        <p id="login-note">Login is not available yet.</p>
+      </form>
+      <a href="./about.html">About Link-up</a>
     </main>
   </body>
 </html>
