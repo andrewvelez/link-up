@@ -1,8 +1,8 @@
-# Regional Distributed Search — Cliff Notes
+# Regional Distributed Search — Recap
 
 Date: October 9, 2026
 
-## Core objective
+## Overview
 
 Build decentralized profile discovery for a gay dating app, optimized for locality and mobile responsiveness. **Fast results take priority over fresh results.** A master backup exists elsewhere, so backup and authoritative recovery are outside the present design discussion. Media is handled separately, with references retained in profiles.
 
