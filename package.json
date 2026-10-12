@@ -15,6 +15,7 @@
   },
   "private": true,
   "dependencies": {
+    "@clerk/clerk-js": "^6.39.0",
     "bulma": "^1.0.4",
     "dexie": "^4.4.6",
     "h3-js": "^4.5.0",
