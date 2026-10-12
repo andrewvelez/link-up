@@ -21,7 +21,7 @@ import icon24Named from "../../dist/icons/icon_24.png" with { type: "file" };
 import icon48Named from "../../dist/icons/icon_48.png" with { type: "file" };
 import icon512Named from "../../dist/icons/icon_512.png" with { type: "file" };
 import styles from "../../dist/styles/global.css" with { type: "file" };
-import picoStyles from "../../dist/external/pico.cyan.min.css" with { type: "file" };
+import picoStyles from "../../dist/external/bulma.min.css" with { type: "file" };
 
 import { requireAuthentication } from "./authentication.js";
 
@@ -59,7 +59,7 @@ export const routes = {
   "/icons/icon_512.png": asset(icon512Named),
   "/external/htmx.min.js": asset(htmx),
   "/styles/global.css": asset(styles),
-  "/external/pico.cyan.min.css": asset(picoStyles),
+  "/external/bulma.min.css": asset(picoStyles),
   "/sw.js": asset(serviceWorker),
   "/*": () => new Response("Not found", { status: 404 }),
 };
