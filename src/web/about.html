@@ -20,14 +20,13 @@
     <script type="module" src="./js/appInit.js"></script>
   </head>
 
-  <body>
+  <body class="about-page">
     <main id="app" class="container" tabindex="-1">
-      <h1>About Link-up</h1>
-      <p>Link-up is being built to help men find and connect with people nearby,
+      <h1 class="title is-1 is-size-2-mobile has-text-weight-semibold">About <span class="has-text-primary">Link-up</span></h1>
+      <p class="subtitle is-5 mb-6">Link-up is being built to help men find and connect with people nearby,
         while keeping control of their own data.</p>
-      <a href="/">Log in</a>
-      <section aria-labelledby="pwa-heading">
-        <h2 id="pwa-heading">Using the app</h2>
+      <section class="content is-medium is-size-6-mobile" aria-labelledby="pwa-heading">
+        <h2 id="pwa-heading" class="title is-3 is-size-4-mobile has-text-weight-normal">Using the app</h2>
         <p>Link-up is a web app: open it in your browser, or add it to your
           device for an app-like experience. Installation is optional.</p>
         <p>On iPhone or iPad, open Safari’s Share menu and choose Add to Home
@@ -37,6 +36,7 @@
         <p>Available options depend on your browser and device. The cached
           introduction works offline; signing in requires a connection.</p>
       </section>
+      <a class="is-inline-block mt-5 is-underlined" href="/">Back to log in <span aria-hidden="true">&rarr;</span></a>
     </main>
   </body>
 </html>

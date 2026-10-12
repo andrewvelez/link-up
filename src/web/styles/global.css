@@ -1,34 +1,55 @@
 /*
- * SPDX-License-Identifier: MIT
- * Copyright (c) 2026 Andrew Velez
+ * @author Andrew Velez
+ * @license MIT
  * Description: Defines the shared presentation for the Link-up PWA.
  */
 
-:root[data-theme="dark"] {
-  --pico-font-family: ui-sans-serif, system-ui, sans-serif;
-  --pico-background-color: #181818;
-  --pico-color: #f2eeee;
-  --accent: #d7fbc1;
-  --muted: #a8a2a2;
-  --line: #363132;
-  --pico-font-size: 100%;
-  --pico-primary: var(--accent);
-  --pico-primary-background: var(--accent);
-  --pico-primary-hover: #95fb62;
-  --pico-primary-hover-background: #95fb62;
-  --pico-primary-inverse: #131f07;
-  --pico-primary-focus: rgb(215 251 193 / 30%);
-  --pico-text-selection-color: rgb(215 251 193 / 25%);
-  --pico-form-element-background-color: #1c1a1b;
-  --pico-form-element-active-background-color: #1c1a1b;
-  --pico-form-element-border-color: #443b3e;
-  --pico-form-element-color: var(--pico-color);
-  --pico-form-element-placeholder-color: #91898b;
-  --pico-form-element-focus-color: var(--pico-primary-focus);
-  --pico-form-element-spacing-vertical: 10px;
-  --pico-form-element-spacing-horizontal: 15px;
+:root {
+  --bulma-primary-h: var(--bulma-info-h);
+  --bulma-primary-s: var(--bulma-info-s);
+  --bulma-primary-l: var(--bulma-info-l);
+  --bulma-primary-base-l: var(--bulma-info-base-l);
+  --bulma-primary-invert-l: var(--bulma-info-invert-l);
+  --bulma-primary-on-scheme-l: var(--bulma-info-on-scheme-l);
+  --bulma-link-h: var(--bulma-info-h);
+  --bulma-link-s: var(--bulma-info-s);
+  --bulma-link-l: var(--bulma-info-l);
+  --bulma-link-on-scheme-l: var(--bulma-info-on-scheme-l);
 }
 
 #app {
   padding-block: 2rem;
+}
+
+.button[hidden] {
+  display: none;
+}
+
+.login-page {
+  background:
+    linear-gradient(150deg, transparent 35%, var(--bulma-scheme-main) 35% 65%, transparent 65%),
+    radial-gradient(ellipse at 15% 90%, hsla(var(--bulma-info-h), var(--bulma-info-s), var(--bulma-info-l), 0.15), transparent 45%),
+    var(--bulma-scheme-main);
+}
+
+.login-panel {
+  width: 100%;
+  max-width: 20rem;
+}
+
+.login-panel .input {
+  --bulma-input-disabled-background-color: transparent;
+  --bulma-input-disabled-border-color: var(--bulma-border);
+  --bulma-input-disabled-placeholder-color: var(--bulma-text);
+}
+
+.about-page {
+  padding-inline: 1.5rem;
+}
+
+.about-page #app {
+  max-width: 48rem;
+  margin-block: clamp(2rem, 7vw, 6rem);
+  border-left: 1px solid var(--bulma-primary);
+  padding-inline: clamp(1.5rem, 6vw, 5rem);
 }

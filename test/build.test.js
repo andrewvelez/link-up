@@ -136,7 +136,7 @@ describe("build", () => {
       "about.html",
       "manifest.json",
       "styles/global.css",
-      "external/pico.cyan.min.css",
+      "external/bulma.min.css",
       "external/htmx.min.js",
       "sw.js",
       "link-up",

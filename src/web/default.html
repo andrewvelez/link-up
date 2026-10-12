@@ -18,20 +18,33 @@
     <script type="module" src="./js/appInit.js"></script>
   </head>
 
-  <body>
-    <main id="app" class="container" tabindex="-1">
-      <h1>Log in to Link-up</h1>
-      <form aria-describedby="login-note">
-        <fieldset disabled>
-          <label for="email">Email address</label>
-          <input id="email" name="email" type="email" autocomplete="email">
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password">
-          <button type="button" disabled>Log in</button>
-        </fieldset>
-        <p id="login-note">Login is not available yet.</p>
-      </form>
-      <a href="./about.html">About Link-up</a>
+  <body class="login-page">
+    <main id="app" class="hero is-fullheight" tabindex="-1">
+      <div class="hero-body is-justify-content-center">
+        <div class="login-panel has-text-centered">
+          <h1 class="title is-1 is-size-2-mobile has-text-weight-semibold mb-2">Link<span class="has-text-primary">-up</span></h1>
+          <p class="subtitle is-5 mb-5">Meet men nearby.</p>
+          <form aria-describedby="login-note">
+            <fieldset disabled>
+              <div class="field">
+                <label class="label is-sr-only" for="email">Email address</label>
+                <div class="control">
+                  <input class="input" id="email" name="email" type="email" autocomplete="email" placeholder="Email">
+                </div>
+              </div>
+              <div class="field">
+                <label class="label is-sr-only" for="password">Password</label>
+                <div class="control">
+                  <input class="input" id="password" name="password" type="password" autocomplete="current-password" placeholder="Password">
+                </div>
+              </div>
+              <button class="button is-primary is-fullwidth mt-4" type="button" disabled>Log in</button>
+            </fieldset>
+            <p id="login-note" class="help mt-3">Login is not available yet.</p>
+          </form>
+          <a class="is-inline-block has-text-grey-light mt-6" href="./about.html">About Link-up</a>
+        </div>
+      </div>
     </main>
   </body>
 </html>
