@@ -2,90 +2,102 @@
 
 Date: October 9, 2026
 
-## Overview
+## How search engines represent and store data
 
-Build decentralized profile discovery for a gay dating app, optimized for locality and mobile responsiveness. **Fast results take priority over fresh results.** A master backup exists elsewhere, so backup and authoritative recovery are outside the present design discussion. Media is handled separately, with references retained in profiles.
+A **document** holds the fields and values supplied to the engine. It can contain the complete data object. The engine builds an **inverted index** that maps terms to matching document IDs; one index covers many documents.
 
-## Documents, indexes, and storage
+For example, these documents:
 
-- A document represents a profile’s fields and values. It can contain the complete profile object.
-- An inverted index maps terms to matching document IDs; one index covers many documents, rather than one inverted index per profile.
-- A search engine that retains retrievable documents can also serve as their data store. A separate profile database is not inherently required on each node.
-- Stored documents, text indexes, geographic indexes, and sorting structures serve different purposes but can coexist in the same engine.
-- Benefits include one local query interface, direct return of profile data, and avoiding synchronization between a separate document database and search engine.
-- Costs include index memory/storage, update processing, and engine-specific limitations around transactions, constraints, and non-search queries. These were discussed, not established as blockers.
+```json
+[
+  { "id": 1, "text": "red bicycle" },
+  { "id": 2, "text": "blue bicycle" },
+  { "id": 3, "text": "red car" }
+]
+```
 
-## Access and encryption
+produce an index conceptually like this:
 
-- Nodes search only profiles they are authorized to read.
-- Profiles can be encrypted during transfer and storage, then decrypted locally for indexing or searching.
-- Searching data that remains unreadable to the node is not required; specialized searchable encryption is therefore outside scope.
-- A readable index can reveal profile information. A shared snapshot must contain only information its recipients are authorized to access.
-- Revoking access cannot guarantee removal of data a recipient has already decrypted.
+```json
+{
+  "red": [1, 3],
+  "blue": [2],
+  "bicycle": [1, 2],
+  "car": [3]
+}
+```
 
-## Geographic model and regional partitioning
+Searching for “red bicycle” finds the ID shared by both lists: `1`. Actual engines may use compact binary formats and include word positions or frequencies.
 
-- Use **H3** for hierarchical geocells.
-- Profiles are assigned to fine-grained cells; coarser ancestors or sets of cells identify regional partitions.
-- The discussion’s child depths 4 and 1 were illustrative, not finalized H3 resolution choices.
-- Distance means **distance from the viewer’s cell center to the profile’s cell center**. Profiles in the same cell tie on distance and need a secondary ordering rule.
-- Geographic partitioning happens before local searching: a San Francisco search should not involve Atlanta’s profile data or indexes.
-- City-centered regions are preferred candidates for shared index distribution. Examples proposed: Atlanta and surrounding communities within 25 miles; San Francisco and surrounding communities within 15 miles. These are illustrative boundaries.
-- A city-centered region may comprise many H3 cells; it need not equal one H3 parent.
-- Search from the viewer’s own cell center, even when a shared snapshot is centered on a city.
-- Neighboring regions may be needed near boundaries. Overlapping regions require deduplication by profile ID.
-- H3 ancestry is logically exact, while geographic containment across resolutions is approximate.
-- Actual profile count, snapshot size, and mobile resource usage can inform regional sizing. The physical location of storage devices was not considered a central issue at this stage.
+Documents and indexes can be held in memory or saved to persistent storage. Making a field searchable does not necessarily preserve its original value for retrieval.
 
-## Distribution and routing
+## Using the search engine as a data store
 
-- Local search libraries do not themselves determine which peers hold documents or how regional requests reach them.
-- A locality-aware DHT or geographic overlay is a candidate for regional placement and routing. No implementation was selected.
-- An ordinary DHT can also act as a directory: **regional H3 cell → peers serving that region**. Directory placement may be non-geographic while profile placement remains regional.
-- Conventional Kademlia uses distance between hashed keys, not physical distance. Hashing H3 IDs does not preserve their geographic relationships.
-- H3 determines relevant cells/regions; routing locates their providers; authorized data or indexes are delivered to nodes for local search.
-- Server-cluster shard routing, geographic indexing, and peer-to-peer regional routing are distinct capabilities.
+If the engine retains the documents as well as the index, and can retrieve them, it can also serve as a data store. One system can store and search complete profiles, avoiding a separate database and synchronization between the two. The tradeoffs are memory and storage use, index maintenance when data changes, and engine-specific limits on transactions, constraints, and other queries. Keeping documents in memory does not by itself preserve them across restarts. With a master backup assumed elsewhere, recovery was outside scope. This left each node able to use the engine as a local searchable store, with a separate layer still needed to distribute data between nodes.
 
-## Fast local search
+## Applying that model to profiles and encryption
 
-- Search locally available regional data immediately; refresh it in the background.
-- Missing regional coverage can be fetched asynchronously rather than blocking available results.
-- Prefetching neighboring regions was suggested to reduce waiting during movement or radius expansion.
-- Benefits include smaller transfers, smaller indexes, fewer peers involved per search, and no network round trip for data already held locally.
-- Fast responses and fresh profile/location data are separate concerns; the explicit priority is speed.
+For the gay dating app, a document could contain a profile’s fields and values. Media would be stored separately, with references in the profile. Nodes would receive only profiles they were authorized to read and decrypt them locally for searching. The engine would not need to search data that remained encrypted and unreadable to it. An index can reveal information about the profiles it describes, so access permissions also apply to indexes shared with other nodes. Revoking access cannot guarantee removal of data already decrypted by a recipient.
 
-## Shared regional indexes
+## Adding geographic search to the library requirements
 
-- **Every node should not independently rebuild substantially the same regional index.** The user identified this as duplicated processing, especially on phones.
-- Local search execution requires a local usable index, not necessarily local construction of that index.
-- Preferred direction: a regional builder creates and maintains a shared index; peers distribute it; phones load their copy and search locally.
-- Initial snapshots provide a starting point. Subsequent changes should update the existing index efficiently.
-- Downloading and loading a prebuilt index still costs bandwidth, memory, and deserialization time, but avoids repeating full document indexing.
-- Smaller transferable segments or deltas may reduce update costs and overlap duplication, **provided the selected engine supports them**. This support has not been established.
+The main query would be distance from the viewer’s geocell center to each profile’s geocell center. Profiles in the same cell would tie and need a secondary ordering rule. A text index alone would not provide the required nearest-profile search.
 
-## Builder selection and continuity
+The initial library review therefore considered document storage, profile filters, text search, and geographic search. Orama was the leading integrated browser candidate; MiniSearch paired with a geographic index was the main alternative. Geographic filtering and nearest-first ordering still needed to be distinguished.
 
-- Maintain a pool of **up to ten qualified builders per region**.
-- Favor sustained uptime, stable connectivity, spare CPU/memory, external power, unmetered networking, possession of regional data, and demonstrated successful builds.
-- The goal is maximum useful contribution with minimum disruption and resource burden.
-- Round-robin handoff was considered, then refined: **rotation is not mandatory**.
-- A powerful, reliable super node may remain the active builder indefinitely. Other eligible nodes provide standby capacity and failover.
-- Keep assignments stable; avoid switching for small, temporary ranking changes.
-- Successors should load the existing index and continue from its recorded update position rather than start over.
-- Peers can distribute finished snapshots independently of the builder, so index production need not bear all download traffic.
-- Builder election, failover coordination, trust/verification, and handoff protocols remain unspecified.
+At this stage, the evaluation concerned searching data available on a node. It had not yet established how data or indexes would be distributed among nodes.
 
-## Index lifecycle and software versions
+## Limiting distribution and searches to relevant regions
 
-- Index format and indexing rules are tied to software versions and do not change independently of them.
-- The intended lifecycle is an initial full build for the relevant software/index version, followed by incremental maintenance.
-- Builder handoff continues the existing compatible index state.
-- A software release that preserves index compatibility need not inherently force a rebuild; incompatible format or rule changes require a version transition.
-- **Local incremental updates are not the same as transferable index deltas.** Efficiently distributing changes without making every phone re-index documents is an essential selection requirement.
+The browser libraries reviewed did not handle geographic peer placement or routing. That required a separate distributed layer; server-cluster routing was also a distinct capability.
 
-## Libraries and engines discussed
+H3 cells could group profiles into regional datasets before local searching. A San Francisco search would not need Atlanta’s profiles or indexes. This would reduce the data transferred, stored, and searched on a phone. The example child depths were not finalized resolutions, and the physical location of storage devices was not central to this model.
 
-The initial shortlist evaluated local geographic/text search and document storage. It predates the shared-index requirement and is **not a final selection**. The research was a broad documentation/repository review, not an exhaustive inventory or a measured benchmark.
+A locality-aware distributed hash table (DHT) could support regional placement and routing. Alternatively, an ordinary DHT could act as a directory: **regional H3 cell → peers serving that region**. Conventional Kademlia uses hashed-key distance, so hashing H3 IDs does not preserve geography. No routing implementation was selected.
+
+Searches near boundaries might need neighboring regions. H3 parent relationships are exact in the hierarchy, but geographic containment across resolutions is approximate.
+
+## Keeping an index locally for fast responses
+
+**Fast results took priority over fresh results.** Searching a locally available regional index would avoid a network round trip for each search. Updates and missing regions could be fetched in the background without blocking results from data already present. Prefetching neighboring regions could reduce waiting during movement or radius expansion.
+
+The initial approach was for each node to maintain an index of its relevant regional profiles. This supported local searching, but left the cost of constructing similar indexes on many devices unresolved.
+
+## Sharing prebuilt indexes to avoid repeated work
+
+Nearby nodes would hold many of the same profiles. Having every phone independently index those profiles would repeat substantial processing, even if done in the background.
+
+The revised approach separated **local search execution** from **index construction**. A regional builder would create and maintain the index, peers would distribute saved copies (snapshots), and phones would load and search their copies.
+
+Loading a snapshot still costs bandwidth, memory, and processing time. Smaller index segments or transferable changes (deltas) could reduce transfer costs if supported by the engine. Shared snapshots must also contain only information their recipients are authorized to read.
+
+## Defining regions for shared snapshots
+
+City-centered regions were proposed as shared distribution units: Atlanta and surrounding communities within 25 miles, or San Francisco and surrounding communities within 15 miles. These were illustrative boundaries. A region could contain many H3 cells rather than correspond to one H3 parent.
+
+A shared city-centered snapshot would still be searched from the viewer’s own cell center. Profile count, snapshot size, and phone resource use could help determine region sizes.
+
+Overlapping regions would require deduplication by profile ID. Smaller shared H3-based index segments might reduce overlap duplication, subject to engine support.
+
+## Choosing stable builders instead of requiring rotation
+
+Builders would be selected for sustained uptime, stable connectivity, spare CPU and memory, external power, unmetered networking, regional data, and successful builds. The aim was useful contribution with little disruption to the network. Other peers could serve downloads independently of the builder.
+
+A pool of up to ten qualified builders per region would provide one active builder and standbys. Round-robin handoff was considered, but a powerful, reliable node could remain active indefinitely. Mandatory rotation was unnecessary when continued service better met the stability goal. Small, temporary ranking changes would not justify switching builders.
+
+Election, failover coordination, trust/verification, and handoff protocols remained unspecified.
+
+## Maintaining the index through updates and handoffs
+
+The intended lifecycle was a full build for the relevant software/index version, followed by incremental updates. Index format and indexing-rule changes would be tied to software versions. A compatible software release would not necessarily require a rebuild.
+
+A successor builder would load the existing compatible index and continue from its recorded update position. Handoff would preserve that work rather than restart it.
+
+This added a requirement to the earlier library evaluation: **the engine must support distributing index changes efficiently, not just updating an index locally**. Local update support does not establish that phones can apply transferred index changes without re-indexing profiles. That capability remained unverified, so the initial shortlist was not a final selection.
+
+## Library candidates from the initial review
+
+This table records the earlier library review. It predates the shared-index requirement and is **not a final selection**. The research was a broad documentation/repository review, not an exhaustive inventory or a measured benchmark.
 
 | Candidate | Initial assessment | Remaining concern for the evolved design |
 | --- | --- | --- |
@@ -102,25 +114,3 @@ The initial shortlist evaluated local geographic/text search and document storag
 | Pagefind / Lunr | Static-index-oriented search. | Poor fit for continuously changing profiles without a suitable update/distribution strategy. |
 
 One optional optimization discussed: spatially index distinct cell centers rather than repeating the same coordinates for every profile, with a separate cell-to-profile membership mapping. This remains a proposed approach, not a decision.
-
-## Open decisions
-
-1. Which engine supports efficiently loading shared regional indexes and applying distributable updates?
-2. What regional boundaries, H3 resolutions, overlap rules, and size limits should be used?
-3. What routing/DHT implementation should discover regional peers and distribute indexes?
-4. How are builder eligibility, assignment, failure detection, and trusted publication coordinated?
-5. How are snapshot versions, update positions, interrupted transfers, and software-version transitions represented?
-6. How are recipient permissions reconciled with a shared regional snapshot?
-7. What are the measured startup, memory, nearest-first query, and update costs on target phones?
-
-## Selected references discussed
-
-- [H3 hierarchy](https://h3geo.org/docs/api/hierarchy/)
-- [H3 indexing and containment](https://h3geo.org/docs/highlights/indexing/)
-- [Orama](https://github.com/oramasearch/orama)
-- [MiniSearch](https://github.com/lucaong/minisearch)
-- [FlexSearch](https://github.com/nextapps-de/flexsearch)
-- [search-index](https://github.com/fergiemcdowall/search-index)
-- [KDBush](https://github.com/mourner/kdbush)
-- [geokdbush](https://github.com/mourner/geokdbush)
-- [libp2p Kademlia specification](https://github.com/libp2p/specs/blob/master/kad-dht/README.md)
