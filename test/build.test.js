@@ -132,7 +132,7 @@ describe("build", () => {
       "js/appInit.js",
       "default.html",
       "home.html",
-      "search.html",
+      "profiles.html",
       "about.html",
       "manifest.json",
       "styles/global.css",
@@ -163,7 +163,7 @@ describe("build", () => {
     const manifest = JSON.parse(readFileSync(join(outputDirectory, "manifest.json"), "utf8"));
     expect(manifest.start_url).toBe("/");
     expect(serviceWorker).not.toContain('"url":"home.html"');
-    expect(serviceWorker).not.toContain('"url":"search.html"');
+    expect(serviceWorker).toMatch(/"revision":"[a-f0-9]{32}","url":"profiles\.html"/);
     expect(serviceWorker).not.toContain('"url":"default.html"');
     expect(existsSync(join(outputDirectory, "Default.html"))).toBe(false);
     expect(existsSync(join(outputDirectory, "js/authentication.js"))).toBe(false);
@@ -275,6 +275,10 @@ test("fixture failure", () => {
 
       for (const [path, filename] of [
         ["/", "default.html"],
+        ["/default", "default.html"],
+        ["/default.html", "default.html"],
+        ["/profiles", "profiles.html"],
+        ["/profiles.html", "profiles.html"],
         ["/about", "about.html"],
         ["/about.html", "about.html"],
       ]) {
@@ -294,7 +298,7 @@ test("fixture failure", () => {
         expect(await head.text()).toBe("");
       }
 
-      for (const path of ["/home", "/home.html", "/search", "/search.html"]) {
+      for (const path of ["/home", "/home.html"]) {
         for (const method of ["GET", "HEAD"]) {
           const response = await fetch(new URL(path, serverUrl), { method, redirect: "manual" });
           expect(response.status).toBe(302);
@@ -304,7 +308,7 @@ test("fixture failure", () => {
         }
       }
 
-      for (const path of ["/default.html", "/Default.html"]) {
+      for (const path of ["/search", "/search.html", "/Default.html"]) {
         expect((await fetch(new URL(path, serverUrl))).status).toBe(404);
       }
 
@@ -317,7 +321,7 @@ test("fixture failure", () => {
     }
   }, 15_000);
 
-  test.each(["Known", "Authenticated"])("protects pages for a %s user", async (state) => {
+  test.each(["Known", "Authenticated"])("routes pages for a %s user", async (state) => {
     const fixtureDirectory = createFixture();
     const authenticationPath = join(fixtureDirectory, "src/server/authentication.js");
     writeFileSync(authenticationPath, readFileSync(authenticationPath, "utf8").replace(
@@ -330,14 +334,30 @@ test("fixture failure", () => {
     const stderr = new Response(child.stderr).text();
     try {
       const serverUrl = await readServerUrl(child.stdout);
-      for (const path of ["/home", "/home.html", "/search", "/search.html"]) {
+      for (const path of ["/", "/default", "/default.html"]) {
+        for (const method of ["GET", "HEAD"]) {
+          const response = await fetch(new URL(path, serverUrl), { method, redirect: "manual" });
+          expect(response.headers.get("Cache-Control")).toBe("no-store");
+          if (state === "Authenticated") {
+            expect(response.status).toBe(302);
+            expect(response.headers.get("Location")).toBe("/profiles.html");
+            expect(await response.text()).toBe("");
+          } else {
+            expect(response.status).toBe(200);
+          }
+        }
+      }
+      for (const path of ["/profiles", "/profiles.html"]) {
+        expect((await fetch(new URL(path, serverUrl))).status).toBe(200);
+      }
+      for (const path of ["/home", "/home.html"]) {
         for (const method of ["GET", "HEAD"]) {
           const response = await fetch(new URL(path, serverUrl), { method, redirect: "manual" });
           expect(response.headers.get("Cache-Control")).toBe("no-store");
           if (state === "Authenticated") {
             expect(response.status).toBe(200);
             if (method === "GET") {
-              const filename = path.includes("home") ? "home.html" : "search.html";
+              const filename = "home.html";
               const html = await response.text();
               expect(html).toBe(readFileSync(join(fixtureDirectory, "dist", filename), "utf8"));
               for (const [, resource] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {

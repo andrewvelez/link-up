@@ -90,7 +90,7 @@ afterEach(() => {
 });
 
 describe("app initialization", () => {
-  test.each(["/", "/about.html", "/home.html", "/search.html"])("initialization preserves %s", async (path) => {
+  test.each(["/", "/about.html", "/home.html", "/profiles.html"])("initialization preserves %s", async (path) => {
     const context = await loadApp({ href: `https://example.test${path}` });
     expect(context.window.location.replace).not.toHaveBeenCalled();
   });

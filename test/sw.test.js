@@ -57,10 +57,11 @@ describe("service worker", () => {
     expect(strategy.options.plugins[0].options.fallbackURL).toBe("/");
     for (const [path, mode, expected] of [
       ["/", "navigate", true],
-      ["/default.html", "navigate", false],
+      ["/default", "navigate", true],
+      ["/default.html", "navigate", true],
       ["/about.html", "navigate", false],
       ["/home.html", "navigate", false],
-      ["/search.html", "navigate", false],
+      ["/profiles.html", "navigate", false],
       ["/", "cors", false],
     ]) {
       expect(matches({ request: { mode }, url: new URL(path, "https://example.test") })).toBe(expected);

@@ -7,7 +7,8 @@
 import about from "../../dist/about.html" with { type: "file" };
 import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
 import login from "../../dist/default.html" with { type: "file" };
-import search from "../../dist/search.html" with { type: "file" };
+import profiles from "../../dist/profiles.html" with { type: "file" };
+import profileViews from "../../dist/js/profiles.js" with { type: "file" };
 import home from "../../dist/home.html" with { type: "file" };
 import manifest from "../../dist/manifest.json" with { type: "file" };
 import serviceWorker from "../../dist/sw.js" with { type: "file" };
@@ -23,7 +24,7 @@ import icon512Named from "../../dist/icons/icon_512.png" with { type: "file" };
 import styles from "../../dist/styles/global.css" with { type: "file" };
 import bulmaStyles from "../../dist/external/bulma.min.css" with { type: "file" };
 
-import { requireAuthentication } from "./authentication.js";
+import { AuthenticationState, getAuthenticationState, requireAuthentication } from "./authentication.js";
 
 /**
  * @description Serves an embedded file for GET and HEAD requests.
@@ -39,12 +40,30 @@ function asset(path, requiresAuthentication = false) {
   return { GET: handler, HEAD: handler };
 }
 
+/**
+ * @description Serves login or redirects an authenticated user to profiles.
+ * @param {Request} request The incoming request.
+ * @returns {Promise<Response>} The login page or a redirect.
+ */
+async function loginPage(request) {
+  if (await getAuthenticationState(request) === AuthenticationState.Authenticated) {
+    return new Response(null, {
+      status: 302,
+      headers: { Location: "/profiles.html", "Cache-Control": "no-store" },
+    });
+  }
+  return new Response(Bun.file(login), { headers: { "Cache-Control": "no-store" } });
+}
+
 export const routes = {
-  "/": asset(login),
+  "/": { GET: loginPage, HEAD: loginPage },
+  "/default": { GET: loginPage, HEAD: loginPage },
+  "/default.html": { GET: loginPage, HEAD: loginPage },
   "/home": asset(home, true),
   "/home.html": asset(home, true),
-  "/search": asset(search, true),
-  "/search.html": asset(search, true),
+  "/profiles": asset(profiles),
+  "/profiles.html": asset(profiles),
+  "/js/profiles.js": asset(profileViews),
   "/about": asset(about),
   "/about.html": asset(about),
   "/js/appInit.js": asset(appInitialization),

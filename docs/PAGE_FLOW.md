@@ -1,25 +1,21 @@
 # App pages and user navigation page flow
 
-User states are Unknown, Known, and Authenticated. Until authentication is implemented, all users resolve to Unknown, regardless of cookies.
+Authenticated users are logged in with a known profile.  Unauthenticated users may be able to see who's online without logging in or having a profile, but they cannot message other users.
 
-## '/default.html' login page
+## Domain root start page - '/' or '/default'
 
-The '/default.html' page is the domain's default page. The PWA’s stable start URL is '/'. The default page '/default.html' is the same as '/'. This is the page the user is on when not logged into the app.  The default page contains the login form.  It may also link to the about page.
+The '/default.html' page is the domain's default page. The PWA’s stable start URL is '/'. The default page '/default.html' is the same as '/'. The default page contains the login form and also a button to go directly to the '/profiles.html' page.
 
-- Authenticated users redirect to '/home.html' from '/default.html'.
-- All other users remain on '/default.html'.
+- Authenticated users redirect to '/profiles.html' from '/default.html'.
+- Unauthenticated users start on '/default.html', but may click a link to go to '/profiles.html'.
 
-## '/home.html' logged-in landing page
-
-The '/home.html' page is the authenticated user's home page. Newly authenticated or already logged-in users can be redirected from the default page to the home page.  The home page will be everything an authenticated user's needs, includes links to various other pages like: change profile, men online, log out, etc.
-
-## '/about.html' is the app's instructional page
+## About Us page - '/about'
 
 The '/about.html' page can serve as the app's introductory instructional page.  It contains info about **Link-up**, about PWAs, and space permitting - device specific info.
 
-## '/search.html' is the app's profile search page
+## Profiles page - '/profiles'
 
-The '/search.html' page is the app's profile search page, which is also known as a roster of profiles, or currently online profiles.  This will likely be the most used page so its features are more dynamic.
+The page can toggle between a grid/list view of profiles or a map view of profiles.  Map view is becoming increasingly popular so this may be the default.  Particular care must be made not to show specific location while still giving the appearance of showing location.  The profiles page only shows profiles that were given permission to be shown to unauthenticated users.
 
 ## Example page navigation flows
 

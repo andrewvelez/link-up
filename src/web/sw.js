@@ -9,7 +9,7 @@ import { registerRoute } from "workbox-routing";
 import { NetworkOnly } from "workbox-strategies";
 
 registerRoute(
-  ({ request, url }) => request.mode === "navigate" && url.pathname === "/",
+  ({ request, url }) => request.mode === "navigate" && ["/", "/default", "/default.html"].includes(url.pathname),
   new NetworkOnly({
     plugins: [new PrecacheFallbackPlugin({ fallbackURL: "/" })],
   }),

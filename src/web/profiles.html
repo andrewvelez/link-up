@@ -1,0 +1,51 @@
+<!--
+  @author Andrew Velez
+  @license MIT
+-->
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <title>Profiles</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#181818">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" href="./icons/icon_24.png" type="image/png">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./external/bulma.min.css">
+    <link rel="stylesheet" href="./styles/global.css">
+    <script src="./external/htmx.min.js"></script>
+    <script type="module" src="./js/appInit.js"></script>
+    <script type="module" src="./js/profiles.js"></script>
+  </head>
+
+  <body>
+    <main id="app" class="container section" tabindex="-1">
+      <h1 class="title is-2">Profiles</h1>
+      <p class="mb-5">Browse profiles shared for public viewing. Locations are approximate.</p>
+      <div class="field">
+        <label class="label" for="profile-view">View profiles</label>
+        <div class="control">
+          <div class="select">
+            <select id="profile-view" aria-controls="profiles-grid profiles-list profiles-map">
+              <option value="map" selected>Map</option>
+              <option value="grid">Grid</option>
+              <option value="list">List</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="my-5" id="profiles-map" data-profile-view="map" role="region" aria-label="Map view">
+        <p>No public profiles are available to show on the map yet.</p>
+      </div>
+      <div class="my-5" id="profiles-grid" data-profile-view="grid" role="region" aria-label="Grid view" hidden>
+        <p>No public profiles are available to show in the grid yet.</p>
+      </div>
+      <div class="my-5" id="profiles-list" data-profile-view="list" role="region" aria-label="List view" hidden>
+        <p>No public profiles are available to show in the list yet.</p>
+      </div>
+      <a class="is-underlined" href="/">Log in</a>
+      <a class="is-underlined ml-4" href="./about.html">About Link-up</a>
+    </main>
+  </body>
+</html>
