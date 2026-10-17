@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="./styles/global.css">
     <script src="./external/htmx.min.js"></script>
     <script type="module" src="./js/appInit.js"></script>
+    <script type="module" src="./js/clerk.js"></script>
   </head>
 
   <body>
@@ -28,7 +29,7 @@
         </ul>
       </nav>
       <button class="button is-primary is-outlined" type="button" disabled>Change profile</button>
-      <button class="button" type="button" disabled>Log out</button>
+      <div id="clerk-account" class="my-4"></div>
       <button id="share-button" class="button is-primary" type="button" hidden>Share Link-up</button>
     </main>
   </body>

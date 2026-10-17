@@ -4,6 +4,7 @@
  * @description Defines routes for the PWA files embedded in the executable.
  */
 
+import clerk from "../../dist/js/clerk.js" with { type: "file" };
 import about from "../../dist/about.html" with { type: "file" };
 import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
 import login from "../../dist/default.html" with { type: "file" };
@@ -67,6 +68,12 @@ export const routes = {
   "/about": asset(about),
   "/about.html": asset(about),
   "/js/appInit.js": asset(appInitialization),
+  "/js/clerk.js": asset(clerk),
+  "/auth/config": {
+    GET: () => Response.json({ publishableKey: process.env.CLERK_PUBLISHABLE_KEY || "" }, {
+      headers: { "Cache-Control": "no-store" },
+    }),
+  },
   "/manifest.json": asset(manifest),
   "/icons/192x192.png": asset(icon192),
   "/icons/24x24.png": asset(icon24),

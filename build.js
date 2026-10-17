@@ -88,6 +88,15 @@ const build = async () => {
 
   rmSync("./dist", { recursive: true, force: true });
   cpSync("./src/web", "./dist", { recursive: true });
+  const authentication = await Bun.build({
+    entrypoints: ["./src/web/js/clerk.js"],
+    outdir: "./dist/js",
+    target: "browser",
+    minify: true,
+  });
+  if (!authentication.success) {
+    throw new Error(authentication.logs.join("\n") || "Authentication build failed.");
+  }
   await bundleServiceWorker();
   await bundleManifest();
   await bundle();

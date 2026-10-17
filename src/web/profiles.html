@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="./styles/global.css">
     <script src="./external/htmx.min.js"></script>
     <script type="module" src="./js/appInit.js"></script>
+    <script type="module" src="./js/clerk.js"></script>
     <script type="module" src="./js/profiles.js"></script>
   </head>
 
@@ -44,7 +45,7 @@
       <div class="my-5" id="profiles-list" data-profile-view="list" role="region" aria-label="List view" hidden>
         <p>No public profiles are available to show in the list yet.</p>
       </div>
-      <a class="is-underlined" href="/">Log in</a>
+      <div id="clerk-account" class="mb-4"><a class="is-underlined" href="/">Log in / Sign up</a></div>
       <a class="is-underlined ml-4" href="./about.html">About Link-up</a>
     </main>
   </body>

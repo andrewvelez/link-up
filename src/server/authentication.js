@@ -4,12 +4,14 @@
  * @description Defines the server authentication API.
  */
 
+import { createClerkClient } from "@clerk/backend";
+
 /** @typedef {"unknown" | "known" | "authenticated"} AuthenticationStateValue */
 
 /**
- * Proposed authentication states. Cookie presence alone does not authorize a user.
- * Unknown has no authentication cookie; Known has a cookie without authorization;
- * Authenticated has a cookie and online authorization.
+ * Authentication states. Credential presence alone does not authorize a user.
+ * Unknown has no credentials; Known has credentials without authorization;
+ * Authenticated has a verified token and online authorization.
  * @type {{ Unknown: AuthenticationStateValue, Known: AuthenticationStateValue, Authenticated: AuthenticationStateValue }}
  */
 export const AuthenticationState = Object.freeze({
@@ -19,12 +21,35 @@ export const AuthenticationState = Object.freeze({
 });
 
 /**
- * @description Returns Unknown until authentication is implemented.
+ * @description Verifies the request token and confirms its session is active online.
  * @param {Request} request The incoming request used to resolve authentication.
  * @returns {Promise<AuthenticationStateValue>} The current authentication state.
  */
 export async function getAuthenticationState(request) {
-  return AuthenticationState.Unknown;
+  if (!request.headers.get("cookie")?.includes("__session") && !request.headers.has("authorization")) {
+    return AuthenticationState.Unknown;
+  }
+  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERK_PUBLISHABLE_KEY) {
+    return AuthenticationState.Known;
+  }
+  try {
+    const clerk = createClerkClient({
+      secretKey: process.env.CLERK_SECRET_KEY,
+      publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+    });
+    const authentication = await clerk.authenticateRequest(request, {
+      authorizedParties: [new URL(request.url).origin],
+    });
+    if (authentication.isAuthenticated) {
+      const session = await clerk.sessions.getSession(authentication.toAuth().sessionId);
+      if (session.status === "active") {
+        return AuthenticationState.Authenticated;
+      }
+    }
+  } catch {
+    // An unverifiable token or unavailable Clerk service cannot authorize the request.
+  }
+  return AuthenticationState.Known;
 }
 
 /**
