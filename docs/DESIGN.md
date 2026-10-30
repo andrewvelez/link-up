@@ -2,7 +2,9 @@
 
 ## Architecture
 
-Keep it simple.  Don't repeat yourself.
+Link-up is first and foremost, a free messenger.  Communication between people should be free [https://reticulum.network/zenofreticulum.html].  Private data remains private unless given express permission.  No data is sold or used otherwise.  Link-up is an app helping people to connect for dating with a focus on gay men looking for gay men.  Eventually, it may be an umbrella app for a series of web properties each with their own branding.
+
+Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source.
 
 Link-up is a local-first, mobile-first Progressive Web App (PWA). Its user interface is framework-free vanilla JavaScript, HTML, CSS, and standard browser and PWA APIs. The browser is the PWA runtime; Bun installs dependencies, runs project tasks, stages browser assets, and compiles the application host. The working-prototype design favors peer-to-peer exchange wherever practical while preserving the hard local-first authority boundary described below.
 

@@ -1,0 +1,11 @@
+:root {
+  --background: #111214;
+  --surface: #17191D;
+  --accent: #F34B3D;
+  --text: #F4F3F2;
+  --muted: #A2A3AB;
+  --button-radius: 0;
+  --panel-radius: 12px;
+  --accent-surface: #30201F;
+  --line: #2D2E33;
+}

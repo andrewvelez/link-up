@@ -1,0 +1,11 @@
+:root {
+  --background: #111214;
+  --surface: #17191D;
+  --accent: #F34B3D;
+  --text: #F4F3F2;
+  --muted: #A2A3AB;
+  --control-radius: 0;
+  --control-border: 1px solid var(--accent);
+  --control-fill: transparent;
+  --line: #2D2E33;
+}
