@@ -26,6 +26,9 @@ remain open choices.
 
 ## Version 1 epics
 
+E14 and E15 begin alongside the features they govern; their positions below mark
+final integration and verification.
+
 ### E01 — Define identity, data ownership, and sharing contracts
 
 As a user, I want clear control over my identity and shared information so that
@@ -35,8 +38,9 @@ using discovery and messaging preserves my data ownership.
   and minimal geographic discovery records.
 - Decide how accounts relate to peer identities, encryption keys, and messaging
   identities; resolve authenticated access versus the public Profiles page.
-- Define sharing permissions, location precision, retention, withdrawal, deletion,
-  and offline access rules. Retained recipient copies cannot be guaranteed erased.
+- Define sharing permissions, blocking, location precision, retention, withdrawal,
+  deletion, and connectivity rules consistent with DESIGN.md. Retained recipient
+  copies cannot be guaranteed erased.
 
 Complete when these contracts are documented and usable by the storage, network,
 search, and messaging implementations.
@@ -68,6 +72,8 @@ dataset or surrendering local authority.
   owner-only detailed-profile retrieval using the proposed distribution model.
 - Resolve direct versus relay-only privacy, initial network entry, server backup,
   signaling, relay availability, and a launch infrastructure plan targeting $0.
+- Validate two-user Converse/XMPP integration, including identity mapping, encryption,
+  persistence, infrastructure costs, and whether messaging requires the peer layer.
 
 Complete when an integration prototype demonstrates the chosen responsibilities,
 privacy boundary, and operating assumptions. Depends on E01 and E02.
@@ -132,7 +138,25 @@ services.
 Complete when downloaded reference data supports locality resolution offline
 and can be refreshed without disturbing user data. Depends on E04 and E06.
 
-### E08 — Establish secure browser network connections
+### E08 — Implement local geographic and profile search
+
+As a user, I want nearby, relevant profiles to appear quickly and remain
+searchable while regional updates arrive.
+
+- Validate local search against representative datasets before integrating
+  distributed indexes in E11.
+- Implement text and profile filters, geographic radius filtering, nearest-first
+  ordering, and deterministic ordering for equal-distance profiles.
+- Implement density-adaptive discovery, neighboring-region expansion, and
+  deduplication while respecting disclosed location precision.
+- Search available local data immediately; incorporate incoming updates without
+  blocking queries and indicate incomplete or stale coverage.
+
+Complete when search meets the agreed phone resource budgets and behaves correctly
+across dense, rural, boundary, and disconnected scenarios.
+Depends on E02, E05, E06, and E07; integrates with E11.
+
+### E09 — Establish secure browser network connections
 
 As a user, I want the app to find and connect to relevant peers automatically.
 
@@ -146,7 +170,7 @@ As a user, I want the app to find and connect to relevant peers automatically.
 Complete when browser peers connect and reconnect across representative networks,
 including the required relay paths. Depends on E03 and E04.
 
-### E09 — Replicate regional discovery and profile summaries
+### E10 — Replicate regional discovery and profile summaries
 
 As a user, I want nearby profiles to become available locally as I move.
 
@@ -158,9 +182,9 @@ As a user, I want nearby profiles to become available locally as I move.
   deletion propagation, and the agreed server-backup behavior.
 
 Complete when peers converge after disconnection and movement without replicating
-owner-only details or requiring a global dataset. Depends on E05, E06, and E08.
+owner-only details or requiring a global dataset. Depends on E05, E06, and E09.
 
-### E10 — Build and distribute shared regional search indexes
+### E11 — Build and distribute shared regional search indexes
 
 As a user, I want ready-to-search regional data with minimal indexing work on
 my device.
@@ -173,23 +197,7 @@ my device.
   or incompatible artifacts while retaining a usable local index.
 
 Complete when phones can obtain and update regional indexes and builder failure
-does not require unnecessary reconstruction. Depends on E02 and E09.
-
-### E11 — Implement local geographic and profile search
-
-As a user, I want nearby, relevant profiles to appear quickly and remain
-searchable while regional updates arrive.
-
-- Implement text and profile filters, geographic radius filtering, nearest-first
-  ordering, and deterministic ordering for equal-distance profiles.
-- Implement density-adaptive discovery, neighboring-region expansion, and
-  deduplication while respecting disclosed location precision.
-- Search available local data immediately; incorporate incoming updates without
-  blocking queries and indicate incomplete or stale coverage.
-
-Complete when search meets the agreed phone resource budgets and behaves correctly
-across dense, rural, boundary, and disconnected scenarios.
-Depends on E02, E05, E06, and E07; integrates with E10.
+does not require unnecessary reconstruction. Depends on E02 and E10.
 
 ### E12 — Complete discovery and shared-profile workflows
 
@@ -204,7 +212,7 @@ As a user, I want to browse search results and open profiles shared with me.
   before committing a map implementation.
 
 Complete when a user can discover another user and view the permitted profile
-through the application. Depends on E09, E10, and E11.
+through the application. Depends on E08, E10, and E11.
 
 ### E13 — Implement rudimentary private messaging
 
@@ -220,9 +228,9 @@ locally.
 
 Complete when two users can exchange encrypted private messages and recover
 consistent local histories after disconnects. Read receipts and typing indicators
-remain excluded. Depends on E01, E04, and E08.
+remain excluded. Depends on E01, E03, and E04.
 
-### E14 — Implement blocking, reporting, and abuse controls
+### E14 — Complete blocking, reporting, and abuse controls
 
 As a user, I want control over unwanted interactions and a way to report abuse.
 
@@ -234,23 +242,23 @@ As a user, I want control over unwanted interactions and a way to report abuse.
   connections, builders, and messaging.
 
 Complete when controls work across relevant interactions and unauthorized or
-malformed network input cannot bypass them. Develop alongside E05 and E08–E13.
+malformed network input cannot bypass them. Develop alongside E01, E05, and E08–E13.
 
-### E15 — Complete offline application behavior
+### E15 — Complete connectivity and recovery behavior
 
-As a returning user, I want access to my permitted local features and data when
-remote services are unavailable.
+As a returning user, I want clear connectivity states and reliable recovery
+so that interruptions and application updates preserve my local data.
 
-- Resolve the current server authentication and uncached Home boundary against
-  the requirement for a usable cached local application.
-- Integrate offline startup, local data access, cached discovery, profile editing,
-  and message queuing according to the agreed account and key-access policy.
+- Integrate cached application startup with authentication and key access while
+  enforcing the network-required interaction policy in DESIGN.md.
+- Preserve page state during brief interruptions; block interaction with the
+  offline overlay after sustained loss and resume automatically on reconnection.
 - Implement safe application updates and storage migrations, reconnection
   reconciliation, and clear offline or unavailable states.
 
-Complete when a previously initialized installation supports the agreed local
-workflows offline and reconnects without losing authoritative data.
-Depends on E04, E05, E11, and E13.
+Complete when cached startup respects access policy and interruptions and updates
+preserve authoritative data. Develop alongside E04–E13.
+Depends on E04, E05, E08, and E13.
 
 ### E16 — Validate and prepare the Version 1 release
 
@@ -268,19 +276,11 @@ and privacy.
 Complete when E01–E15 meet their acceptance criteria and the tested release
 artifact and operating procedures are ready for deployment.
 
-## Deferred work
+## Unresolved issues
 
-These capabilities require separate scope and acceptance decisions before becoming
-scheduled implementation epics:
-
-- Remote-region browsing and travel mode.
-- Advanced message delivery, background notifications, attachments, and structured
-  sharing.
-- Groups, events, and group messaging.
-- Regional public posts.
-- Shared place listings, check-ins, and activity counts.
-- Live audio and video.
-- Device linking and identity recovery.
-- Limited advertising delivery and measurement.
-
-Anonymous or guest entry, read receipts, and typing indicators remain excluded.
+Operating costs and device resource requirements cannot yet be assessed reliably
+because too many implementation details remain unknown. A working prototype is
+needed to evaluate regional index loading and updates on phones, along with the
+infrastructure needed for builders, backups, relays, and central distribution.
+Further decisions on these concerns are deferred until prototype results provide
+evidence. The $0 launch operating-cost target remains the goal.

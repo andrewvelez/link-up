@@ -32,7 +32,9 @@ The peer transport has not yet been selected. If direct peer connections are use
 
 Link-up runs within the browser security model. Its UI, essential application logic, and authoritative user data remain local. Browser and installed-PWA capabilities use standard Web APIs and must account for platform support.
 
-The completed PWA is intended to provide its local interface without depending on a remote application service. Local application data will be stored in IndexedDB through [Dexie](https://dexie.org/). The schema, data lifecycle, and user-controlled export path have not yet been decided.
+The application requires network access for all functionality. Local-first refers to local data authority and execution. Local application data will be stored in IndexedDB through [Dexie](https://dexie.org/). The schema, data lifecycle, and user-controlled export path have not yet been decided.
+
+After sustained loss of network connectivity, a shaded overlay covers the current page, blocks interaction, and states “The app is offline.” The underlying page remains in place. The overlay disappears automatically when connectivity resumes. Brief interruptions, such as a ten-second drop, do not trigger it.
 
 ### Application Initialization
 

@@ -39,6 +39,10 @@ If the engine retains the documents as well as the index, and can retrieve them,
 
 For the gay dating app, a document could contain a profile’s fields and values. Media would be stored separately, with references in the profile. Nodes would receive only profiles they were authorized to read and decrypt them locally for searching. The engine would not need to search data that remained encrypted and unreadable to it. An index can reveal information about the profiles it describes, so access permissions also apply to indexes shared with other nodes. Revoking access cannot guarantee removal of data already decrypted by a recipient.
 
+The shared search index contains only the limited profile properties needed to display a search-results grid. Profiles are not searchable by default. A user must explicitly mark their profile as searchable, granting anyone searching permission to view those result properties as public display data. This permission does not extend to detailed profile data.
+
+Blocked profiles are filtered from displayed results by the searching user's client. Blocking therefore controls display rather than access to the distributed search summary, allowing regional indexes to be shared without recipient-specific versions.
+
 ## Adding geographic search to the library requirements
 
 The main query would be distance from the viewer’s geocell center to each profile’s geocell center. Profiles in the same cell would tie and need a secondary ordering rule. A text index alone would not provide the required nearest-profile search.
