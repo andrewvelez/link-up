@@ -46,7 +46,7 @@ During installation, Workbox downloads new or changed resources and reuses uncha
 
 The `version` property in `package.json` is the authoritative semantic application version. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.js` and uses the service-worker update lifecycle to install and activate changed builds.
 
-The manifest has one stable start URL, `/`, which directly serves the login file `default.html`. The filename is not exposed as a page URL. Home and Search use shared `requireAuthentication` handling in `src/server/authentication.js`: unauthorized requests redirect to `/`, and protected responses are not cached. Authentication is not implemented, so every user currently resolves to Unknown regardless of cookies. The authenticated startup redirect described in `PAGE_FLOW.md` is deferred until authentication is implemented.
+The manifest has one stable start URL, `/`, which directly serves the login file `default.html`. The filename is not exposed as a page URL. Home and Search use shared `requireAuthentication` handling in `src/server/authentication.js`: unauthorized requests redirect to `/`, and protected responses are not cached. Authentication is not implemented, so every user currently resolves to Unknown regardless of cookies. The authenticated startup redirect described in `archived/PAGE_FLOW.md` is deferred until authentication is implemented.
 
 The service worker sends startup navigation to the server and serves cached `/` if the network request fails. The build maps the login file's precache URL to `/` and excludes Home and Search from precaching, so their requests must reach the server's authentication check. About remains publicly accessible and precached.
 
@@ -86,8 +86,9 @@ Bare `bun test` runs the test suite without the build step provided by `bun run 
 ├── jsconfig.json
 ├── package.json
 ├── docs/
-│   ├── DESIGN.md
-│   └── locality-diagram.png
+│   ├── design.md
+│   └── archived/
+│       └── locality-diagram.png
 ├── src/
 │   ├── web/
 │   │   ├── about.html
@@ -180,7 +181,7 @@ Changing a user's location updates that record; it does not rebuild the geograph
 
 Locality labels use a separate, cached path. If an H3-cell-to-locality mapping is already cached, the app returns it. Otherwise, the app resolves the cell against local Census data, caches the mapping, and returns the resulting label. The user's search origin may change more frequently than a locality label, so a city or census-designated-place label is recomputed only after the user enters a different relevant geographic area.
 
-![Locality search and label-resolution flow](locality-diagram.png)
+![Locality search and label-resolution flow](archived/locality-diagram.png)
 
 A durable locality-data pipeline:
 

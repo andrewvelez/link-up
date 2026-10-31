@@ -2,12 +2,17 @@
 
 ## Required Directives
 
+- If the prompt is ambiguous, ask clarifying questions before responding.
 - Always get approval for and show changes before applying changes.
 - Diffs should be as small as possible to satisfy the prompt.
-- Fewer lines of code changed is the preference.
-- You should be prepared to justify every line you change in the strictest sense possible.
-- You have full responsibility and accountability for the code you change.  If you broke it, you fix it.
-- Do not reiterate the directives to me as I know them already.
+- You should be prepared to justify every line you change.
+- Write code that is easy to read and maintain.
+
+## Documentation
+
+The docs folder has some artifacts that are historically left over.  These docs are more recent and authoritative.
+
+design.md, locality-design.md, network-search-decisions.md, regional-search-recap.md
 
 ## Commands
 

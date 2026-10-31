@@ -1,6 +1,6 @@
 # Network Requirements
 
-This document summarizes the network requirements discussed for Link-up. It records accepted decisions, deferred features, and unresolved choices; it does not describe completed implementation. Related architecture is documented in [DESIGN.md](DESIGN.md).
+This document summarizes the network requirements discussed for Link-up. It records accepted decisions, deferred features, and unresolved choices; it does not describe completed implementation. Related architecture is documented in [design.md](../design.md).
 
 ## Product and Operating Constraints
 
@@ -44,7 +44,7 @@ Advanced delivery behavior, background notifications, media transfer, and struct
 
 Eventual consistency does not yet specify whether messages remain queued on the sender's device or whether another node or server retains encrypted copies for later delivery. That delivery model remains unresolved.
 
-DESIGN.md currently selects Converse/XMPP and local message history. This discussion has not replaced that selection. Its infrastructure, encryption, and integration with the P2P system remain unresolved. The existing requirement to keep user-owned data encrypted remains applicable.
+design.md currently selects Converse/XMPP and local message history. This discussion has not replaced that selection. Its infrastructure, encryption, and integration with the P2P system remain unresolved. The existing requirement to keep user-owned data encrypted remains applicable.
 
 ## Supporting Network Capabilities
 

@@ -40,7 +40,7 @@ full-stack executable build pipeline. Build output is generated in `dist/`.
 The service worker uses bundled Workbox precaching with content revisions to
 make application resources available offline after installation completes.
 Precached resources are served cache-first, with a network fallback if a cache
-entry is missing. See [Service-Worker Cache Design](docs/DESIGN.md#service-worker-cache-design).
+entry is missing. See [Service-Worker Cache Design](docs/design.md#service-worker-cache-design).
 
 Product workflows, local persistence, peer networking, encryption,
 notifications, and offline delivery remain unimplemented.
