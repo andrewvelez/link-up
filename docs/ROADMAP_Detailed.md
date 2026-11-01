@@ -15,14 +15,14 @@ Sources:
 ## Current baseline
 
 Source inspection shows an existing PWA shell, Workbox precaching, Bun executable
-build, Clerk authentication integration, and placeholder profile views. Dexie
-and H3 are installed dependencies; application persistence, encrypted user data,
+build, Clerk authentication integration, and placeholder profile views. H3
+is an installed dependency; application persistence, encrypted user data,
 geographic discovery, peer networking, search, and messaging remain to be implemented.
 
 Some overview descriptions lag behind the source: authentication exists, and
 Profiles is publicly accessible. Resolve access policy before exposing real data.
 
-Dexie, H3, and Converse/XMPP are established directions. Orama is preferred but
+granthdb, H3, and Converse/XMPP are established directions. Orama is preferred but
 awaits validation. Peer transport, replication, and shared-index mechanisms
 remain open choices.
 
@@ -74,7 +74,7 @@ under my control.
 As a user, I want my data kept separate from other accounts on this device.
 
 - **Accept:** Create reusable profile and locality models in a versioned,
-  account-scoped Dexie store. Map Clerk identities to stable local accounts.
+  account-scoped granthdb store. Map Clerk identities to stable local accounts.
   Keep geographic concepts distinct and private owner data separate from
   supporting discovery data. Verify isolation with non-sensitive fixtures;
   real owner data awaits E1-S2.
@@ -633,7 +633,7 @@ As a user, I want to know where undelivered messages and conversation copies rem
 
 - **Accept:** Decide whether delivery requires permitted intermediary storage.
   Implement the resulting retention policy and coordinate Converse persistence
-  with Dexie while preserving local authority.
+  with granthdb while preserving local authority.
 - **Requires:** E10-S2.
 - **Human coding time:** 12–28 hours.
 - **Human coding with AI:** 8–20 hours.

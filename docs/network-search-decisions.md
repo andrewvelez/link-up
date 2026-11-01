@@ -8,7 +8,7 @@ This document consolidates [Network Requirements.md](archived/Network%20Requirem
 
 Link-up is intended to compete with Sniffies across its functionality over time. Version 1 focuses on geographic discovery, searchable profile information, and rudimentary messaging.
 
-The application is a browser-only, local-first PWA intended to run from cached assets. Essential application logic and authoritative user data remain on the user's device. design.md selects Dexie over IndexedDB for local application storage.
+The application is a browser-only, local-first PWA intended to run from cached assets. Essential application logic and authoritative user data remain on the user's device. design.md selects granthdb with SQLite/WASM, OPFS persistence, and an IndexedDB fallback for local application storage.
 
 Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source, but ad delivery is deferred.
 
@@ -102,7 +102,7 @@ Iroh's current browser implementation relays all connections, increasing depende
 | Candidate | Documented strengths | Remaining questions for Link-up |
 | --- | --- | --- |
 | Peerbit | Built on libp2p; browser WebRTC; searchable distributed documents; sharding and configurable replication ranges | Mapping replication to geographic scope, browser resource use, and whether it can distribute Orama artifacts without redundant indexing |
-| RxDB | Browser-local structured queries; free Dexie storage adapter; WebRTC replication and backend synchronization | Geographic document scoping through the P2P plugin, paid-feature dependencies, and duplication of Orama's search responsibilities |
+| RxDB | Browser-local structured queries; WebRTC replication and backend synchronization | Geographic document scoping through the P2P plugin, paid-feature dependencies, and duplication of Orama's search responsibilities |
 | OrbitDB | Browser/Node support; eventual consistency; libp2p synchronization through Helia/IPFS | Geographic partitioning and efficient search need additional design; basic document queries iterate records |
 
 Peerbit is the first replication candidate to investigate, with RxDB as a comparison and OrbitDB as another option. Restoring Orama to the architecture reduces the importance of their built-in search features.
@@ -111,7 +111,7 @@ Peerbit's query authorization does not by itself establish confidentiality again
 
 RxDB's geographic partial-sync documentation primarily describes scoped server replication. Equivalent document-level geographic scoping through its standard WebRTC plugin has not been verified. A shared topic selects peers, not necessarily a subset of their documents.
 
-RxDB currently lists a free limit of 13 open collections, with full-text search and WebCrypto encryption among paid features. Its free structured querying and Dexie adapter remain relevant, but regional partitioning must account for the collection limit.
+RxDB currently lists a free limit of 13 open collections, with full-text search and WebCrypto encryption among paid features. Its free structured querying remains relevant, but regional partitioning must account for the collection limit.
 
 A persistent server peer is a possible way to retain replicated data. Backup coverage, recovery, retention, and operational cost remain application decisions.
 

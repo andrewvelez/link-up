@@ -32,7 +32,7 @@ The peer transport has not yet been selected. If direct peer connections are use
 
 Link-up runs within the browser security model. Its UI, essential application logic, and authoritative user data remain local. Browser and installed-PWA capabilities use standard Web APIs and must account for platform support.
 
-The application requires network access for all functionality. Local-first refers to local data authority and execution. Local application data will be stored in IndexedDB through [Dexie](https://dexie.org/). The schema, data lifecycle, and user-controlled export path have not yet been decided.
+The application requires network access for all functionality. Local-first refers to local data authority and execution. Local application data will be stored through [granthdb](https://granthlabs.github.io/), using SQLite/WASM with OPFS persistence and an IndexedDB fallback. The schema, data lifecycle, and user-controlled export path have not yet been decided.
 
 After sustained loss of network connectivity, a shaded overlay covers the current page, blocks interaction, and states “The app is offline.” The underlying page remains in place. The overlay disappears automatically when connectivity resumes. Brief interruptions, such as a ten-second drop, do not trigger it.
 
@@ -130,12 +130,12 @@ Application data that is not user-owned is also stored locally first. It may be 
 The local application boundary is distinct from the external peer boundary:
 
 ```text
-Link-up PWA ↔ Dexie ↔ IndexedDB on-device storage
+Link-up PWA ↔ granthdb ↔ SQLite/WASM ↔ OPFS (IndexedDB fallback)
 
 Link-up peer ↔ untrusted network and signalling/relay infrastructure ↔ Link-up peer
 ```
 
-Dexie is the selected wrapper for IndexedDB. The integration between local application storage and Converse's message persistence remains an open decision.
+granthdb is the selected local database. The integration between local application storage and Converse's message persistence remains an open decision.
 
 ## Product Features
 
@@ -230,7 +230,7 @@ The resulting locality architecture is unmetered: coordinates originate on the u
 
 ### Profiles
 
-Users can create and update a Link-up profile. A user's own profile is stored locally on the device by the Link-up PWA using Dexie over IndexedDB.
+Users can create and update a Link-up profile. A user's own profile is stored locally on the device by the Link-up PWA using granthdb with SQLite/WASM, OPFS persistence, and an IndexedDB fallback.
 
 Users can share their profiles with other Link-up users and view profiles that other users share with them. The information included in a profile has not yet been decided.
 

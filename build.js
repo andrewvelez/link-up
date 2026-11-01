@@ -5,7 +5,7 @@
  * @description Builds and serves Link-up's browser PWA assets with Bun.
  */
 
-import { cpSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, rmSync } from "node:fs";
 import { injectManifest } from "workbox-build";
 
 /**
@@ -84,7 +84,7 @@ async function bundle() {
  * @returns {Promise} Resolves after all build steps succeed.
  * @throws {Error} If any build step fails.
  */
-const build = async () => {
+async function build() {
 
   rmSync("./dist", { recursive: true, force: true });
   cpSync("./src/web", "./dist", { recursive: true });
@@ -109,7 +109,7 @@ const build = async () => {
  * @returns {Promise} Resolves after the test process exits.
  * @throws {Error} If the build fails or the test process cannot be started.
  */
-const test = async () => {
+async function test() {
 
   await build();
 
@@ -128,7 +128,7 @@ const test = async () => {
  * @returns {Promise} Resolves after the server module loads.
  * @throws {Error} If the build or server-module import fails.
  */
-const start = async () => {
+async function start() {
 
   await build();
   await import("./src/server/server.js");
