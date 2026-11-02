@@ -62,6 +62,9 @@ async function bundleManifest() {
  */
 async function bundle() {
 
+  await bundleServiceWorker();
+  await bundleManifest();
+
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({
     entrypoints: ["./src/server/server.js"],
@@ -79,28 +82,38 @@ async function bundle() {
 }
 
 /**
+ * @description Copies directories for the build.
+ */
+function copyBuildFiles() {
+  rmSync("./dist", { recursive: true, force: true });
+  cpSync("./src/web", "./dist", { recursive: true });
+
+  mkdirSync("./dist/external", { recursive: true });
+  cpSync("./node_modules/htmx.org/dist/htmx.min.js", "./dist/external/htmx.min.js");
+  cpSync("./node_modules/milligram/dist/milligram.min.css", "./dist/external/milligram.min.css");
+
+}
+
+/**
+ * @description Removes generated build output.
+ * @returns {void}
+ */
+function clean() {
+
+  rmSync("./dist", { recursive: true, force: true });
+
+}
+
+/**
  * @type {Function}
  * @description Creates a clean production build of the complete application.
  * @returns {Promise} Resolves after all build steps succeed.
  * @throws {Error} If any build step fails.
  */
 async function build() {
-
-  rmSync("./dist", { recursive: true, force: true });
-  cpSync("./src/web", "./dist", { recursive: true });
-  const authentication = await Bun.build({
-    entrypoints: ["./src/web/js/clerk.js"],
-    outdir: "./dist/js",
-    target: "browser",
-    minify: true,
-  });
-  if (!authentication.success) {
-    throw new Error(authentication.logs.join("\n") || "Authentication build failed.");
-  }
-  await bundleServiceWorker();
-  await bundleManifest();
+  clean();
+  copyBuildFiles();
   await bundle();
-
 };
 
 /**
@@ -110,7 +123,6 @@ async function build() {
  * @throws {Error} If the build fails or the test process cannot be started.
  */
 async function test() {
-
   await build();
 
   /** @type {Object} Spawned test process with an exited promise. */
@@ -119,7 +131,6 @@ async function test() {
     stderr: "inherit",
   });
   process.exitCode = await testRunner.exited;
-
 };
 
 /**
@@ -129,25 +140,29 @@ async function test() {
  * @throws {Error} If the build or server-module import fails.
  */
 async function start() {
-
   await build();
   await import("./src/server/server.js");
-
 };
 
-// #region build script
-if (!import.meta.main) {
+/**
+ * @description entrypoint to module
+ */
+async function main() {
+  process.chdir(import.meta.dir);
+
+  const buildCommands = [build, test, start];
+  const argvCommand = process.argv[2];
+  const cmdFunc = buildCommands.find(cmdFunc => cmdFunc.name === argvCommand);
+
+  if (cmdFunc) {
+    await cmdFunc();
+  } else {
+    throw new Error(`Usage: bun run <${buildCommands.map(cmd => cmd.name).join("|")}>`);
+  }
+}
+
+if (import.meta.main) {
+  await main();
+} else {
   throw new Error("build.js must be run directly, not imported.");
 }
-process.chdir(import.meta.dir);
-
-const buildCommands = [build, test, start];
-const argvCommand = process.argv[2];
-const cmdFunc = buildCommands.find(cmdFunc => cmdFunc.name === argvCommand);
-
-if (cmdFunc) {
-  await cmdFunc();
-} else {
-  throw new Error(`Usage: bun run <${buildCommands.map(cmd => cmd.name).join("|")}>`);
-}
-// #endregion

@@ -7,6 +7,8 @@
 - Diffs should be as small as possible to satisfy the prompt.
 - You should be prepared to justify every line you change.
 - Write code that is easy to read and maintain.
+- All src code, test code, jsdoc annotations and examples in docs should be in JavaScript with no references to TypeScript types.
+- Prefer synchronous code over asynchronous code.
 
 ## Two Kinds of Prompt/Response
 

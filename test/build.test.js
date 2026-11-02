@@ -136,7 +136,7 @@ describe("build", () => {
       "about.html",
       "manifest.json",
       "styles/global.css",
-      "external/bulma.min.css",
+      "external/milligram.min.css",
       "external/htmx.min.js",
       "sw.js",
       "link-up",
@@ -166,7 +166,7 @@ describe("build", () => {
     expect(serviceWorker).toMatch(/"revision":"[a-f0-9]{32}","url":"profiles\.html"/);
     expect(serviceWorker).not.toContain('"url":"default.html"');
     expect(existsSync(join(outputDirectory, "Default.html"))).toBe(false);
-    expect(existsSync(join(outputDirectory, "js/authentication.js"))).toBe(false);
+    expect(existsSync(join(outputDirectory, "js/clerk.js"))).toBe(false);
     expect(existsSync(join(outputDirectory, "sw.bundle.js"))).toBe(false);
   });
 
@@ -277,6 +277,8 @@ test("fixture failure", () => {
         ["/", "default.html"],
         ["/default", "default.html"],
         ["/default.html", "default.html"],
+        ["/home", "home.html"],
+        ["/home.html", "home.html"],
         ["/profiles", "profiles.html"],
         ["/profiles.html", "profiles.html"],
         ["/about", "about.html"],
@@ -298,80 +300,8 @@ test("fixture failure", () => {
         expect(await head.text()).toBe("");
       }
 
-      for (const path of ["/home", "/home.html"]) {
-        for (const method of ["GET", "HEAD"]) {
-          const response = await fetch(new URL(path, serverUrl), { method, redirect: "manual" });
-          expect(response.status).toBe(302);
-          expect(response.headers.get("Location")).toBe("/");
-          expect(response.headers.get("Cache-Control")).toBe("no-store");
-          expect(await response.text()).toBe("");
-        }
-      }
-
-      for (const path of ["/search", "/search.html", "/Default.html"]) {
+      for (const path of ["/search", "/search.html", "/Default.html", "/js/clerk.js", "/auth/config"]) {
         expect((await fetch(new URL(path, serverUrl))).status).toBe(404);
-      }
-
-      const authenticationResponse = await fetch(new URL("js/authentication.js", serverUrl));
-      expect(authenticationResponse.status).toBe(404);
-    } finally {
-      child.kill();
-      await child.exited;
-      await stderr;
-    }
-  }, 15_000);
-
-  test.each(["Known", "Authenticated"])("routes pages for a %s user", async (state) => {
-    const fixtureDirectory = createFixture();
-    const authenticationPath = join(fixtureDirectory, "src/server/authentication.js");
-    writeFileSync(authenticationPath, readFileSync(authenticationPath, "utf8").replace(
-      "return AuthenticationState.Unknown;", `return AuthenticationState.${state};`,
-    ));
-    expect((await runBuildScript(fixtureDirectory, "build")).exitCode).toBe(0);
-    const child = Bun.spawn([join(fixtureDirectory, "dist/link-up")], {
-      cwd: fixtureDirectory, stdout: "pipe", stderr: "pipe",
-    });
-    const stderr = new Response(child.stderr).text();
-    try {
-      const serverUrl = await readServerUrl(child.stdout);
-      for (const path of ["/", "/default", "/default.html"]) {
-        for (const method of ["GET", "HEAD"]) {
-          const response = await fetch(new URL(path, serverUrl), { method, redirect: "manual" });
-          expect(response.headers.get("Cache-Control")).toBe("no-store");
-          if (state === "Authenticated") {
-            expect(response.status).toBe(302);
-            expect(response.headers.get("Location")).toBe("/profiles.html");
-            expect(await response.text()).toBe("");
-          } else {
-            expect(response.status).toBe(200);
-          }
-        }
-      }
-      for (const path of ["/profiles", "/profiles.html"]) {
-        expect((await fetch(new URL(path, serverUrl))).status).toBe(200);
-      }
-      for (const path of ["/home", "/home.html"]) {
-        for (const method of ["GET", "HEAD"]) {
-          const response = await fetch(new URL(path, serverUrl), { method, redirect: "manual" });
-          expect(response.headers.get("Cache-Control")).toBe("no-store");
-          if (state === "Authenticated") {
-            expect(response.status).toBe(200);
-            if (method === "GET") {
-              const filename = "home.html";
-              const html = await response.text();
-              expect(html).toBe(readFileSync(join(fixtureDirectory, "dist", filename), "utf8"));
-              for (const [, resource] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
-                expect((await fetch(new URL(resource, serverUrl))).status).toBe(200);
-              }
-            } else {
-              expect(await response.text()).toBe("");
-            }
-          } else {
-            expect(response.status).toBe(302);
-            expect(response.headers.get("Location")).toBe("/");
-            expect(await response.text()).toBe("");
-          }
-        }
       }
     } finally {
       child.kill();

@@ -38,7 +38,7 @@ After sustained loss of network connectivity, a shaded overlay covers the curren
 
 ### Application Initialization
 
-`src/web/js/appInit.js` is the shared browser entry point loaded by Login, Home, About, and Search. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
+`src/web/js/appInit.js` is the shared browser entry point loaded by the default page, Home, About, and Search. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
 
 ### Service-Worker Cache Design
 
@@ -48,9 +48,9 @@ During installation, Workbox downloads new or changed resources and reuses uncha
 
 The `version` property in `package.json` is the authoritative semantic application version. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.js` and uses the service-worker update lifecycle to install and activate changed builds.
 
-The manifest has one stable start URL, `/`, which directly serves the login file `default.html`. The filename is not exposed as a page URL. Home and Search use shared `requireAuthentication` handling in `src/server/authentication.js`: unauthorized requests redirect to `/`, and protected responses are not cached. Authentication is not implemented, so every user currently resolves to Unknown regardless of cookies. The authenticated startup redirect described in `archived/PAGE_FLOW.md` is deferred until authentication is implemented.
+The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Home, Profiles, and About are publicly accessible; no authentication is required.
 
-The service worker sends startup navigation to the server and serves cached `/` if the network request fails. The build maps the login file's precache URL to `/` and excludes Home and Search from precaching, so their requests must reach the server's authentication check. About remains publicly accessible and precached.
+The service worker sends startup navigation to the server and serves cached `/` if the network request fails. The build maps `default.html` to `/` in the precache manifest and excludes Home from precaching. Profiles and About remain precached.
 
 ### PWA User Interface
 
@@ -108,7 +108,6 @@ Bare `bun test` runs the test suite without the build step provided by `bun run 
 │   │   └── styles/
 │   │       └── global.css
 │   └── server/
-│       ├── authentication.js
 │       ├── routes.js
 │       └── server.js
 ├── test/
