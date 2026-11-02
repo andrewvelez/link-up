@@ -46,7 +46,7 @@ Link-up uses [Workbox precaching](https://developer.chrome.com/docs/workbox/modu
 
 During installation, Workbox downloads new or changed resources and reuses unchanged cached resources. During activation, it removes precache entries that are absent from the current manifest. Requests matching the precache use Workbox's cache-first behavior: cached responses are served first, with a network fallback if a required cache entry is missing. Requests outside the precache use the network unless another service-worker route handles them. The initial page load uses the network while the service worker installs.
 
-The `version` property in `package.json` is the authoritative semantic application version. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.js` and uses the service-worker update lifecycle to install and activate changed builds.
+The `version` property in `package.json` is the authoritative application version, using `MAJOR_VERSION.YYYYMMDD`. GitHub Actions updates the date after branch pushes using the push date in `America/New_York`; the major number changes manually. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.js` and uses the service-worker update lifecycle to install and activate changed builds.
 
 The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Home, Profiles, and About are publicly accessible; no authentication is required.
 
