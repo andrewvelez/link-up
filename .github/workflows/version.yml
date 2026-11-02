@@ -1,0 +1,48 @@
+name: Update application version
+
+on:
+  push:
+    branches: ["**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-version-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    if: github.event.deleted == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            let pushedAt = context.payload.repository.pushed_at;
+            if (typeof pushedAt === "number") {
+              pushedAt *= 1000;
+            }
+            const date = new Date(pushedAt).toLocaleDateString("en-CA", {
+              timeZone: "America/New_York",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            }).replaceAll("-", "");
+            const branch = context.ref.slice("refs/heads/".length);
+            const file = { ...context.repo, path: "package.json" };
+            const { data } = await github.rest.repos.getContent({ ...file, ref: branch });
+            const packageJson = JSON.parse(Buffer.from(data.content, "base64").toString("utf8"));
+            const [major, previousDate] = packageJson.version.split(".");
+            if (Number(previousDate) >= Number(date)) {
+              return;
+            }
+            const version = `${major}.${date}`;
+            packageJson.version = version;
+            await github.rest.repos.createOrUpdateFileContents({
+              ...file,
+              branch,
+              sha: data.sha,
+              message: `Update version to ${version}`,
+              content: Buffer.from(JSON.stringify(packageJson, null, 2) + "\n").toString("base64"),
+            });
