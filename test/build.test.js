@@ -138,14 +138,14 @@ describe("build", () => {
       "styles/global.css",
       "external/milligram.min.css",
       "external/htmx.min.js",
-      "sw.js",
+      "sw.min.js",
       "link-up",
     ]) {
       expect(existsSync(join(fixtureDirectory, "dist", path))).toBe(true);
     }
 
     const serviceWorker = readFileSync(
-      join(fixtureDirectory, "dist", "sw.js"),
+      join(fixtureDirectory, "dist", "sw.min.js"),
       "utf8",
     );
 
@@ -167,7 +167,7 @@ describe("build", () => {
     expect(serviceWorker).not.toContain('"url":"default.html"');
     expect(existsSync(join(outputDirectory, "Default.html"))).toBe(false);
     expect(existsSync(join(outputDirectory, "js/clerk.js"))).toBe(false);
-    expect(existsSync(join(outputDirectory, "sw.bundle.js"))).toBe(false);
+    expect(existsSync(join(outputDirectory, "sw.js"))).toBe(false);
   });
 
   test("fails when the service worker cannot compile", async () => {
@@ -263,6 +263,12 @@ test("fixture failure", () => {
       );
       const postResponse = await fetch(serverUrl, { method: "POST" });
       const missingResponse = await fetch(new URL("missing", serverUrl));
+      const serviceWorkerResponse = await fetch(new URL("sw.min.js", serverUrl));
+
+      expect(serviceWorkerResponse.status).toBe(200);
+      expect(await serviceWorkerResponse.text()).toBe(
+        readFileSync(join(fixtureDirectory, "dist", "sw.min.js"), "utf8"),
+      );
 
       expect(pageResponse.status).toBe(200);
       expect(pageResponse.headers.get("Content-Type")).toContain("text/html");

@@ -9,9 +9,9 @@ import { cpSync, mkdirSync, rmSync } from "node:fs";
 import { injectManifest } from "workbox-build";
 
 /**
- * @description Bundles Workbox and the service-worker source for the browser.
- * @returns {Promise} Resolves after bundling succeeds.
- * @throws {Error} If Bun cannot bundle the service worker.
+ * @description Bundles and minifies the service worker, then injects its asset manifest.
+ * @returns {Promise} Resolves after bundling and manifest injection succeed.
+ * @throws {Error} If bundling or manifest injection fails.
  */
 async function bundleServiceWorker() {
 
@@ -19,7 +19,7 @@ async function bundleServiceWorker() {
   const result = await Bun.build({
     entrypoints: ["./src/web/sw.js"],
     outdir: "./dist",
-    naming: { entry: "sw.bundle.js" },
+    naming: { entry: "sw.js" },
     target: "browser",
     minify: true,
   });
@@ -28,26 +28,17 @@ async function bundleServiceWorker() {
     throw new Error(result.logs.join("\n") || "Service-worker build failed.");
   }
 
-}
-
-/**
- * @description Injects the output-file manifest into the service worker.
- * @returns {Promise} Resolves after the manifest is injected.
- * @throws {Error} If Workbox cannot inject the manifest.
- */
-async function bundleManifest() {
-
   /** @type {Object} Workbox result containing a warnings array. */
   const { warnings } = await injectManifest({
     globDirectory: "./dist",
     globPatterns: ["**/*.{html,js,json,css,svg,png}"],
     globIgnores: ["home.html"],
     modifyURLPrefix: { "default.html": "/" },
-    swSrc: "./dist/sw.bundle.js",
-    swDest: "./dist/sw.js",
+    swSrc: "./dist/sw.js",
+    swDest: "./dist/sw.min.js",
   });
 
-  rmSync("./dist/sw.bundle.js", { force: true });
+  rmSync("./dist/sw.js", { force: true });
 
   if (warnings.length > 0) {
     console.warn("Warnings encountered while injecting the manifest:", warnings.join("\n"));
@@ -63,7 +54,6 @@ async function bundleManifest() {
 async function bundle() {
 
   await bundleServiceWorker();
-  await bundleManifest();
 
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({

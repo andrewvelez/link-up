@@ -136,7 +136,7 @@ describe("app initialization", () => {
     expect(context.windowListeners.get("load").options).toEqual({ once: true });
 
     context.windowListeners.get("load").listener();
-    expect(register).toHaveBeenCalledWith("./sw.js");
+    expect(register).toHaveBeenCalledWith("./sw.min.js");
   });
 
   test("leaves unsupported sharing and service workers disabled", async () => {

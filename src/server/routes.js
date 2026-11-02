@@ -11,7 +11,7 @@ import profiles from "../../dist/profiles.html" with { type: "file" };
 import profileViews from "../../dist/js/profiles.js" with { type: "file" };
 import home from "../../dist/home.html" with { type: "file" };
 import manifest from "../../dist/manifest.json" with { type: "file" };
-import serviceWorker from "../../dist/sw.js" with { type: "file" };
+import serviceWorker from "../../dist/sw.min.js" with { type: "file" };
 import htmx from "../../dist/external/htmx.min.js" with { type: "file" };
 import icon192 from "../../dist/icons/192x192.png" with { type: "file" };
 import icon24 from "../../dist/icons/24x24.png" with { type: "file" };
@@ -58,6 +58,6 @@ export const routes = {
   "/external/htmx.min.js": asset(htmx),
   "/styles/global.css": asset(styles),
   "/external/milligram.min.css": asset(milligramStyles),
-  "/sw.js": asset(serviceWorker),
+  "/sw.min.js": asset(serviceWorker),
   "/*": () => new Response("Not found", { status: 404 }),
 };
