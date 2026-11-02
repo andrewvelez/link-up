@@ -1,6 +1,7 @@
 # Link-up
 
-Link-up is a local-first Progressive Web App (PWA) written in vanilla JavaScript.
+Link-up is a local-first Progressive Web App (PWA) written in vanilla JavaScript,
+being built to help gay men discover nearby profiles and communicate privately.
 The browser is the PWA runtime. Bun installs dependencies, runs project tasks,
 stages browser assets, and compiles the VPS-deployable application host.
 
@@ -22,6 +23,10 @@ bun install
 | `bun run test` | Build `dist/link-up`, then run the Bun test suite. Use this before production deployment. |
 | `bun run start` | Build and start the local host from source. Does not run tests. |
 
+For local development, run `bun run start` and open the URL printed at startup.
+The host listens on `127.0.0.1` with an operating-system-assigned port. Public
+hosting and TLS configuration are outside the current implementation.
+
 ### Before production deployment
 
 Run `bun run test` and deploy the resulting `dist/link-up` only if the command
@@ -33,14 +38,27 @@ builds before testing. None of these commands deploys the executable.
 
 ## Current implementation status
 
-The current checkout contains login, home, about, and search pages, a web app manifest,
-browser service-worker registration, a service worker, automated tests, and the
+The current checkout contains public default, Home, Profiles, and About pages,
+a web app manifest, service-worker registration, automated tests, and the
 full-stack executable build pipeline. Build output is generated in `dist/`.
+Authentication is not implemented; all current pages are publicly accessible.
+Profiles provides a selector for placeholder map, grid, and list views.
 
-The service worker uses bundled Workbox precaching with content revisions to
-make application resources available offline after installation completes.
-Precached resources are served cache-first, with a network fallback if a cache
-entry is missing. See [Service-Worker Cache Design](docs/design.md#service-worker-cache-design).
+The service worker uses bundled Workbox precaching with content revisions.
+Startup navigation to `/`, `/default`, and `/default.html` uses the network,
+falling back to cached `/` if the request fails. Profiles and About are
+precached and served cache-first; Home is excluded from precaching. See
+[Service-Worker Cache Design](docs/DESIGN.md#service-worker-cache-design).
 
-Product workflows, local persistence, peer networking, encryption,
-notifications, and offline delivery remain unimplemented.
+Profile creation, local persistence, geographic discovery, search, peer
+networking, encryption, messaging, and notifications remain unimplemented.
+The design keeps authoritative user data and essential logic on-device while
+requiring network access for product functionality. The planned interaction-blocking
+overlay for sustained network loss is not yet implemented.
+
+## Project documentation
+
+- [Design and architecture](docs/DESIGN.md)
+- [Implementation roadmap](docs/ROADMAP_Detailed.md)
+- [Two-device prototype sprint](docs/Speed_Sprint_Detailed.md)
+- [Network and search decisions](docs/network-search-decisions.md)
