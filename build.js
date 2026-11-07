@@ -9,11 +9,11 @@ import { cpSync, mkdirSync, rmSync } from "node:fs";
 import { injectManifest } from "workbox-build";
 
 /**
- * @description Bundles and minifies the service worker, then injects its asset manifest.
- * @returns {Promise} Resolves after bundling and manifest injection succeed.
- * @throws {Error} If bundling or manifest injection fails.
+ * @description Compiles the server entry point into an executable.
+ * @returns {Promise} Resolves after compilation succeeds.
+ * @throws {Error} If Bun cannot compile the server executable.
  */
-async function bundleServiceWorker() {
+async function bundle() {
 
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({
@@ -43,17 +43,6 @@ async function bundleServiceWorker() {
   if (warnings.length > 0) {
     console.warn("Warnings encountered while injecting the manifest:", warnings.join("\n"));
   }
-
-}
-
-/**
- * @description Compiles the server entry point into an executable.
- * @returns {Promise} Resolves after compilation succeeds.
- * @throws {Error} If Bun cannot compile the server executable.
- */
-async function bundle() {
-
-  await bundleServiceWorker();
 
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({
@@ -89,9 +78,7 @@ function copyBuildFiles() {
  * @returns {void}
  */
 function clean() {
-
   rmSync("./dist", { recursive: true, force: true });
-
 }
 
 /**

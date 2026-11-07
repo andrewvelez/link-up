@@ -1,13 +1,21 @@
 # Speed Sprint
 
+> **Early rough draft — not a final implementation outline.**
+>
+> Stories, acceptance criteria, dependencies, priorities, and estimates are
+> provisional proposals based on overarching design goals, not approved
+> implementation commitments.
+
 Demonstrate location, profile discovery, and private messaging on two devices,
 including a phone, while keeping authoritative user data encrypted on-device.
 This sprint is composed entirely of whole stories from [ROADMAP_Detailed.md](ROADMAP_Detailed.md).
 That document owns each story's scope, acceptance criteria, and prerequisites.
 
-## Execution rules
+See the roadmap for [story decision status](ROADMAP_Detailed.md#story-decision-status).
 
-Execute the selected stories in the order below. Every direct and transitive
+## Proposed execution rules
+
+The proposed story order is listed below. Every direct and transitive
 prerequisite is included earlier in the sequence. A story is complete only when
 its roadmap acceptance criteria pass; headings below group work, not new tasks.
 The final verification story establishes prototype completion, not Version 1 release.
@@ -18,11 +26,13 @@ local search before networking and regional distribution. Complete working
 discovery before messaging. Research, definitions, library evaluation, and
 decisions are part of the implementation story that needs them.
 
-Use one test region, known peers, a fixed builder, city-level disclosure, and
-complete Orama snapshots. Verify required library capabilities within the
-implementation; resolve failed validation before completing that story.
-Converse/XMPP retains sender-held undelivered text and encrypted local history.
-Record the required signaling, relay, builder, and XMPP infrastructure and costs.
+The proposed setup uses one test region, known peers, a fixed builder,
+city-level disclosure, and complete Orama snapshots. Verify required library
+capabilities within the implementation; resolve failed validation before
+completing that story.
+The messaging library, delivery behavior, and persistence integration remain
+speculative; Converse/XMPP is only a candidate. Record the required signaling,
+relay, builder, and messaging infrastructure and costs as choices are resolved.
 
 ## Selected stories
 

@@ -1,5 +1,11 @@
 # Link-up Implementation Roadmap
 
+> **Early rough draft — not a final implementation outline.**
+>
+> Stories, acceptance criteria, dependencies, priorities, and estimates are
+> provisional proposals based on overarching design goals, not approved
+> implementation commitments.
+
 This roadmap covers the remaining Version 1 application: geographic discovery,
 searchable profiles, and rudimentary private messaging. Each epic contains
 individually selectable user stories in priority order. Technical enablers use
@@ -22,9 +28,18 @@ geographic discovery, peer networking, search, and messaging remain to be implem
 Authentication is not implemented. All current pages are publicly accessible.
 Resolve access policy before exposing real data.
 
-granthdb, H3, and Converse/XMPP are established directions. Orama is preferred but
-awaits validation. Peer transport, replication, and shared-index mechanisms
-remain open choices.
+granthdb, H3, and Orama are settled library choices; their implementation and
+integration remain open. Converse/XMPP is a speculative messaging candidate.
+Peer transport, replication, and shared-index mechanisms remain open choices.
+
+## Story decision status
+
+| Stories | Decision status |
+| --- | --- |
+| E1-S1 | Contains a settled library choice: granthdb. |
+| E3-S1 | Contains a settled library choice: H3. |
+| E5-S1, E8-S1 | Contain a settled library choice: Orama. |
+| All other stories | Speculative scope and implementation based on overarching design goals. |
 
 ## Story ordering and sprint composition
 
@@ -32,7 +47,7 @@ remain open choices.
   implementation priority; explicit dependencies determine what can start.
 - **Requires** lists direct prerequisite stories. Their prerequisites also apply.
   Epic order alone does not impose a dependency on every story in an earlier epic.
-- **Accept** defines the complete scope of a story. A sprint selects whole stories
+- **Accept** defines the proposed scope of a story. A sprint selects whole stories
   and their unmet prerequisites; it does not silently narrow acceptance criteria.
 - Early stories deliver bounded, reusable capabilities: a test region, known
   peers, one builder, and complete snapshots. Later stories extend those
@@ -299,7 +314,7 @@ searchable while regional updates arrive.
 As a user, I want matching profiles ordered by approximate proximity.
 
 - **Accept:** Implement persistent local profile search using permitted
-  discovery data. Evaluate Orama and complete snapshot support against phone
+  discovery data. Validate Orama integration and snapshot support against phone
   performance and transfer budgets set in advance. Verify realistic geographic
   and record-lifecycle cases. Order matches by disclosed distance with stable
   tie breaking, and resolve compatibility problems before distributed-index
@@ -599,7 +614,8 @@ locally.
 As a user, I want private text exchange with another authorized user.
 
 - **Accept:** Enable private messaging between two discovered users through
-  Converse/XMPP. Tie messaging access to their local accounts and preserve
+  a library still to be selected; Converse/XMPP is a speculative candidate.
+  Tie messaging access to their local accounts and preserve
   encrypted conversation history across reloads.
 - **Requires:** E9-S2, E11-S2.
 - **Human coding time:** 32–60 hours.
@@ -632,7 +648,7 @@ As a user, I want to open a contact, read local history, and send messages.
 As a user, I want to know where undelivered messages and conversation copies remain.
 
 - **Accept:** Decide whether delivery requires permitted intermediary storage.
-  Implement the resulting retention policy and coordinate Converse persistence
+  Implement the resulting retention policy and coordinate messaging persistence
   with granthdb while preserving local authority.
 - **Requires:** E10-S2.
 - **Human coding time:** 12–28 hours.

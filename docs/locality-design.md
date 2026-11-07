@@ -43,7 +43,7 @@ Distance can help filter and order results without dominating the interface. Pro
 
 The client should perform as much location interpretation and local discovery work as possible. It obtains device coordinates, converts them to a geocell or locality identity, and joins the relevant discovery space. Exact GPS coordinates should remain private when possible.
 
-Servers may assist with rendezvous, validation, abuse controls, rate limits, and fallback delivery. A location record used for computation is not, by itself, a requirement to transmit exact coordinates to a server or expose them to other users. Any shared representation must respect the location-privacy policy in [design.md](design.md).
+Servers may assist with rendezvous, validation, abuse controls, rate limits, and fallback delivery. A location record used for computation is not, by itself, a requirement to transmit exact coordinates to a server or expose them to other users. Any shared representation must respect the location-privacy policy in [DESIGN.md](DESIGN.md#locality).
 
 ## Geographic components
 
@@ -149,7 +149,7 @@ Map rendering and map-tile availability are separate decisions. Choosing a rende
 
 - The base H3 resolution, target number of visible active users, and rules for selecting or expanding an effective geocell.
 - The minimum movement distance, driving-speed threshold, refresh interval, and record-expiration window.
-- The placement and permitted precision of shared location records within the client/server discovery model, consistent with the privacy policy in `design.md`.
+- The placement and permitted precision of shared location records within the client/server discovery model, consistent with the privacy policy in [DESIGN.md](DESIGN.md#locality).
 - The handling of ambiguous cell-to-locality mappings and the definitions or data sources for neighborhood and metro discovery scopes.
 
 These values and mechanisms are not specified by the two source documents or the diagram.
