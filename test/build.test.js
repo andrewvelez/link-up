@@ -15,6 +15,7 @@ import {
   symlinkSync,
   writeFileSync,
 } from "node:fs";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -56,7 +57,7 @@ async function runBuildScript(directory, ...arguments_) {
   return { exitCode, stderr, stdout };
 }
 
-async function readServerUrl(stream) {
+async function readServerUrl(stream, stderr) {
   const decoder = new TextDecoder();
   const reader = stream.getReader();
   let output = "";
@@ -65,7 +66,7 @@ async function readServerUrl(stream) {
     const { done, value } = await reader.read();
 
     if (done) {
-      throw new Error(`The development server exited before startup:\n${output}`);
+      throw new Error(`The development server exited before startup:\n${output}\n${await stderr}`);
     }
 
     output += decoder.decode(value, { stream: true });
@@ -155,31 +156,67 @@ describe("build", () => {
     expect(serviceWorker).not.toContain('from"workbox-precaching"');
     expect(serviceWorker).not.toContain('from "workbox-precaching"');
     expect(serviceWorker).toMatch(
-      /"revision":"[a-f0-9]{32}","url":"\/"/,
+      /"?revision"?:"[a-f0-9]{32}","?url"?:"\/"/,
     );
     expect(serviceWorker).toMatch(
-      /"revision":"[a-f0-9]{32}","url":"about\.html"/,
+      /"?revision"?:"[a-f0-9]{32}","?url"?:"about\.html"/,
     );
     const manifest = JSON.parse(readFileSync(join(outputDirectory, "manifest.json"), "utf8"));
     expect(manifest.start_url).toBe("/");
-    expect(serviceWorker).not.toContain('"url":"home.html"');
-    expect(serviceWorker).toMatch(/"revision":"[a-f0-9]{32}","url":"profiles\.html"/);
-    expect(serviceWorker).not.toContain('"url":"default.html"');
+    expect(serviceWorker).not.toMatch(/"?url"?:"home\.html"/);
+    expect(serviceWorker).toMatch(/"?revision"?:"[a-f0-9]{32}","?url"?:"profiles\.html"/);
+    expect(serviceWorker).not.toMatch(/"?url"?:"default\.html"/);
+    expect(serviceWorker).not.toMatch(/"?url"?:"sw(?:\.min)?\.js"/);
     expect(existsSync(join(outputDirectory, "Default.html"))).toBe(false);
     expect(existsSync(join(outputDirectory, "js/clerk.js"))).toBe(false);
     expect(existsSync(join(outputDirectory, "sw.js"))).toBe(false);
+  });
+
+  test("updates precache revisions when asset contents change", async () => {
+    const fixtureDirectory = createFixture();
+    const aboutPath = join(fixtureDirectory, "src", "web", "about.html");
+    const workerPath = join(fixtureDirectory, "dist", "sw.min.js");
+
+    for (const content of ["<p>Initial content</p>", "<p>Changed content</p>"]) {
+      writeFileSync(aboutPath, content);
+
+      const result = await runBuildScript(fixtureDirectory, "build");
+
+      expect(result.exitCode).toBe(0);
+      const revision = createHash("md5").update(content).digest("hex");
+      expect(readFileSync(workerPath, "utf8")).toMatch(
+        new RegExp(`"?revision"?:"${revision}","?url"?:"about\\.html"`),
+      );
+    }
+  });
+
+  test("fails when the service worker has no manifest placeholder", async () => {
+    const fixtureDirectory = createFixture();
+    const serviceWorkerPath = join(fixtureDirectory, "src", "web", "sw.js");
+
+    writeFileSync(serviceWorkerPath, "export {};\n");
+
+    const result = await runBuildScript(fixtureDirectory, "build");
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain("Unable to find a place to inject the manifest.");
+    expect(existsSync(join(fixtureDirectory, "dist", "sw.min.js"))).toBe(false);
+    expect(existsSync(join(fixtureDirectory, "dist", "link-up"))).toBe(false);
   });
 
   test("fails when the service worker cannot compile", async () => {
     const fixtureDirectory = createFixture();
     const serviceWorkerPath = join(fixtureDirectory, "src", "web", "sw.js");
 
-    writeFileSync(serviceWorkerPath, "import {;\n");
+    writeFileSync(serviceWorkerPath, "self.__WB_MANIFEST;\nexport const =;\n");
 
     const result = await runBuildScript(fixtureDirectory, "build");
 
     expect(result.exitCode).not.toBe(0);
-    expect(result.stderr).toContain("error");
+    expect(result.stderr).toContain('Expected identifier but found "="');
+    expect(result.stderr).toContain("dist/sw.js");
+    expect(existsSync(join(fixtureDirectory, "dist", "sw.min.js"))).toBe(false);
+    expect(existsSync(join(fixtureDirectory, "dist", "link-up"))).toBe(false);
   });
 
   test("fails when the server bundle cannot compile", async () => {
@@ -191,7 +228,11 @@ describe("build", () => {
     const result = await runBuildScript(fixtureDirectory, "build");
 
     expect(result.exitCode).not.toBe(0);
-    expect(result.stderr).toContain("error");
+    expect(result.stderr).toContain('Expected identifier but found "="');
+    expect(result.stderr).toContain("src/server/server.js");
+    expect(existsSync(join(fixtureDirectory, "dist", "sw.min.js"))).toBe(true);
+    expect(existsSync(join(fixtureDirectory, "dist", "sw.js"))).toBe(false);
+    expect(existsSync(join(fixtureDirectory, "dist", "link-up"))).toBe(false);
   });
 
   test("the test command propagates the test runner exit code", async () => {
@@ -228,7 +269,7 @@ test("fixture failure", () => {
     const stderr = new Response(child.stderr).text();
 
     try {
-      const serverUrl = await readServerUrl(child.stdout);
+      const serverUrl = await readServerUrl(child.stdout, stderr);
       const response = await fetch(serverUrl);
 
       expect(response.status).toBe(200);
@@ -255,7 +296,7 @@ test("fixture failure", () => {
     const stderr = new Response(child.stderr).text();
 
     try {
-      const serverUrl = await readServerUrl(child.stdout);
+      const serverUrl = await readServerUrl(child.stdout, stderr);
       const pageResponse = await fetch(serverUrl);
       const headResponse = await fetch(
         new URL("styles/global.css", serverUrl),

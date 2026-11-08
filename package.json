@@ -6,9 +6,9 @@
   "author": "Andrew Velez <andrewvelez@outlook.com>",
   "type": "module",
   "scripts": {
-    "build": "bun build.js build",
-    "test": "bun build.js test",
-    "start": "bun build.js start"
+    "builds": "bun build.js build",
+    "tests": "bun build.js test",
+    "starts": "bun build.js start"
   },
   "devDependencies": {
     "@types/bun": "^1.4.3"

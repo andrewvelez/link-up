@@ -9,17 +9,31 @@ import { cpSync, mkdirSync, rmSync } from "node:fs";
 import { injectManifest } from "workbox-build";
 
 /**
- * @description Compiles the server entry point into an executable.
- * @returns {Promise} Resolves after compilation succeeds.
- * @throws {Error} If Bun cannot compile the server executable.
+ * @description Injects the precache manifest and bundles the client service worker.
+ * @returns {Promise} Resolves after the client bundle succeeds.
+ * @throws {Error} If manifest injection or client bundling fails.
  */
-async function bundle() {
+async function bundleClientJs() {
+
+  /** @type {Object} Workbox result containing a warnings array. */
+  const { warnings } = await injectManifest({
+    globDirectory: "./dist",
+    globPatterns: ["**/*.{html,js,json,css,svg,png}"],
+    globIgnores: ["home.html"],
+    modifyURLPrefix: { "default.html": "/" },
+    swSrc: "./src/web/sw.js",
+    swDest: "./dist/sw.js",
+  });
+
+  if (warnings.length > 0) {
+    console.warn("Warnings encountered while injecting the manifest:", warnings.join("\n"));
+  }
 
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({
-    entrypoints: ["./src/web/sw.js"],
+    entrypoints: ["./dist/sw.js"],
     outdir: "./dist",
-    naming: { entry: "sw.js" },
+    naming: { entry: "sw.min.js" },
     target: "browser",
     minify: true,
   });
@@ -28,21 +42,16 @@ async function bundle() {
     throw new Error(result.logs.join("\n") || "Service-worker build failed.");
   }
 
-  /** @type {Object} Workbox result containing a warnings array. */
-  const { warnings } = await injectManifest({
-    globDirectory: "./dist",
-    globPatterns: ["**/*.{html,js,json,css,svg,png}"],
-    globIgnores: ["home.html"],
-    modifyURLPrefix: { "default.html": "/" },
-    swSrc: "./dist/sw.js",
-    swDest: "./dist/sw.min.js",
-  });
-
   rmSync("./dist/sw.js", { force: true });
 
-  if (warnings.length > 0) {
-    console.warn("Warnings encountered while injecting the manifest:", warnings.join("\n"));
-  }
+}
+
+/**
+ * @description Compiles the server entry point into an executable.
+ * @returns {Promise} Resolves after compilation succeeds.
+ * @throws {Error} If Bun cannot compile the server executable.
+ */
+async function bundleServerExecutable() {
 
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({
@@ -90,7 +99,8 @@ function clean() {
 async function build() {
   clean();
   copyBuildFiles();
-  await bundle();
+  await bundleClientJs();
+  await bundleServerExecutable();
 };
 
 /**
@@ -138,6 +148,9 @@ async function main() {
   }
 }
 
+/**
+ * @description DO NOT REMOVE
+ */
 if (import.meta.main) {
   await main();
 } else {
