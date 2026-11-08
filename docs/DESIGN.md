@@ -109,18 +109,18 @@ The service worker sends startup navigation to the server and serves cached `/` 
 
 ## Build and Delivery
 
-`bun run build` performs these stages in order:
+`bun run builds` performs these stages in order:
 
 1. In `clean()`, delete `dist/` if it exists.
 2. In `copyBuildFiles()`, copy the PWA pages, manifest, and static assets from `src/web/` into `dist/`, then stage HTMX and Milligram from `node_modules/` into `dist/external/`.
 3. In `bundle()`, bundle and minify `src/web/sw.js` and Workbox into the intermediate `dist/sw.js`, inject the Workbox asset manifest to produce `dist/sw.min.js`, then remove `dist/sw.js`.
 4. Compile `src/server/server.js` and its route-embedded assets into `dist/link-up`.
 
-`bun run start` performs the same build and starts `src/server/server.js` for local development. Neither `build` nor `start` runs tests.
+`bun run starts` performs the same build and starts `src/server/server.js` for local development. Neither `builds` nor `starts` runs tests.
 
-**Before production deployment, run `bun run test`.** This command performs the same build, then runs the Bun test suite and returns its exit code. A build failure stops the command before tests run. Deploy the resulting `dist/link-up` only when the command succeeds (exit code 0); do not deploy after a build or test failure. No separate build is needed after a successful test run.
+**Before production deployment, run `bun run tests`.** This command performs the same build, then runs the Bun test suite and returns its exit code. A build failure stops the command before tests run. Deploy the resulting `dist/link-up` only when the command succeeds (exit code 0); do not deploy after a build or test failure. No separate build is needed after a successful test run.
 
-Bare `bun test` runs the test suite without the build step provided by `bun run test`. None of these commands deploys the executable; deployment is a separate step.
+Bare `bun test` runs the test suite without the build step provided by `bun run tests`. None of these commands deploys the executable; deployment is a separate step.
 
 ## Project Structure
 
