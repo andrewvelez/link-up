@@ -24,9 +24,9 @@ import styles from "../../dist/styles/global.css" with { type: "file" };
 import milligramStyles from "../../dist/external/milligram.min.css" with { type: "file" };
 
 const pages = {
-  default: login,
-  profiles,
-  about,
+  Default: login,
+  Profiles,
+  About,
 };
 
 const assets = {
@@ -57,15 +57,24 @@ function asset(path) {
   return { GET: handler, HEAD: handler };
 }
 
+function redirect(path) {
+  const handler = () => new Response(null, { status: 302, headers: { Location: path } });
+  return { GET: handler, HEAD: handler };
+}
+
 export const routes = {
-  "/": asset(pages.default),
-  "/default": asset(pages.default),
-  "/default.html": asset(pages.default),
-  "/profiles": asset(pages.profiles),
-  "/profiles.html": asset(pages.profiles),
+  "/": asset(pages.Default),
+  "/default": redirect("/"),
+  "/default.html": redirect("/"),
+  "/index": redirect("/"),
+  "/index.html": redirect("/"),
+  "/Profiles": asset(pages.Profiles),
+  "/profiles": redirect("/Profiles"),
+  "/profiles.html": redirect("/Profiles"),
+  "/About": asset(pages.About),
+  "/about": redirect("/About"),
+  "/about.html": redirect("/About"),
   "/js/profiles.js": asset(assets.profileViews),
-  "/about": asset(pages.about),
-  "/about.html": asset(pages.about),
   "/js/appInit.js": asset(assets.appInitialization),
   "/manifest.json": asset(assets.manifest),
   "/icons/192x192.png": asset(assets.icon192),
