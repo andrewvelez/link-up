@@ -23,7 +23,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const projectDirectory = dirname(dirname(fileURLToPath(import.meta.url)));
 const fixtureDirectories = [];
 
-function createFixture() {
+function createFixture(environment = "development") {
   const fixtureDirectory = mkdtempSync(join(tmpdir(), "link-up-build-test-"));
 
   for (const path of ["build.js", "package.json", "src"]) {
@@ -38,6 +38,14 @@ function createFixture() {
     "dir",
   );
   fixtureDirectories.push(fixtureDirectory);
+  writeFileSync(join(fixtureDirectory, "regression.test.js"), `
+import { expect, test } from "bun:test";
+
+test("tests run after bundling in the selected environment", () => {
+  expect(Bun.file("./dist/link-up").size).toBeGreaterThan(0);
+  expect(process.env.NODE_ENV).toBe(${JSON.stringify(environment)});
+});
+`);
 
   return fixtureDirectory;
 }
@@ -90,7 +98,7 @@ describe("build", () => {
     const result = await runBuildScript(createFixture(), "unknown");
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("Usage: bun run <build|test|start>");
+    expect(result.stderr).toContain("Usage: bun build.js <buildDevelopment|startDevelopment|deployProduction>");
   });
 
   test("rejects importing the build script as a module", async () => {
@@ -116,15 +124,18 @@ describe("build", () => {
     expect(stderr).toContain("build.js must be run directly, not imported.");
   });
 
-  test("builds the complete browser application", async () => {
-    const fixtureDirectory = createFixture();
+  test.each([
+    ["buildDevelopment", "development"],
+    ["deployProduction", "production"],
+  ])("%s builds and tests the complete application", async (command, environment) => {
+    const fixtureDirectory = createFixture(environment);
     const outputDirectory = join(fixtureDirectory, "dist");
     const staleOutputPath = join(outputDirectory, "stale.txt");
 
     mkdirSync(outputDirectory);
     writeFileSync(staleOutputPath, "stale output");
 
-    const result = await runBuildScript(fixtureDirectory, "build");
+    const result = await runBuildScript(fixtureDirectory, command);
 
     expect(result.exitCode).toBe(0);
     expect(existsSync(staleOutputPath)).toBe(false);
@@ -179,7 +190,7 @@ describe("build", () => {
     for (const content of ["<p>Initial content</p>", "<p>Changed content</p>"]) {
       writeFileSync(aboutPath, content);
 
-      const result = await runBuildScript(fixtureDirectory, "build");
+      const result = await runBuildScript(fixtureDirectory, "buildDevelopment");
 
       expect(result.exitCode).toBe(0);
       const revision = createHash("md5").update(content).digest("hex");
@@ -195,7 +206,7 @@ describe("build", () => {
 
     writeFileSync(serviceWorkerPath, "export {};\n");
 
-    const result = await runBuildScript(fixtureDirectory, "build");
+    const result = await runBuildScript(fixtureDirectory, "buildDevelopment");
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain("Unable to find a place to inject the manifest.");
@@ -209,7 +220,7 @@ describe("build", () => {
 
     writeFileSync(serviceWorkerPath, "self.__WB_MANIFEST;\nexport const =;\n");
 
-    const result = await runBuildScript(fixtureDirectory, "build");
+    const result = await runBuildScript(fixtureDirectory, "buildDevelopment");
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain('Expected identifier but found "="');
@@ -224,7 +235,7 @@ describe("build", () => {
 
     writeFileSync(serverPath, "export const =;\n");
 
-    const result = await runBuildScript(fixtureDirectory, "build");
+    const result = await runBuildScript(fixtureDirectory, "buildDevelopment");
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain('Expected identifier but found "="');
@@ -234,7 +245,7 @@ describe("build", () => {
     expect(existsSync(join(fixtureDirectory, "dist", "link-up"))).toBe(false);
   });
 
-  test("the test command propagates the test runner exit code", async () => {
+  test.each(["buildDevelopment", "startDevelopment", "deployProduction"])("%s stops when tests fail", async (command) => {
     const fixtureDirectory = createFixture();
     const regressionTestPath = join(fixtureDirectory, "regression.test.js");
 
@@ -248,18 +259,19 @@ test("fixture failure", () => {
 `,
     );
 
-    const result = await runBuildScript(fixtureDirectory, "test");
+    const result = await runBuildScript(fixtureDirectory, command);
 
     expect(result.exitCode).toBe(1);
     expect(result.stdout + result.stderr).toContain("fixture failure");
+    expect(result.stdout + result.stderr).not.toContain("Link-up running at");
   });
 
-  test("the start command serves from another working directory", async () => {
+  test("startDevelopment tests and serves from another working directory", async () => {
     const fixtureDirectory = createFixture();
     const child = Bun.spawn([
       process.execPath,
       join(fixtureDirectory, "build.js"),
-      "start",
+      "startDevelopment",
     ], {
       cwd: tmpdir(),
       stdout: "pipe",
@@ -284,7 +296,7 @@ test("fixture failure", () => {
 
   test("the executable serves normal HTTP paths and rejects unsupported methods", async () => {
     const fixtureDirectory = createFixture();
-    const buildResult = await runBuildScript(fixtureDirectory, "build");
+    const buildResult = await runBuildScript(fixtureDirectory, "buildDevelopment");
     expect(buildResult.exitCode).toBe(0);
 
     const child = Bun.spawn([join(fixtureDirectory, "dist", "link-up")], {

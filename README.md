@@ -19,22 +19,20 @@ bun install
 
 | Command | Purpose |
 | --- | --- |
-| `bun run builds` | Build `dist/link-up`, the full-stack executable that embeds and serves the PWA. Does not run tests. |
-| `bun run tests` | Build `dist/link-up`, then run the Bun test suite. Use this before production deployment. |
-| `bun run starts` | Build and start the local host from source. Does not run tests. |
+| `bun run build:dev` | Bundle the application for development, then run tests. |
+| `bun run start:dev` | Bundle for development, run tests, then start the local host from source. |
+| `bun run deploy:prod` | Bundle for production and run tests. Deployment is currently a TODO. |
 
-For local development, run `bun run starts` and open the URL printed at startup.
+For local development, run `bun run start:dev` and open the URL printed at startup.
 The host listens on `127.0.0.1` with an operating-system-assigned port. Public
 hosting and TLS configuration are outside the current implementation.
 
 ### Before production deployment
 
-Run `bun run tests` and deploy the resulting `dist/link-up` only if the command
-succeeds (exit code 0). A successful `bun run builds` alone does not establish
-that tests pass. No separate build is needed after a successful test run.
-
-Use `bun run tests`, not bare `bun test`, for this workflow: the package script
-builds before testing. None of these commands deploys the executable.
+Run `bun run deploy:prod` and deploy the resulting `dist/link-up` only if the
+command succeeds (exit code 0). Automatic deployment is currently a TODO.
+All three commands test after bundling and stop if bundling or tests fail.
+Bare `bun test` runs the test suite without bundling first.
 
 ## Current implementation status
 

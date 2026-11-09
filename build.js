@@ -97,11 +97,13 @@ function clean() {
 
 /**
  * @type {Function}
- * @description Creates a clean production build of the complete application.
+ * @description Creates a clean application bundle for the requested environment.
+ * @param {string} environment Development or production environment name.
  * @returns {Promise} Resolves after all build steps succeed.
  * @throws {Error} If any build step fails.
  */
-async function build() {
+async function bundleApplication(environment) {
+  process.env.NODE_ENV = environment;
   clean();
   copyBuildFiles();
   await bundleClientJs();
@@ -109,32 +111,57 @@ async function build() {
 };
 
 /**
- * @type {Function}
- * @description Builds the application and runs its test suite.
- * @returns {Promise} Resolves after the test process exits.
- * @throws {Error} If the build fails or the test process cannot be started.
+ * @description Runs the test suite and stops the workflow if tests fail.
+ * @returns {void}
+ * @throws {Error} If the test process cannot be started.
  */
-async function test() {
-  await build();
-
-  /** @type {Object} Spawned test process with an exited promise. */
-  const testRunner = Bun.spawn([process.execPath, "test"], {
+function runTests() {
+  const testRunner = Bun.spawnSync([process.execPath, "test"], {
+    env: process.env,
     stdout: "inherit",
     stderr: "inherit",
   });
-  process.exitCode = await testRunner.exited;
-};
+  if (testRunner.exitCode !== 0) {
+    process.exit(testRunner.exitCode);
+  }
+}
 
 /**
- * @type {Function}
- * @description Builds the application and starts the development server.
+ * @description Starts the development server from source.
  * @returns {Promise} Resolves after the server module loads.
- * @throws {Error} If the build or server-module import fails.
  */
-async function start() {
-  await build();
+async function startServer() {
   await import("./src/server/server.js");
-};
+}
+
+/**
+ * @description Bundles and tests the application for development.
+ * @returns {Promise} Resolves after bundling and tests succeed.
+ */
+async function buildDevelopment() {
+  await bundleApplication("development");
+  runTests();
+}
+
+/**
+ * @description Bundles, tests, and starts the application for development.
+ * @returns {Promise} Resolves after the development server starts.
+ */
+async function startDevelopment() {
+  await bundleApplication("development");
+  runTests();
+  await startServer();
+}
+
+/**
+ * @description Bundles and tests the application for production; deployment is TODO.
+ * @returns {Promise} Resolves after bundling and tests succeed.
+ */
+async function deployProduction() {
+  await bundleApplication("production");
+  runTests();
+  // TODO: Deploy the tested production build.
+}
 
 /**
  * @description entrypoint to module
@@ -142,14 +169,14 @@ async function start() {
 async function main() {
   process.chdir(import.meta.dir);
 
-  const buildCommands = [build, test, start];
+  const buildCommands = [buildDevelopment, startDevelopment, deployProduction];
   const argvCommand = process.argv[2];
   const cmdFunc = buildCommands.find(cmdFunc => cmdFunc.name === argvCommand);
 
   if (cmdFunc) {
     await cmdFunc();
   } else {
-    throw new Error(`Usage: bun run <${buildCommands.map(cmd => cmd.name).join("|")}>`);
+    throw new Error(`Usage: bun build.js <${buildCommands.map(cmd => cmd.name).join("|")}>`);
   }
 }
 

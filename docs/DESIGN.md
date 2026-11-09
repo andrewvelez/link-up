@@ -105,22 +105,26 @@ The `version` property in `package.json` is the authoritative application versio
 
 ### Sitemap
 
-The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Profiles, and About are publicly accessible
+The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Profiles, and About are publicly accessible.
 
 ## Build and Delivery
 
-`bun run builds` performs these stages in order:
+The build environments are development and production. Each top-level command independently calls shared internal functions; top-level commands do not call one another.
+
+- `bun run build:dev` calls `buildDevelopment()`: bundle for development, then run tests.
+- `bun run start:dev` calls `startDevelopment()`: bundle for development, run tests, then start the local server from source.
+- `bun run deploy:prod` calls `deployProduction()`: bundle for production, then run tests. Deployment is currently a TODO.
+
+`bundleApplication(environment)` sets `NODE_ENV` to the selected environment and performs these stages in order:
 
 1. In `clean()`, delete `dist/` if it exists.
 2. In `copyBuildFiles()`, copy the PWA pages, manifest, and static assets from `src/web/` into `dist/`, then stage HTMX and Milligram from `node_modules/` into `dist/external/`.
-3. In `bundle()`, bundle and minify `src/web/sw.js` and Workbox into the intermediate `dist/sw.js`, inject the Workbox asset manifest to produce `dist/sw.min.js`, then remove `dist/sw.js`.
-4. Compile `src/server/server.js` and its route-embedded assets into `dist/link-up`.
+3. In `bundleClientJs()`, inject the Workbox asset manifest into intermediate `dist/sw.js`, bundle and minify it into `dist/sw.min.js`, then remove `dist/sw.js`.
+4. In `bundleServerExecutable()`, compile `src/server/server.js` and its route-embedded assets into `dist/link-up`.
 
-`bun run starts` performs the same build and starts `src/server/server.js` for local development. Neither `builds` nor `starts` runs tests.
+All three commands call `runTests()` after bundling. A build or test failure stops the workflow; `startDevelopment()` calls `startServer()` only after tests pass. Deploy the production `dist/link-up` only when `bun run deploy:prod` succeeds (exit code 0). Automatic deployment is not implemented.
 
-**Before production deployment, run `bun run tests`.** This command performs the same build, then runs the Bun test suite and returns its exit code. A build failure stops the command before tests run. Deploy the resulting `dist/link-up` only when the command succeeds (exit code 0); do not deploy after a build or test failure. No separate build is needed after a successful test run.
-
-Bare `bun test` runs the test suite without the build step provided by `bun run tests`. None of these commands deploys the executable; deployment is a separate step.
+Bare `bun test` runs the test suite without bundling first.
 
 ## Project Structure
 

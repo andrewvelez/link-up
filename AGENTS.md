@@ -21,11 +21,11 @@
 * Install dependencies
   > `bun install`
 
-* Bundle project for production deployment
-  > `bun run build` **or** `bun build.js build`
+* Bundle for development and run tests
+  > `bun run build:dev` **or** `bun build.js buildDevelopment`
 
-* Build project and run all tests (tests are WIP)
-  > `bun run test` **or** `bun build.js test`
+* Bundle for development, run tests, and start the local server
+  > `bun run start:dev` **or** `bun build.js startDevelopment`
 
-* Build project and start local dev server
-  > `bun run start` **or** `bun build.js start`
+* Bundle for production and run tests (deployment is TODO)
+  > `bun run deploy:prod` **or** `bun build.js deployProduction`
