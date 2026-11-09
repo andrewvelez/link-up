@@ -132,7 +132,6 @@ describe("build", () => {
     for (const path of [
       "js/appInit.js",
       "default.html",
-      "home.html",
       "profiles.html",
       "about.html",
       "manifest.json",
@@ -174,7 +173,7 @@ describe("build", () => {
 
   test("updates precache revisions when asset contents change", async () => {
     const fixtureDirectory = createFixture();
-    const aboutPath = join(fixtureDirectory, "src", "web", "about.html");
+    const aboutPath = join(fixtureDirectory, "src", "web", "pages", "about.html");
     const workerPath = join(fixtureDirectory, "dist", "sw.min.js");
 
     for (const content of ["<p>Initial content</p>", "<p>Changed content</p>"]) {
@@ -324,8 +323,6 @@ test("fixture failure", () => {
         ["/", "default.html"],
         ["/default", "default.html"],
         ["/default.html", "default.html"],
-        ["/home", "home.html"],
-        ["/home.html", "home.html"],
         ["/profiles", "profiles.html"],
         ["/profiles.html", "profiles.html"],
         ["/about", "about.html"],

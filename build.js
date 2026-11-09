@@ -19,7 +19,6 @@ async function bundleClientJs() {
   const { warnings } = await injectManifest({
     globDirectory: "./dist",
     globPatterns: ["**/*.{html,js,json,css,svg,png}"],
-    globIgnores: ["home.html"],
     modifyURLPrefix: { "default.html": "/" },
     swSrc: "./src/web/sw.js",
     swDest: "./dist/sw.js",
@@ -74,7 +73,13 @@ async function bundleServerExecutable() {
  */
 function copyBuildFiles() {
   rmSync("./dist", { recursive: true, force: true });
-  cpSync("./src/web", "./dist", { recursive: true });
+  cpSync("./src/web/pages", "./dist", { recursive: true });
+  cpSync("./src/web/components", "./dist/components", { recursive: true });
+  cpSync("./src/web/scripts", "./dist/js", { recursive: true });
+  cpSync("./src/web/styles", "./dist/styles", { recursive: true });
+  cpSync("./src/web/images", "./dist/icons", { recursive: true });
+  cpSync("./src/web/manifest.json", "./dist/manifest.json");
+  cpSync("./src/web/sw.js", "./dist/sw.js");
 
   mkdirSync("./dist/external", { recursive: true });
   cpSync("./node_modules/htmx.org/dist/htmx.min.js", "./dist/external/htmx.min.js");

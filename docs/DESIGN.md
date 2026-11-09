@@ -87,7 +87,7 @@ The installed PWA can integrate with platform notifications where supported. How
 
 ### Application Initialization
 
-`src/web/js/appInit.js` is the shared browser entry point loaded by the default page, Home, Profiles, and About. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
+`src/web/scripts/appInit.js` is the shared browser entry point loaded by the default page, Home, Profiles, and About. Its scope is shared listener setup and service-worker registration. Keep feature logic, persistence, networking, and page-specific behavior in separate modules; this entry point calls their initialization functions when needed.
 
 ### Connectivity
 
@@ -103,9 +103,9 @@ During installation, Workbox downloads new or changed resources and reuses uncha
 
 The `version` property in `package.json` is the authoritative application version, using `MAJOR_VERSION.YYYYMMDD`. GitHub Actions updates the date after branch pushes using the push date in `America/New_York`; the major number changes manually. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.min.js` and uses the service-worker update lifecycle to install and activate changed builds.
 
-The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Home, Profiles, and About are publicly accessible; no authentication is required.
+### Sitemap
 
-The service worker sends startup navigation to the server and serves cached `/` if the network request fails. The build maps `default.html` to `/` in the precache manifest and excludes Home from precaching. Profiles and About remain precached.
+The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Profiles, and About are publicly accessible
 
 ## Build and Delivery
 
@@ -136,18 +136,19 @@ Bare `bun test` runs the test suite without the build step provided by `bun run 
 │       └── locality-diagram.png
 ├── src/
 │   ├── web/
-│   │   ├── about.html
-│   │   ├── default.html
-│   │   ├── home.html
-│   │   ├── profiles.html
+│   │   ├── components/
+│   │   ├── images/
 │   │   ├── manifest.json
-│   │   ├── sw.js
-│   │   ├── icons/
-│   │   ├── js/
+│   │   ├── pages/
+│   │   │   ├── about.html
+│   │   │   ├── default.html
+│   │   │   └── profiles.html
+│   │   ├── scripts/
 │   │   │   ├── appInit.js
 │   │   │   └── profiles.js
-│   │   └── styles/
-│   │       └── global.css
+│   │   ├── styles/
+│   │   │   └── global.css
+│   │   └── sw.js
 │   └── server/
 │       ├── routes.js
 │       └── server.js

@@ -9,7 +9,6 @@ import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
 import login from "../../dist/default.html" with { type: "file" };
 import profiles from "../../dist/profiles.html" with { type: "file" };
 import profileViews from "../../dist/js/profiles.js" with { type: "file" };
-import home from "../../dist/home.html" with { type: "file" };
 import manifest from "../../dist/manifest.json" with { type: "file" };
 import serviceWorker from "../../dist/sw.min.js" with { type: "file" };
 import htmx from "../../dist/external/htmx.min.js" with { type: "file" };
@@ -24,6 +23,30 @@ import icon512Named from "../../dist/icons/icon_512.png" with { type: "file" };
 import styles from "../../dist/styles/global.css" with { type: "file" };
 import milligramStyles from "../../dist/external/milligram.min.css" with { type: "file" };
 
+const pages = {
+  default: login,
+  profiles,
+  about,
+};
+
+const assets = {
+  appInitialization,
+  profileViews,
+  manifest,
+  serviceWorker,
+  htmx,
+  icon192,
+  icon24,
+  icon48,
+  icon512,
+  icon192Named,
+  icon24Named,
+  icon48Named,
+  icon512Named,
+  styles,
+  milligramStyles,
+};
+
 /**
  * @description Serves an embedded file for GET and HEAD requests.
  * @param {string} path The embedded file path.
@@ -35,29 +58,27 @@ function asset(path) {
 }
 
 export const routes = {
-  "/": asset(login),
-  "/default": asset(login),
-  "/default.html": asset(login),
-  "/home": asset(home),
-  "/home.html": asset(home),
-  "/profiles": asset(profiles),
-  "/profiles.html": asset(profiles),
-  "/js/profiles.js": asset(profileViews),
-  "/about": asset(about),
-  "/about.html": asset(about),
-  "/js/appInit.js": asset(appInitialization),
-  "/manifest.json": asset(manifest),
-  "/icons/192x192.png": asset(icon192),
-  "/icons/24x24.png": asset(icon24),
-  "/icons/48x48.png": asset(icon48),
-  "/icons/512x512.png": asset(icon512),
-  "/icons/icon_192.png": asset(icon192Named),
-  "/icons/icon_24.png": asset(icon24Named),
-  "/icons/icon_48.png": asset(icon48Named),
-  "/icons/icon_512.png": asset(icon512Named),
-  "/external/htmx.min.js": asset(htmx),
-  "/styles/global.css": asset(styles),
-  "/external/milligram.min.css": asset(milligramStyles),
-  "/sw.min.js": asset(serviceWorker),
+  "/": asset(pages.default),
+  "/default": asset(pages.default),
+  "/default.html": asset(pages.default),
+  "/profiles": asset(pages.profiles),
+  "/profiles.html": asset(pages.profiles),
+  "/js/profiles.js": asset(assets.profileViews),
+  "/about": asset(pages.about),
+  "/about.html": asset(pages.about),
+  "/js/appInit.js": asset(assets.appInitialization),
+  "/manifest.json": asset(assets.manifest),
+  "/icons/192x192.png": asset(assets.icon192),
+  "/icons/24x24.png": asset(assets.icon24),
+  "/icons/48x48.png": asset(assets.icon48),
+  "/icons/512x512.png": asset(assets.icon512),
+  "/icons/icon_192.png": asset(assets.icon192Named),
+  "/icons/icon_24.png": asset(assets.icon24Named),
+  "/icons/icon_48.png": asset(assets.icon48Named),
+  "/icons/icon_512.png": asset(assets.icon512Named),
+  "/external/htmx.min.js": asset(assets.htmx),
+  "/styles/global.css": asset(assets.styles),
+  "/external/milligram.min.css": asset(assets.milligramStyles),
+  "/sw.min.js": asset(assets.serviceWorker),
   "/*": () => new Response("Not found", { status: 404 }),
 };
