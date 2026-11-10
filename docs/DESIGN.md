@@ -1,8 +1,6 @@
-# Link-up Project Design
+# Link-up Design Choices
 
-Link-up is first and foremost, a free messenger.  Communication between people should be free [https://reticulum.network/zenofreticulum.html].  Private data remains private unless given express permission.  No data is sold or used otherwise.  Link-up is an app helping people to connect for dating with a focus on gay men looking for gay men.  Eventually, it may be an umbrella app for a series of web properties each with their own branding.
-
-Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source.
+- I use the words app and site interchangeably because being a PWA (progressive web app), Link-Up is both a site and an app.
 
 ## Contents
 
@@ -13,6 +11,10 @@ Link-up targets $0 ongoing operating costs at launch, with any later costs small
 - [Project Structure](#project-structure)
 
 ## Architecture
+
+Link-up is first and foremost, a free messenger.  Communication between people should be free [https://reticulum.network/zenofreticulum.html].  Private data remains private unless given express permission.  No data is sold or used otherwise.  Link-up is an app helping people to connect for dating with a focus on gay men looking for gay men.  Eventually, it may be an umbrella app for a series of web properties each with their own branding.
+
+Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source.
 
 Link-up is a local-first, mobile-first Progressive Web App (PWA). Its user interface uses vanilla JavaScript, HTML, Milligram CSS, and standard browser and PWA APIs. The browser is the PWA runtime; Bun installs dependencies, runs project tasks, stages browser assets, and compiles the application host. The working-prototype design favors peer-to-peer exchange wherever practical.
 
@@ -103,9 +105,9 @@ During installation, Workbox downloads new or changed resources and reuses uncha
 
 The `version` property in `package.json` is the authoritative application version, using `MAJOR_VERSION.YYYYMMDD`. GitHub Actions updates the date after branch pushes using the push date in `America/New_York`; the major number changes manually. Workbox manages precache identity and invalidation through the generated asset revisions. The browser registers the service worker at `./sw.min.js` and uses the service-worker update lifecycle to install and activate changed builds.
 
-### Sitemap
+### Pages and UI overview
 
-The manifest has one stable start URL, `/`, which serves `default.html`. The default page, Profiles, and About are publicly accessible.
+The manifest has one stable start URL, `/`, which serves `default.html`. The main pages are Default, About, Profiles.  Default is the main entrypoint for the site.  Default also includes the login web component.  About includes info on the site including device specific info about PWAs in general.  Profiles is the "who's online" page for the app.  It will offer the profile search results toggled between a map based view and a list/grid based view.  There will also be various facets to narrow the search.
 
 ## Build and Delivery
 

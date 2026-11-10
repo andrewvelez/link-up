@@ -7,6 +7,7 @@
 import about from "../../dist/about.html" with { type: "file" };
 import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
 import login from "../../dist/default.html" with { type: "file" };
+import loginComponent from "../../dist/components/login.js" with { type: "file" };
 import profiles from "../../dist/profiles.html" with { type: "file" };
 import profileViews from "../../dist/js/profiles.js" with { type: "file" };
 import manifest from "../../dist/manifest.json" with { type: "file" };
@@ -23,14 +24,17 @@ import icon512Named from "../../dist/icons/icon_512.png" with { type: "file" };
 import styles from "../../dist/styles/global.css" with { type: "file" };
 import milligramStyles from "../../dist/external/milligram.min.css" with { type: "file" };
 
+import mockupArtwork from "../../dist/icons/mockup.svg" with { type: "file" };
+
 const pages = {
   Default: login,
-  Profiles,
-  About,
+  Profiles: profiles,
+  About: about,
 };
 
 const assets = {
   appInitialization,
+  loginComponent,
   profileViews,
   manifest,
   serviceWorker,
@@ -45,6 +49,7 @@ const assets = {
   icon512Named,
   styles,
   milligramStyles,
+  mockupArtwork,
 };
 
 /**
@@ -74,9 +79,11 @@ export const routes = {
   "/About": asset(pages.About),
   "/about": redirect("/About"),
   "/about.html": redirect("/About"),
+  "/components/login.js": asset(assets.loginComponent),
   "/js/profiles.js": asset(assets.profileViews),
   "/js/appInit.js": asset(assets.appInitialization),
   "/manifest.json": asset(assets.manifest),
+  "/icons/mockup.svg": asset(assets.mockupArtwork),
   "/icons/192x192.png": asset(assets.icon192),
   "/icons/24x24.png": asset(assets.icon24),
   "/icons/48x48.png": asset(assets.icon48),

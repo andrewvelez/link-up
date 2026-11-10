@@ -4,16 +4,18 @@
   @description Provides the About page for the Link-up PWA.
 -->
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#181818">
+    <meta name="theme-color" content="#111214">
+    <meta name="color-scheme" content="dark">
 
     <title>About</title>
 
     <link rel="icon" href="./icons/icon_24.png" type="image/png">
     <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./external/milligram.min.css">
     <link rel="stylesheet" href="./styles/global.css">
     <script src="./external/htmx.min.js"></script>
     <script type="module" src="./js/appInit.js"></script>
@@ -21,21 +23,39 @@
 
   <body class="about-page">
     <main id="app" class="container" tabindex="-1">
-      <h1 class="title is-1 is-size-2-mobile has-text-weight-semibold">About <span class="has-text-primary">Link-up</span></h1>
-      <p class="subtitle is-5 mb-6">Link-up is being built to help men find and connect with people nearby,
-        while keeping control of their own data.</p>
-      <section class="content is-medium is-size-6-mobile" aria-labelledby="pwa-heading">
-        <h2 id="pwa-heading" class="title is-3 is-size-4-mobile has-text-weight-normal">Using the app</h2>
-        <p>Link-up is a web app: open it in your browser, or add it to your
-          device for an app-like experience. Installation is optional.</p>
-        <p>On iPhone or iPad, open Safari’s Share menu and choose Add to Home
-          Screen. On Android, look for Install app or Add to Home screen in
-          your browser menu. On desktop, look for an install icon in the
-          address bar or an installation option in the browser menu.</p>
-        <p>Available options depend on your browser and device. The cached
-          introduction works offline; signing in requires a connection.</p>
+      <header class="about-header">
+        <a class="mini-brand" href="/"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="./icons/mockup.svg#link-mark"></use></svg><span>About Link-up</span></a>
+        <a class="button button-outline icon-button back" href="/" aria-label="Back to sign in"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#arrow-left"></use></svg></a>
+      </header>
+      <h1>Less noise.<br>More connection.</h1>
+      <p class="intro">For gay men, nearby and beyond.<br>Meet on your own terms.</p>
+      <div class="principles">
+        <section class="principle" aria-labelledby="conversations-heading">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chat"></use></svg>
+          <div><h2 id="conversations-heading">Good conversations. Free.</h2><p>Say hello. Keep talking.<br>Messaging doesn’t come with a price.</p></div>
+        </section>
+        <section class="principle" aria-labelledby="data-heading">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#shield"></use></svg>
+          <div><h2 id="data-heading">Your data stays yours.</h2><p>Stored on your device.<br>You decide what to share.</p></div>
+        </section>
+        <section class="principle" aria-labelledby="people-heading">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#hand"></use></svg>
+          <div><h2 id="people-heading">People come first.</h2><p>Your personal data isn’t for sale.<br>It’s that simple.</p></div>
+        </section>
+      </div>
+      <section class="install" aria-labelledby="install-heading">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#phone"></use></svg>
+        <div>
+          <h2 id="install-heading">A place on your home screen.</h2>
+          <p>Link-up is a web app. Add it to your home screen and open it like an app.</p>
+          <p class="install-steps">On iPhone <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#share"></use></svg> Share <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chevron-right"></use></svg> Add to Home Screen</p>
+          <details>
+            <summary>Other devices and browsers</summary>
+            <p>On Android, look for Install app or Add to Home screen in your browser menu. On desktop, look for an install icon in the address bar or an installation option in the browser menu. Available options depend on your browser and device. Installation is optional.</p>
+          </details>
+        </div>
       </section>
-      <a class="is-inline-block mt-5 is-underlined" href="/">Back to log in <span aria-hidden="true">&rarr;</span></a>
+      <a class="button explore primary" href="./profiles.html">Explore profiles<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#arrow-up-right"></use></svg></a>
     </main>
   </body>
 </html>

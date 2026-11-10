@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="link-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="m28 38-5 5a12 12 0 0 1-17-17l12-12a12 12 0 0 1 17 0m1 12 5-5a12 12 0 0 1 17 17L46 50a12 12 0 0 1-17 0M23 41l18-18"/>
+  </symbol>
+  <symbol id="brooklyn-concept-map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 932">
+    <rect width="430" height="932" fill="#121518"/><path d="M335-30c-55 110-35 182-61 266s-43 114-24 220 60 227 34 353L260 970h90l45-181c12-80-51-235-53-339s46-186 38-277S411 37 430-30Z" fill="#0D1013"/><g stroke="#22272C" stroke-width="1" opacity=".8"><path d="M-320 -80 0 990"/><path d="M-282 -80 38 990"/><path d="M-244 -80 76 990"/><path d="M-206 -80 114 990"/><path d="M-168 -80 152 990"/><path d="M-130 -80 190 990"/><path d="M-92 -80 228 990"/><path d="M-54 -80 266 990"/><path d="M-16 -80 304 990"/><path d="M22 -80 342 990"/><path d="M60 -80 380 990"/><path d="M98 -80 418 990"/><path d="M136 -80 456 990"/><path d="M174 -80 494 990"/><path d="M212 -80 532 990"/><path d="M250 -80 570 990"/><path d="M288 -80 608 990"/><path d="M326 -80 646 990"/><path d="M364 -80 684 990"/><path d="M402 -80 722 990"/><path d="M440 -80 760 990"/><path d="M478 -80 798 990"/><path d="M516 -80 836 990"/><path d="M554 -80 874 990"/><path d="M592 -80 912 990"/><path d="M-100 -100 520 -285"/><path d="M-100 -62 520 -247"/><path d="M-100 -24 520 -209"/><path d="M-100 14 520 -171"/><path d="M-100 52 520 -133"/><path d="M-100 90 520 -95"/><path d="M-100 128 520 -57"/><path d="M-100 166 520 -19"/><path d="M-100 204 520 19"/><path d="M-100 242 520 57"/><path d="M-100 280 520 95"/><path d="M-100 318 520 133"/><path d="M-100 356 520 171"/><path d="M-100 394 520 209"/><path d="M-100 432 520 247"/><path d="M-100 470 520 285"/><path d="M-100 508 520 323"/><path d="M-100 546 520 361"/><path d="M-100 584 520 399"/><path d="M-100 622 520 437"/><path d="M-100 660 520 475"/><path d="M-100 698 520 513"/><path d="M-100 736 520 551"/><path d="M-100 774 520 589"/><path d="M-100 812 520 627"/><path d="M-100 850 520 665"/><path d="M-100 888 520 703"/><path d="M-100 926 520 741"/><path d="M-100 964 520 779"/><path d="M-100 1002 520 817"/><path d="M-100 1040 520 855"/><path d="M-100 1078 520 893"/></g><g fill="none" stroke="#343A40" stroke-width="2" opacity=".7"><path d="M-90 296 480 128M-90 428 480 260M-38-80 258 932M133-80 429 932"/></g><path d="M306 145c-11 61-13 98-33 158s-15 99-6 151" stroke="#121518" stroke-width="54"/><g fill="#737B82" font-family="Arial,sans-serif" font-size="9" letter-spacing="2"><text x="83" y="200">GREENPOINT</text><text x="33" y="419">WILLIAMSBURG</text><text x="309" y="370" transform="rotate(73 309 370)" opacity=".55">EAST RIVER</text></g>
+  </symbol>
+  <symbol id="arrow-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M4 12h16m-6-6 6 6-6 6"/>
+  </symbol>
+  <symbol id="arrow-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M20 12H4m6-6-6 6 6 6"/>
+  </symbol>
+  <symbol id="arrow-up-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M6 18 18 6M6 6h12v12"/>
+  </symbol>
+  <symbol id="chevron-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="m7 10 5 5 5-5"/>
+  </symbol>
+  <symbol id="chevron-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="m10 6 6 6-6 6"/>
+  </symbol>
+  <symbol id="eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>
+  </symbol>
+  <symbol id="chat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M20 11.5a8 8 0 0 1-8 8H4l1.5-4A8 8 0 1 1 20 11.5Z"/><path d="M8 10h8m-8 4h5"/>
+  </symbol>
+  <symbol id="shield" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6l8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>
+  </symbol>
+  <symbol id="hand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M7 12V6a2 2 0 0 1 4 0v5-7a2 2 0 0 1 4 0v7-5a2 2 0 0 1 4 0v9c0 5-3 7-7 7-3 0-5-2-6-4l-3-5a2 2 0 0 1 3-2l3 3"/>
+  </symbol>
+  <symbol id="phone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 5h4m-3 14h2"/>
+  </symbol>
+  <symbol id="share" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M12 16V2m-5 5 5-5 5 5M7 10H4v12h16V10h-3"/>
+  </symbol>
+  <symbol id="map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/>
+  </symbol>
+  <symbol id="grid" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+  </symbol>
+  <symbol id="list" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M8 5h13M8 12h13M8 19h13M3 5h.1M3 12h.1M3 19h.1"/>
+  </symbol>
+  <symbol id="filter" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M3 7h4m4 0h10M3 17h10m4 0h4"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="17" r="2"/>
+  </symbol>
+  <symbol id="location" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/>
+  </symbol>
+  <symbol id="compass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <circle cx="12" cy="12" r="9"/><path d="m16 8-2 6-6 2 2-6 6-2Z"/>
+  </symbol>
+  <symbol id="locate" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+  </symbol>
+  <symbol id="person" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" >
+    <circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2H4Z"/>
+  </symbol>
+  <symbol id="profile-glyph-01" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+    <rect width="80" height="80" rx="8" fill="#252129"/><g stroke="#D1BDC8" stroke-width="1.6" stroke-linecap="round"><circle cx="40" cy="27" r="10"/><path d="M22 57c0-14 8-21 18-21s18 7 18 21"/></g>
+  </symbol>
+  <symbol id="profile-glyph-02" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+    <rect width="80" height="80" rx="8" fill="#252724"/><g stroke="#BFC9AE" stroke-width="1.6" stroke-linecap="round"><circle cx="40" cy="27" r="10"/><path d="M18 58c0-14 10-22 22-22s22 8 22 22"/></g>
+  </symbol>
+  <symbol id="profile-glyph-03" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+    <rect width="80" height="80" rx="8" fill="#23272C"/><g stroke="#B3C5D2" stroke-width="1.6" stroke-linecap="round"><circle cx="40" cy="27" r="10"/><path d="M23 58c0-16 7-22 17-22s17 6 17 22"/></g>
+  </symbol>
+</svg>
