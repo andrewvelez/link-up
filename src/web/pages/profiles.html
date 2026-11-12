@@ -6,14 +6,17 @@
 <html lang="en">
   <head>
     <title>Profiles</title>
+
     <meta charset="utf-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1">
     <meta name="theme-color" content="#111214">
     <meta name="color-scheme" content="dark">
+
     <link rel="icon" href="./icons/icon_24.png" type="image/png">
     <link rel="manifest" href="./manifest.json">
     <link rel="stylesheet" href="./external/milligram.min.css">
     <link rel="stylesheet" href="./styles/global.css">
+
     <script src="./external/htmx.min.js"></script>
     <script type="module" src="./js/appInit.js"></script>
     <script type="module" src="./js/profiles.js"></script>
@@ -22,29 +25,93 @@
   <body class="profiles-page">
     <main id="app" data-view="map" tabindex="-1">
       <header class="profile-controls">
-        <button class="place" type="button" disabled title="Location selection is coming soon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#location"></use></svg>Brooklyn, NY<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chevron-down"></use></svg></button>
-        <a class="button button-outline icon-button" href="/" aria-label="Sign in"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#person"></use></svg></a>
+        <button class="place" type="button" disabled title="Location selection is coming soon">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#location"></use>
+          </svg>
+          Brooklyn, NY
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#chevron-down"></use>
+          </svg>
+        </button>
+
+        <a class="button button-outline icon-button" href="/" aria-label="Sign in">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#person"></use>
+          </svg>
+        </a>
+
         <fieldset id="profile-view" class="views">
           <legend class="visually-hidden">View profiles</legend>
+
           <input type="radio" name="profile-view" id="view-map" value="map" aria-controls="profiles-map profiles-results" checked>
-          <label for="view-map"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#map"></use></svg>Map</label>
+          <label for="view-map">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#map"></use>
+            </svg>
+            Map
+          </label>
+
           <input type="radio" name="profile-view" id="view-grid" value="grid" aria-controls="profiles-map profiles-results">
-          <label for="view-grid"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#grid"></use></svg>Grid</label>
+          <label for="view-grid">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#grid"></use>
+            </svg>
+            Grid
+          </label>
         </fieldset>
-        <button class="icon-button" type="button" disabled aria-label="Filters (coming soon)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#filter"></use></svg></button>
+
+        <button class="icon-button" type="button" disabled aria-label="Filters (coming soon)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#filter"></use>
+          </svg>
+        </button>
       </header>
+
       <div id="profiles-map" class="map" role="region" aria-label="Illustrative Brooklyn map with sample profile areas">
-        <svg class="map-art" viewBox="0 0 430 932" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><use href="./icons/mockup.svg#brooklyn-concept-map"></use></svg>
-        <div class="area area-one" aria-hidden="true"><span>8</span></div>
-        <div class="area area-two" aria-hidden="true"><span>12</span></div>
-        <div class="area area-three" aria-hidden="true"><span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#person"></use></svg></span></div>
-        <p class="map-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#shield"></use></svg>Approximate areas. Never exact pins.</p>
-        <button class="icon-button recenter" type="button" disabled aria-label="Recenter map (coming soon)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#locate"></use></svg></button>
+        <svg class="map-art" viewBox="0 0 430 932" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+          <use href="./icons/mockup.svg#brooklyn-concept-map"></use>
+        </svg>
+
+        <div class="area area-one" aria-hidden="true">
+          <span>8</span>
+        </div>
+
+        <div class="area area-two" aria-hidden="true">
+          <span>12</span>
+        </div>
+
+        <div class="area area-three" aria-hidden="true">
+          <span>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#person"></use>
+            </svg>
+          </span>
+        </div>
+
+        <p class="map-note">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#shield"></use>
+          </svg>
+          Approximate areas. Never exact pins.
+        </p>
+
+        <button class="icon-button recenter" type="button" disabled aria-label="Recenter map (coming soon)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#locate"></use>
+          </svg>
+        </button>
       </div>
+
       <section class="sheet" aria-labelledby="nearby-heading">
         <div class="handle" aria-hidden="true"></div>
-        <div class="sheet-title"><h1 id="nearby-heading">Nearby</h1><span>Sample profiles</span></div>
+
+        <div class="sheet-title">
+          <h1 id="nearby-heading">Nearby</h1>
+          <span>Sample profiles</span>
+        </div>
         <p class="sheet-subtitle">People who’ve chosen to be visible.</p>
+
         <div class="grid-settings">
           <label for="profile-columns">Columns</label>
           <select id="profile-columns" aria-controls="profiles-results">
@@ -53,24 +120,72 @@
             <option value="5">5</option>
           </select>
         </div>
+
         <ul id="profiles-results" class="profile-results">
           <li class="profile">
-            <svg class="avatar" viewBox="0 0 80 80" aria-hidden="true"><use href="./icons/mockup.svg#profile-glyph-01"></use></svg>
-            <div class="person-info"><p class="person-name">Marcus <span>32</span></p><p class="person-location"><span class="online-dot" aria-hidden="true"></span>Online · Brooklyn</p></div>
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chevron-right"></use></svg>
+            <svg class="avatar" viewBox="0 0 80 80" aria-hidden="true">
+              <use href="./icons/mockup.svg#profile-glyph-01"></use>
+            </svg>
+
+            <div class="person-info">
+              <p class="person-name">Marcus <span>32</span></p>
+              <p class="person-location">
+                <span class="online-dot" aria-hidden="true"></span>
+                Online · Brooklyn
+              </p>
+            </div>
+
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#chevron-right"></use>
+            </svg>
           </li>
+
           <li class="profile">
-            <svg class="avatar" viewBox="0 0 80 80" aria-hidden="true"><use href="./icons/mockup.svg#profile-glyph-02"></use></svg>
-            <div class="person-info"><p class="person-name">Alex <span>36</span></p><p class="person-location"><span class="online-dot" aria-hidden="true"></span>Online · Brooklyn</p></div>
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chevron-right"></use></svg>
+            <svg class="avatar" viewBox="0 0 80 80" aria-hidden="true">
+              <use href="./icons/mockup.svg#profile-glyph-02"></use>
+            </svg>
+
+            <div class="person-info">
+              <p class="person-name">Alex <span>36</span></p>
+              <p class="person-location">
+                <span class="online-dot" aria-hidden="true"></span>
+                Online · Brooklyn
+              </p>
+            </div>
+
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#chevron-right"></use>
+            </svg>
           </li>
+
           <li class="profile">
-            <svg class="avatar" viewBox="0 0 80 80" aria-hidden="true"><use href="./icons/mockup.svg#profile-glyph-03"></use></svg>
-            <div class="person-info"><p class="person-name">Eli <span>29</span></p><p class="person-location">Brooklyn</p></div>
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chevron-right"></use></svg>
+            <svg class="avatar" viewBox="0 0 80 80" aria-hidden="true">
+              <use href="./icons/mockup.svg#profile-glyph-03"></use>
+            </svg>
+
+            <div class="person-info">
+              <p class="person-name">Eli <span>29</span></p>
+              <p class="person-location">Brooklyn</p>
+            </div>
+
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#chevron-right"></use>
+            </svg>
           </li>
         </ul>
-        <footer class="guest"><p><strong>Browsing is open.</strong><br>Sign in to start a conversation.</p><a href="/">Sign in <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#arrow-up-right"></use></svg></a></footer>
+
+        <footer class="guest">
+          <p>
+            <strong>Browsing is open.</strong><br>
+            Sign in to start a conversation.
+          </p>
+          <a href="/">
+            Sign in
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#arrow-up-right"></use>
+            </svg>
+          </a>
+        </footer>
       </section>
     </main>
   </body>

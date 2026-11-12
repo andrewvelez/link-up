@@ -17,6 +17,7 @@
     <link rel="manifest" href="./manifest.json">
     <link rel="stylesheet" href="./external/milligram.min.css">
     <link rel="stylesheet" href="./styles/global.css">
+
     <script src="./external/htmx.min.js"></script>
     <script type="module" src="./js/appInit.js"></script>
   </head>
@@ -24,38 +25,106 @@
   <body class="about-page">
     <main id="app" class="container" tabindex="-1">
       <header class="about-header">
-        <a class="mini-brand" href="/"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="./icons/mockup.svg#link-mark"></use></svg><span>About Link-up</span></a>
-        <a class="button button-outline icon-button back" href="/" aria-label="Back to sign in"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#arrow-left"></use></svg></a>
+        <a class="mini-brand" href="/">
+          <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+            <use href="./icons/mockup.svg#link-mark"></use>
+          </svg>
+          <span>About Link-up</span>
+        </a>
+
+        <a class="button button-outline icon-button back" href="/" aria-label="Back to sign in">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#arrow-left"></use>
+          </svg>
+        </a>
       </header>
-      <h1>Less noise.<br>More connection.</h1>
-      <p class="intro">For gay men, nearby and beyond.<br>Meet on your own terms.</p>
+
+      <h1>
+        Less noise.<br>
+        More connection.
+      </h1>
+      <p class="intro">
+        For gay men, nearby and beyond.<br>
+        Meet on your own terms.
+      </p>
+
       <div class="principles">
         <section class="principle" aria-labelledby="conversations-heading">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chat"></use></svg>
-          <div><h2 id="conversations-heading">Good conversations. Free.</h2><p>Say hello. Keep talking.<br>Messaging doesn’t come with a price.</p></div>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#chat"></use>
+          </svg>
+
+          <div>
+            <h2 id="conversations-heading">Good conversations. Free.</h2>
+            <p>
+              Say hello. Keep talking.<br>
+              Messaging doesn’t come with a price.
+            </p>
+          </div>
         </section>
+
         <section class="principle" aria-labelledby="data-heading">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#shield"></use></svg>
-          <div><h2 id="data-heading">Your data stays yours.</h2><p>Stored on your device.<br>You decide what to share.</p></div>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#shield"></use>
+          </svg>
+
+          <div>
+            <h2 id="data-heading">Your data stays yours.</h2>
+            <p>
+              Stored on your device.<br>
+              You decide what to share.
+            </p>
+          </div>
         </section>
+
         <section class="principle" aria-labelledby="people-heading">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#hand"></use></svg>
-          <div><h2 id="people-heading">People come first.</h2><p>Your personal data isn’t for sale.<br>It’s that simple.</p></div>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="./icons/mockup.svg#hand"></use>
+          </svg>
+
+          <div>
+            <h2 id="people-heading">People come first.</h2>
+            <p>
+              Your personal data isn’t for sale.<br>
+              It’s that simple.
+            </p>
+          </div>
         </section>
       </div>
+
       <section class="install" aria-labelledby="install-heading">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#phone"></use></svg>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <use href="./icons/mockup.svg#phone"></use>
+        </svg>
+
         <div>
           <h2 id="install-heading">A place on your home screen.</h2>
           <p>Link-up is a web app. Add it to your home screen and open it like an app.</p>
-          <p class="install-steps">On iPhone <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#share"></use></svg> Share <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#chevron-right"></use></svg> Add to Home Screen</p>
+          <p class="install-steps">
+            On iPhone
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#share"></use>
+            </svg>
+            Share
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <use href="./icons/mockup.svg#chevron-right"></use>
+            </svg>
+            Add to Home Screen
+          </p>
+
           <details>
             <summary>Other devices and browsers</summary>
             <p>On Android, look for Install app or Add to Home screen in your browser menu. On desktop, look for an install icon in the address bar or an installation option in the browser menu. Available options depend on your browser and device. Installation is optional.</p>
           </details>
         </div>
       </section>
-      <a class="button explore primary" href="./profiles.html">Explore profiles<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="./icons/mockup.svg#arrow-up-right"></use></svg></a>
+
+      <a class="button explore primary" href="./profiles.html">
+        Explore profiles
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <use href="./icons/mockup.svg#arrow-up-right"></use>
+        </svg>
+      </a>
     </main>
   </body>
 </html>

@@ -1,8 +1,10 @@
 /**
  * @author Andrew Velez
  * @license MIT
+ * @module
  * @description Switches between the public profile views.
  */
+
 
 const viewSelector = document.querySelector("#profile-view");
 const app = document.querySelector("#app");
