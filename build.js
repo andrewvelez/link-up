@@ -97,13 +97,11 @@ function clean() {
 
 /**
  * @type {Function}
- * @description Creates a clean application bundle for the requested environment.
- * @param {string} environment Development or production environment name.
+ * @description Creates a clean application bundle.
  * @returns {Promise} Resolves after all build steps succeed.
  * @throws {Error} If any build step fails.
  */
-async function bundleApplication(environment) {
-  process.env.NODE_ENV = environment;
+async function bundleApplication() {
   clean();
   copyBuildFiles();
   await bundleClientJs();
@@ -116,8 +114,8 @@ async function bundleApplication(environment) {
  * @throws {Error} If the test process cannot be started.
  */
 function runTests() {
-  const testRunner = Bun.spawnSync([process.execPath, "test"], {
-    env: process.env,
+  const testRunner = Bun.spawnSync([process.execPath, "test", "--env-file=.env.test"], {
+    env: { ...process.env, NODE_ENV: undefined },
     stdout: "inherit",
     stderr: "inherit",
   });
@@ -138,8 +136,8 @@ async function startServer() {
  * @description Bundles and tests the application for development.
  * @returns {Promise} Resolves after bundling and tests succeed.
  */
-async function buildDevelopment() {
-  await bundleApplication("development");
+async function buildDev() {
+  await bundleApplication();
   runTests();
 }
 
@@ -147,8 +145,8 @@ async function buildDevelopment() {
  * @description Bundles, tests, and starts the application for development.
  * @returns {Promise} Resolves after the development server starts.
  */
-async function startDevelopment() {
-  await bundleApplication("development");
+async function startDev() {
+  await bundleApplication();
   runTests();
   await startServer();
 }
@@ -157,8 +155,8 @@ async function startDevelopment() {
  * @description Bundles and tests the application for production; deployment is TODO.
  * @returns {Promise} Resolves after bundling and tests succeed.
  */
-async function deployProduction() {
-  await bundleApplication("production");
+async function deployProd() {
+  await bundleApplication();
   runTests();
   // TODO: Deploy the tested production build.
 }
@@ -169,7 +167,7 @@ async function deployProduction() {
 async function main() {
   process.chdir(import.meta.dir);
 
-  const buildCommands = [buildDevelopment, startDevelopment, deployProduction];
+  const buildCommands = [buildDev, startDev, deployProd];
   const argvCommand = process.argv[2];
   const cmdFunc = buildCommands.find(cmdFunc => cmdFunc.name === argvCommand);
 

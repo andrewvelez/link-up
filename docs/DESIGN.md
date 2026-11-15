@@ -117,7 +117,7 @@ The build environments are development and production. Each top-level command in
 - `bun run start:dev` calls `startDevelopment()`: bundle for development, run tests, then start the local server from source.
 - `bun run deploy:prod` calls `deployProduction()`: bundle for production, then run tests. Deployment is currently a TODO.
 
-`bundleApplication(environment)` sets `NODE_ENV` to the selected environment and performs these stages in order:
+`NODE_ENV` comes from `.env` files: `.env.local` sets `dev` locally, `.env` sets `prod`, and `runTests()` loads `.env.test` with `test` after excluding the inherited `NODE_ENV`. `bundleApplication()` performs these stages in order:
 
 1. In `clean()`, delete `dist/` if it exists.
 2. In `copyBuildFiles()`, copy the PWA pages, manifest, and static assets from `src/web/` into `dist/`, then stage HTMX and Milligram from `node_modules/` into `dist/external/`.
@@ -126,7 +126,7 @@ The build environments are development and production. Each top-level command in
 
 All three commands call `runTests()` after bundling. A build or test failure stops the workflow; `startDevelopment()` calls `startServer()` only after tests pass. Deploy the production `dist/link-up` only when `bun run deploy:prod` succeeds (exit code 0). Automatic deployment is not implemented.
 
-Bare `bun test` runs the test suite without bundling first.
+`bun test --env-file=.env.test` runs the test suite in the test environment without bundling first.
 
 ## Project Structure
 

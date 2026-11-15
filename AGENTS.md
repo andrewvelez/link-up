@@ -9,6 +9,7 @@
 - Write code that is easy to read and maintain.
 - All src code, test code, jsdoc annotations and examples in docs should be in JavaScript with no references to TypeScript types.
 - Prefer synchronous code over asynchronous code.
+- Regular code should never have to be modified in order to satisfy or to write a test.
 
 ## Appropriate Role & Response for the Given Prompt
 
