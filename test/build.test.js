@@ -179,6 +179,42 @@ describe("build", () => {
     expect(existsSync(join(outputDirectory, "sw.js"))).toBe(false);
   });
 
+  test("removes only HTML comments before precaching copied pages", async () => {
+    const fixtureDirectory = createFixture();
+    const pagesDirectory = join(fixtureDirectory, "src", "web", "pages");
+    const outputDirectory = join(fixtureDirectory, "dist");
+    const expected = `<html>
+  <body>
+    <p>Hello</p>
+    <script>const value = "<!-- literal -->";</script>
+  </body>
+</html>
+`;
+    const html = `<!-- Header
+comment -->${expected.replace("<p>", "<!-- Inside body --><p>")}`;
+    const pages = ["about.html", "nested/extra.html"];
+
+    mkdirSync(join(pagesDirectory, "nested"), { recursive: true });
+    for (const page of pages) {
+      writeFileSync(join(pagesDirectory, page), html);
+    }
+    writeFileSync(join(pagesDirectory, "keep.txt"), html);
+
+    const result = await runBuildScript(fixtureDirectory, "buildDev");
+
+    expect(result.exitCode).toBe(0);
+    for (const page of pages) {
+      expect(readFileSync(join(outputDirectory, page), "utf8")).toBe(expected);
+      expect(readFileSync(join(pagesDirectory, page), "utf8")).toBe(html);
+    }
+    expect(readFileSync(join(outputDirectory, "keep.txt"), "utf8")).toBe(html);
+
+    const revision = createHash("md5").update(expected).digest("hex");
+    expect(readFileSync(join(outputDirectory, "sw.min.js"), "utf8")).toMatch(
+      new RegExp(`"?revision"?:"${revision}","?url"?:"about\\.html"`),
+    );
+  });
+
   test("updates precache revisions when asset contents change", async () => {
     const fixtureDirectory = createFixture();
     const aboutPath = join(fixtureDirectory, "src", "web", "pages", "about.html");

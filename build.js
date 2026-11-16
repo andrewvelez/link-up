@@ -5,7 +5,7 @@
  * @description Builds and serves Link-up's browser PWA assets with Bun.
  */
 
-import { cpSync, mkdirSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { injectManifest } from "workbox-build";
 
 /**
@@ -88,6 +88,23 @@ function copyBuildFiles() {
 }
 
 /**
+ * @description Removes HTML comments from copied build pages.
+ */
+function removeComments() {
+  const rewriter = new HTMLRewriter().onDocument({
+    comments(comment) {
+      comment.remove();
+    },
+  });
+
+  for (const file of new Bun.Glob("**/*.html").scanSync("./dist")) {
+    const path = `./dist/${file}`;
+    const html = readFileSync(path, "utf8");
+    writeFileSync(path, rewriter.transform(html));
+  }
+}
+
+/**
  * @description Removes generated build output.
  * @returns {void}
  */
@@ -104,6 +121,7 @@ function clean() {
 async function bundleApplication() {
   clean();
   copyBuildFiles();
+  removeComments();
   await bundleClientJs();
   await bundleServerExecutable();
 };
