@@ -6,13 +6,15 @@
 > provisional proposals based on overarching design goals, not approved
 > implementation commitments.
 
-This roadmap covers the remaining Version 1 application: geographic discovery,
-searchable profiles, and rudimentary private messaging. Each epic contains
-individually selectable user stories in priority order. Technical enablers use
-the same acceptance and dependency rules as user-facing stories.
+This roadmap starts with a **text-only profile-search beta demo** and continues
+through geographic discovery, searchable profiles, and rudimentary private
+messaging for Version 1. Epics group related stories; they are not the execution
+order. Technical enablers use the same acceptance and dependency rules as
+user-facing stories. Reviewed against the current checkout on November 22, 2026.
 
 Sources:
 
+- [README and implementation status](../README.md)
 - [Application overview](DESIGN.md)
 - [Locality architecture](locality-design.md)
 - [Network and search decisions](network-search-decisions.md)
@@ -20,42 +22,96 @@ Sources:
 
 ## Current baseline
 
-Source inspection shows an existing PWA shell, Workbox precaching, Bun executable
-build and placeholder profile views. H3
-is an installed dependency; application persistence, encrypted user data,
-geographic discovery, peer networking, search, and messaging remain to be implemented.
+Source inspection shows public Default and Profiles pages, a disabled login
+component, sample profiles, an illustrative map, Map/Grid switching, and grid
+column selection. None of these views searches stored profile data.
 
-Authentication is not implemented. All current pages are publicly accessible.
-Resolve access policy before exposing real data.
+Application source is under `src/`, with page-specific Profiles files in
+`src/profiles/` and regular-DOM components in `src/components/`. Shared browser
+initialization is `src/appInit.js`; the executable host and routes are
+`src/server.js` and `src/routes.js`. `dist/` is generated. Keep markup and styles
+separate from component scripts, and keep feature logic outside shared listeners.
 
-granthdb, H3, and Orama are settled library choices; their implementation and
-integration remain open. Converse/XMPP is a speculative messaging candidate.
-Peer transport, replication, and shared-index mechanisms remain open choices.
+Workbox already precaches revisioned assets. Startup navigation checks the
+network and falls back to cached `/`; Profiles uses the precache. The manifest
+starts at `/`. Cached interface assets do not implement the planned blocking
+offline overlay or permission to use features offline.
+
+`bun run build`, `bun run start`, and `bun run deploy` bundle and then test;
+`bun test` tests without bundling. Production bundling produces `dist/link-up`,
+but automatic deployment is TODO. The host listens on `127.0.0.1` with an
+assigned port, so access from a second device needs an explicit hosting setup.
+
+Authentication, profile editing, application persistence, encryption, geographic
+discovery, peer networking, search, messaging, and notifications are absent.
+H3 and Dexie are installed, but neither implements those application features;
+an installed dependency does not establish a persistence implementation.
+granthdb, Orama, and Converse are not installed in the current package manifest.
+
+DESIGN proposes granthdb with SQLite/WASM, OPFS, and an IndexedDB fallback, and
+names Converse/XMPP as the planned messaging library. H3 is the geographic
+direction; Orama remains the preferred search candidate pending integration
+validation. Peer transport, replication, and shared-index mechanisms remain
+open. Earlier planning documents do not turn those proposals into completed work.
 
 ## Story decision status
 
 | Stories | Decision status |
 | --- | --- |
-| E1-S1 | Contains a settled library choice: granthdb. |
-| E3-S1 | Contains a settled library choice: H3. |
-| E5-S1, E8-S1 | Contain a settled library choice: Orama. |
+| E1-S1 | Implement and validate the granthdb storage proposal from DESIGN, including its persistence fallback. |
+| E3-S1 | Integrate the installed H3 library; geographic policy remains open. |
+| E5-S6, E5-S1, E8-S1 | Evaluate the preferred Orama direction; beta text search and shared geographic snapshots are separate validation steps. |
+| E10-S1, E10-S4 | Integrate planned Converse/XMPP; encryption, infrastructure, delivery, and persistence boundaries remain open. |
 | All other stories | Speculative scope and implementation based on overarching design goals. |
+
+## Delivery milestones and beta-first order
+
+The requested early deliverable is a **beta demo**, not an MVP: a functional
+text-only profile-search page inside the PWA, with a defined local profile-text
+store and working search results. It needs no photos, location permission, H3
+processing, regional builder, peer exchange, or messaging. Use synthetic demo
+profiles; this milestone does not authorize publication of real profiles.
+
+| Order | Story | Observable result |
+| --- | --- | --- |
+| 1 | [E1-S1](#e1-s1--create-profile-and-locality-data-structures-and-their-local-store) | Defined profile-text records and local store, distinct from the search index. |
+| 2 | [E1-S2](#e1-s2--encrypt-and-reopen-authoritative-owner-records) | Encrypted owner records reopen through a local account unlock. |
+| 3 | [E2-S1](#e2-s1--save-a-minimal-text-profile-locally) | Display name and bio can be edited, saved, and restored. |
+| 4 | [E5-S6](#e5-s6--search-locally-stored-profile-text) | Text queries search persisted synthetic summaries without geographic prerequisites. |
+| 5 | [E9-S4](#e9-s4--provide-the-text-only-profile-search-page) | PWA search controls render matching text profiles and empty/error states. |
+| 6 | [E12-S1](#e12-s1--preserve-the-page-and-enforce-sustained-offline-behavior) | The demo observes DESIGN's network-required interaction policy. |
+| **7** | [**E13-S5 — beta demo complete**](#e13-s5--verify-the-text-search-beta-demo) | The integrated search, persistence, and PWA flow passes verification. |
+
+The old sequence required photo creation, location/locality processing, peer
+networking, and regional snapshots before displaying searchable results. E5-S6
+and E9-S4 now supply the earlier text-only flow; geographic search extends it
+later. Existing story IDs remain stable even where a new story executes first.
+
+There is no separate two-device prototype milestone. E13-S1 is retired and is
+not a prerequisite for subsequent work. **MVP scope and its completion gate
+remain to be agreed**; the beta demo does not define them.
+The expected finish for the currently specified full Version 1 scope remains
+**E13-S4**, after complete acceptance and release-readiness checks. A smaller
+product MVP would need its own agreed user scope and acceptance gate before a
+credible earlier finish can be marked.
 
 ## Story ordering and sprint composition
 
-- Story IDs are stable. Within each epic, lower-numbered stories have higher
-  implementation priority; explicit dependencies determine what can start.
+- Story IDs are stable references, not execution priority. Follow the beta-first
+  order above, also used by the Speed Sprint; explicit dependencies determine what
+  can start. Post-beta work follows the remaining dependency graph.
 - **Requires** lists direct prerequisite stories. Their prerequisites also apply.
   Epic order alone does not impose a dependency on every story in an earlier epic.
 - **Accept** defines the proposed scope of a story. A sprint selects whole stories
   and their unmet prerequisites; it does not silently narrow acceptance criteria.
-- Early stories deliver bounded, reusable capabilities: a test region, known
-  peers, one builder, and complete snapshots. Later stories extend those
-  capabilities for Version 1. Completing an early story does not complete its epic.
+- Beta stories deliver reusable text storage, search, and results. Later stories
+  introduce location, configured peers, one regional builder, and complete
+  snapshots before extending those capabilities for Version 1. Completing an
+  early story does not complete its epic.
 - Research, definitions, library evaluation, and architecture decisions are
   part of the implementation stories that need them. Set budgets before
   evaluation, record the results with the implementation, and resolve failed
-  validation before completing the story. Prototype choices do not settle
+  validation before completing the story. Early implementation choices do not settle
   launch architecture.
 - [Speed Sprint](Speed_Sprint_Detailed.md) selects an ordered, dependency-complete subset.
   Its story definitions and acceptance criteria live here. No story below is
@@ -64,17 +120,17 @@ Peer transport, replication, and shared-index mechanisms remain open choices.
 Human coding time estimates assume one experienced developer without AI assistance.
 Human coding with AI estimates assume the same developer using AI assistance.
 Both are person-hours.
-They include implementation and prototype code, excluding research, testing,
+They include implementation code, excluding research, testing,
 and documentation. Prerequisites are assumed complete; their effort is not
 counted again. Zero means no coding is specified, not zero total effort.
 Ranges are planning judgments and may change as implementation resolves the architecture.
 
 ## Version 1 epics
 
-Begin with profile data structures, then their local store with locality as a
-first-class entity. Create saved profiles and resolve their localities before
-implementing local search, regional distribution, and discovery. Messaging
-follows working discovery.
+Begin with the seven-story beta sequence above. Define locality as a separate
+entity without requiring its resolution to search text. After beta verification,
+add authenticated access, location/locality processing, geographic search,
+regional distribution, and real discovery. Messaging follows working discovery.
 
 E11 and E12 begin alongside the features they govern. Their final stories cover
 integration across the completed Version 1 application.
@@ -89,10 +145,13 @@ under my control.
 As a user, I want my data kept separate from other accounts on this device.
 
 - **Accept:** Create reusable profile and locality models in a versioned,
-  account-scoped granthdb store. Map user identities to stable local accounts.
-  Keep geographic concepts distinct and private owner data separate from
-  supporting discovery data. Verify isolation with non-sensitive fixtures;
-  real owner data awaits E1-S2.
+  account-scoped granthdb store. Validate the proposed SQLite/WASM, OPFS, and
+  IndexedDB fallback path. Document profile-text records (stable ID, display
+  name, bio, and revision), ownership, and the store API. Separate owner records,
+  synthetic demo summaries, and rebuildable search indexes; define which store
+  owns each record so the search engine never becomes the owner-data authority.
+  Keep locality separate and optional for beta text search. Verify account
+  isolation with non-sensitive fixtures; real owner data awaits E1-S2.
 - **Requires:** None.
 - **Human coding time:** 8–12 hours.
 - **Human coding with AI:** 4–6 hours.
@@ -102,9 +161,11 @@ As a user, I want my data kept separate from other accounts on this device.
 As a user, I want my profile and messages protected and available after reload.
 
 - **Accept:** Encrypt owner records with account-scoped keys and reopen them
-  after reload or sign-in. Keep accounts isolated and show failures clearly
-  without silently saving plaintext. Device linking and identity recovery
-  remain deferred.
+  after reload through a defined local unlock and key lifecycle. A local demo
+  account is sufficient for beta; remote authentication belongs to E1-S6. Keep
+  accounts isolated and show failures clearly without silently saving plaintext.
+  Message-record support does not implement messaging. Device linking and
+  identity recovery remain deferred.
 - **Requires:** E1-S1.
 - **Human coding time:** 16–24 hours.
 - **Human coding with AI:** 10–16 hours.
@@ -141,6 +202,21 @@ As a user, I want to remove my local data and stop its continued publication.
 - **Human coding time:** 8–16 hours.
 - **Human coding with AI:** 4–8 hours.
 
+#### E1-S6 — Authenticate accounts and enforce feature access
+
+As a user, I want sign-in to protect account actions and private data.
+
+- **Accept:** Replace the disabled login placeholder with an agreed account
+  creation, sign-in, sign-out, and local-unlock flow. Bind the authenticated
+  identity to local encryption keys and later peer and messaging identities.
+  Decide whether unauthenticated users may read opted-in discovery summaries;
+  enforce authorization for publication, owner details, and messaging. Public
+  shell/demo access grants no private-data access. Do not imply that the current
+  email/password mockup establishes an authentication or recovery architecture.
+- **Requires:** E1-S2.
+- **Human coding time:** 12–24 hours.
+- **Human coding with AI:** 6–14 hours.
+
 ### E2 — Create and maintain the user's profile
 
 As a user, I want to create and update my profile and choose what others can see.
@@ -162,7 +238,8 @@ As a user, I want to choose or replace the photo associated with my profile.
 
 - **Accept:** Support one encrypted profile photo that survives reloads,
   enforcing suitable image limits. Keep the owner’s photo distinct from any
-  version approved for discovery.
+  version explicitly approved for discovery, and integrate photo consent with
+  publication if E2-S3 is already implemented. Photos do not gate text search.
 - **Requires:** E2-S1.
 - **Human coding time:** 6–10 hours.
 - **Human coding with AI:** 3–5 hours.
@@ -174,8 +251,8 @@ As a user, I want to explicitly choose whether my profile appears in discovery.
 - **Accept:** Require explicit opt-in before preparing a permitted search
   summary. Keep private information out of distributed discovery data. Version
   outgoing updates and show whether saved changes await publication; network
-  delivery belongs to E7.
-- **Requires:** E2-S2.
+  delivery belongs to E7. Text-only profiles may opt in without a photo.
+- **Requires:** E2-S1.
 - **Human coding time:** 8–12 hours.
 - **Human coding with AI:** 4–6 hours.
 
@@ -234,7 +311,7 @@ As a user, I want useful nearby discovery without disclosing my exact position.
 
 As a user, I want meaningful movement reflected without stale presence or GPS jitter.
 
-- **Accept:** Keep active location and presence current using fixed prototype
+- **Accept:** Keep active location and presence current using initial bounded
   rules that suppress GPS jitter and expire stale information. Update locality
   membership as users move and revalidate expired locations before publishing
   again.
@@ -265,14 +342,14 @@ As a user, I want to choose the agreed precise mode and return to city-level pri
 - **Human coding time:** 10–18 hours.
 - **Human coding with AI:** 6–10 hours.
 
-### E4 — Build offline locality reference data and resolution
+### E4 — Build local locality reference data and resolution
 
 As a user, I want useful locality names without depending on metered geographic
 services.
 
 #### E4-S1 — Prepare reference data for one test region
 
-As a tester, I want a reproducible geographic dataset for the prototype region.
+As a tester, I want a reproducible geographic dataset for the initial region.
 
 - **Accept:** Prepare a compact, versioned geographic dataset for the test
   region from the specified government sources. Record its provenance and
@@ -295,7 +372,7 @@ As a user, I want my position labeled with the correct available locality.
 
 #### E4-S3 — Extend and maintain partitioned U.S. reference data
 
-As a user, I want locality resolution beyond the prototype region.
+As a user, I want locality resolution beyond the initial region.
 
 - **Accept:** Automate regional reference-data preparation and maintenance
   across the U.S. Preserve owner data and keep essential locality resolution
@@ -313,15 +390,15 @@ searchable while regional updates arrive.
 
 As a user, I want matching profiles ordered by approximate proximity.
 
-- **Accept:** Implement persistent local profile search using permitted
-  discovery data. Validate Orama integration and snapshot support against phone
-  performance and transfer budgets set in advance. Verify realistic geographic
-  and record-lifecycle cases. Order matches by disclosed distance with stable
+- **Accept:** Extend E5-S6 text search with radius filtering using permitted
+  discovery data. Validate Orama geographic integration and snapshot support
+  against phone performance and transfer budgets set in advance. Verify realistic
+  geographic and record-lifecycle cases. Order matches by disclosed distance with stable
   tie breaking, and resolve compatibility problems before distributed-index
   work.
-- **Requires:** E2-S3, E3-S3.
-- **Human coding time:** 18–34 hours.
-- **Human coding with AI:** 10–20 hours.
+- **Requires:** E5-S6, E2-S3, E3-S3.
+- **Human coding time:** 10–20 hours.
+- **Human coding with AI:** 6–12 hours.
 
 #### E5-S2 — Include neighboring cells without duplicate profiles
 
@@ -368,20 +445,40 @@ As a user, I want immediate available results with an honest view of freshness.
 - **Human coding time:** 10–18 hours.
 - **Human coding with AI:** 6–10 hours.
 
+#### E5-S6 — Search locally stored profile text
+
+As a beta demonstrator, I want text queries to find matching stored profiles.
+
+- **Accept:** Load a reproducible set of synthetic profile summaries into the
+  E1-S1 local store and search their display names and bios. Evaluate Orama for
+  this bounded text-search path without waiting for geographic or shared-index
+  validation. Define matching, empty-query behavior, stable result ordering,
+  and insert/update/delete handling. Reopen or rebuild the derived index from
+  persisted summaries after reload. Keep private owner records out of search
+  unless explicitly included in a local-only demo dataset. No publication or
+  location is required. Persist owner-derived summaries or search artifacts
+  encrypted; authorized queries may use decrypted data in memory. Resolve failed
+  library validation before completing.
+- **Requires:** E1-S2.
+- **Human coding time:** 8–14 hours.
+- **Human coding with AI:** 4–8 hours.
+
 ### E6 — Establish secure browser network connections
 
 As a user, I want the app to find and connect to relevant peers automatically.
 
 #### E6-S1 — Connect known peers securely
 
-As a tester, I want authorized exchanges between configured test devices.
+As a user, I want authorized exchanges with configured peers.
 
-- **Accept:** Connect two configured devices through a secure browser
+- **Accept:** Connect configured peers through a secure browser
   transport with the necessary supporting infrastructure. Authenticate
-  account-bound peers and authorize their requests. Enforce a prototype
+  account-bound peers and authorize their requests. Establish a reachable,
+  secure hosting setup for browser networking; the current loopback-only host
+  and production build command do not supply public hosting or TLS. Enforce a
   connection-privacy policy that addresses IP exposure, and measure capacity
   and operating costs.
-- **Requires:** E5-S2, E11-S1, E11-S2.
+- **Requires:** E1-S6, E5-S2, E11-S1, E11-S2.
 - **Human coding time:** 28–52 hours.
 - **Human coding with AI:** 18–36 hours.
 
@@ -573,12 +670,13 @@ As a user, I want to browse search results and open profiles shared with me.
 As a user, I want a discovery view backed by the downloaded regional index.
 
 - **Accept:** Replace placeholder profiles with permitted discovery results
-  and usable search controls. Explain result availability and freshness.
+  and usable geographic search controls, extending the beta page from E9-S4.
+  Explain result availability and freshness.
   Resolve the public Profiles access policy before exposing real data, and
   enforce account access and local blocking rules.
-- **Requires:** E5-S5, E8-S3, E11-S1.
-- **Human coding time:** 12–24 hours.
-- **Human coding with AI:** 5–12 hours.
+- **Requires:** E1-S6, E9-S4, E5-S5, E8-S3, E11-S1.
+- **Human coding time:** 6–12 hours.
+- **Human coding with AI:** 2–6 hours.
 
 #### E9-S2 — Open details directly from an authorized owner
 
@@ -597,11 +695,41 @@ As a user, I want to view additional profile information shared with me.
 As a user, I want to move between discovery, profiles, controls, and conversations.
 
 - **Accept:** Integrate Version 1 workflows into accessible navigation that
-  works well on mobile. Decide whether maps belong in this release; inclusion
-  requires sustainable rendering and tile infrastructure with separately
-  reviewable implementation stories.
-- **Requires:** E9-S2, E5-S3, E5-S4, E10-S3.
+  works well on mobile. Preserve the stable `/` PWA start URL and integrate
+  sign-in, profile editing, real Map/Grid discovery, conversations, and controls.
+  Basic accessible beta navigation belongs to E9-S4; this story completes the
+  broader application flow.
+- **Requires:** E9-S2, E9-S5, E5-S3, E5-S4, E10-S3.
 - **Human coding time:** 20–36 hours.
+- **Human coding with AI:** 8–18 hours.
+
+#### E9-S4 — Provide the text-only profile-search page
+
+As a beta demonstrator, I want to search stored profile text inside the PWA.
+
+- **Accept:** Replace sample-only results in the beta search view with E5-S6
+  query results showing display name and bio. Provide a labeled search control,
+  keyboard-accessible navigation to text-profile editing, and loading, empty,
+  and failure states. Label synthetic data clearly; do not imply live nearby
+  users or real presence. Keep map, location, photo, and sign-in placeholders
+  from obstructing this text-only flow. Keep markup and styles separate from
+  scripts and preserve the existing PWA entry and service-worker lifecycle.
+- **Requires:** E5-S6, E2-S1.
+- **Human coding time:** 6–12 hours.
+- **Human coding with AI:** 3–6 hours.
+
+#### E9-S5 — Render real discovery in Map and Grid views
+
+As a user, I want Map and Grid to represent the same permitted discovery results.
+
+- **Accept:** Replace the illustrative map with real permitted discovery areas
+  and keep Map/Grid results, selection, and grid column controls consistent.
+  Respect city-level or explicitly selected precise disclosure without deriving
+  finer locations. Validate map rendering and tile/data supply against the $0
+  operating target and provider terms; choosing a library alone is insufficient.
+  This implements DESIGN's Map/Grid scope after the text-only beta.
+- **Requires:** E9-S1.
+- **Human coding time:** 16–32 hours.
 - **Human coding with AI:** 8–18 hours.
 
 ### E10 — Implement rudimentary private messaging
@@ -614,9 +742,12 @@ locally.
 As a user, I want private text exchange with another authorized user.
 
 - **Accept:** Enable private messaging between two discovered users through
-  a library still to be selected; Converse/XMPP is a speculative candidate.
-  Tie messaging access to their local accounts and preserve
-  encrypted conversation history across reloads.
+  planned Converse/XMPP. Resolve server configuration, end-to-end encryption,
+  key/identity binding, and integration with the peer layer; transport encryption
+  alone does not establish private message content. Tie messaging access to
+  authenticated local accounts and preserve encrypted conversation history
+  across reloads. Resolve the granthdb/Converse persistence boundary here for
+  basic exchanges; E10-S4 extends delivery and retention behavior.
 - **Requires:** E9-S2, E11-S2.
 - **Human coding time:** 32–60 hours.
 - **Human coding with AI:** 20–42 hours.
@@ -665,6 +796,19 @@ As a user, I want consistent conversations after delayed, repeated, or reordered
 - **Human coding time:** 0 hours.
 - **Human coding with AI:** 0 hours.
 
+#### E10-S6 — Integrate supported platform notifications
+
+As a user, I want incoming-message notifications where my browser or PWA supports them.
+
+- **Accept:** Provide an explicit notification-permission flow and notify for
+  messages received while the application can receive them, respecting blocking
+  and private-content preferences. Handle denial and unsupported platforms.
+  Document supported browser/installed-PWA behavior. Closed-app delivery and
+  background push remain separate, unresolved scope rather than implied support.
+- **Requires:** E10-S3, E11-S1.
+- **Human coding time:** 8–16 hours.
+- **Human coding with AI:** 4–8 hours.
+
 ### E11 — Complete blocking, reporting, and abuse controls
 
 As a user, I want control over unwanted interactions and a way to report abuse.
@@ -679,11 +823,11 @@ As a user, I want to block a user across discovery, profile access, and messagin
 - **Human coding time:** 8–12 hours.
 - **Human coding with AI:** 3–6 hours.
 
-#### E11-S2 — Validate untrusted input at prototype boundaries
+#### E11-S2 — Validate untrusted input at feature boundaries
 
 As a user, I want peers unable to overwrite my data or exhaust my device trivially.
 
-- **Accept:** Provide shared validation that protects prototype boundaries
+- **Accept:** Provide shared validation that protects feature boundaries
   from unauthorized or abusive input. Verify rejection with hostile fixtures,
   and require each feature to validate its transport before accepting
   untrusted traffic.
@@ -723,8 +867,10 @@ As a user, I want brief interruptions tolerated and sustained loss clearly shown
 
 - **Accept:** Apply the network-required interaction policy consistently
   during startup and connection loss. Tolerate brief interruptions such as ten
-  seconds, show the blocking offline overlay during sustained loss, and remove
-  it automatically on reconnection. Treat an unreachable owner separately.
+  seconds, then show a shaded interaction-blocking overlay stating “The app is
+  offline.” during sustained loss. Preserve the underlying page and remove the
+  overlay automatically on reconnection. Define the timing and connectivity
+  criteria; treat an unreachable owner separately from application connectivity.
 - **Requires:** E1-S2.
 - **Human coding time:** 10–18 hours.
 - **Human coding with AI:** 4–9 hours.
@@ -766,17 +912,7 @@ As a user, I want clear guidance when keys or local storage are unavailable.
 As a user, I want a reliable installation and update path that preserves my data
 and privacy.
 
-#### E13-S1 — Verify the complete two-device prototype
-
-As a tester, I want evidence that location, discovery, and private messaging work together.
-
-- **Accept:** Verify the complete discovery-to-messaging flow on two devices,
-  including a phone. Exercise privacy boundaries and recovery under realistic
-  use and failure conditions. Run `bun run test` and record measured operating
-  requirements alongside failures and resulting architecture decisions.
-- **Requires:** E9-S2, E10-S3, E11-S1, E11-S2, E12-S1.
-- **Human coding time:** 0 hours.
-- **Human coding with AI:** 0 hours.
+E13-S1 is retired. There is no separate two-device prototype verification story.
 
 #### E13-S2 — Establish central distribution and verified updates
 
@@ -784,8 +920,9 @@ As a user, I want an authentic install and a recoverable update path.
 
 - **Accept:** Provide authentic central distribution and recoverable updates
   for the Bun executable and PWA. Verify the release artifact together with
-  its deployment procedure.
-- **Requires:** E13-S1, E12-S2.
+  its manual deployment, public HTTPS hosting, and rollback procedure. Preserve
+  the build/test failure gate; automatic deployment remains a separate choice.
+- **Requires:** E13-S5, E12-S2.
 - **Human coding time:** 16–28 hours.
 - **Human coding with AI:** 8–16 hours.
 
@@ -804,20 +941,45 @@ As a user, I want the finished release to work on supported browsers and install
 As a maintainer, I want a release whose capacity, costs, and recovery are understood.
 
 - **Accept:** Confirm operating readiness against measured capacity and the $0
-  launch plan. Resolve cost gaps, run `bun run test`, and retain the passing
-  artifact. Deployment remains a separate action.
+  launch plan. Resolve cost gaps, run `bun run deploy`, and retain `dist/link-up`
+  only when production bundling and tests succeed. Deployment remains a separate
+  action. This finishes the specified Version 1 scope, not an independently
+  agreed smaller MVP.
 - **Requires:** E13-S3.
+- **Human coding time:** 0 hours.
+- **Human coding with AI:** 0 hours.
+
+#### E13-S5 — Verify the text-search beta demo
+
+As a beta demonstrator, I want evidence that stored profile text can be searched
+and displayed inside the PWA.
+
+- **Accept:** Demonstrate text-profile editing, encrypted save and local unlock,
+  and persistence across reloads. With reproducible synthetic summaries, verify
+  name/bio queries, matching and nonmatching results, updates/deletions, and
+  clear empty/error states on the PWA search page. Confirm that private records
+  are not implicitly searchable and that sustained network loss blocks
+  interaction without removing the current page. Run `bun run build` and record
+  browser/PWA verification and any failures. No photo, geolocation, peer,
+  regional snapshot, messaging, or second-device flow is required. This is the
+  **beta demo completion gate**, not an MVP or release gate.
+- **Requires:** E9-S4, E12-S1.
 - **Human coding time:** 0 hours.
 - **Human coding with AI:** 0 hours.
 
 ## Deferred and excluded capabilities
 
-Anonymous/guest entry, read receipts, and typing indicators remain excluded.
+Anonymous participation in publication, private profile access, or messaging,
+read receipts, and typing indicators remain excluded. Public shell and synthetic
+beta browsing are supported; unauthenticated access to real opted-in summaries
+must be decided in E1-S6 before E9-S1 exposes them.
 Remote-region travel mode, advanced/background message delivery, attachments,
 structured sharing, groups/events, public posts, shared places/check-ins,
 audio/video, device linking/identity recovery, and ad delivery remain deferred
 or uncommitted as recorded in the network and search decisions. They are not
-implicit acceptance criteria for the stories above.
+implicit acceptance criteria for the stories above. Supported notifications for
+messages received by an active application belong to E10-S6; that does not
+promise background delivery.
 
 ## Unresolved issues
 
@@ -828,8 +990,15 @@ builders, backups, relays, XMPP, and central distribution as those features
 are built. Resolve each choice and its measured limits within the feature
 that needs it, before completing its dependent launch work.
 The $0 launch operating-cost target remains the goal.
+MVP user scope and acceptance remain open. The beta is the immediate delivery
+target; no separate prototype is scheduled between beta and the remaining
+Version 1 feature work.
 
 ## Total coding estimates
 
-- **Human coding time:** 790–1,460 hours (approximately 98.8–182.5 eight-hour workdays).
-- **Human coding with AI:** 463–921 hours (approximately 57.9–115.1 eight-hour workdays).
+- **Human coding time:** 826–1,532 hours (approximately 103.3–191.5 eight-hour workdays).
+- **Human coding with AI:** 481–961 hours (approximately 60.1–120.1 eight-hour workdays).
+
+The beta subset is 54–90 human coding hours, or 27–49 with AI, included in these
+totals. E5-S1 and E9-S1 estimates cover their geographic extensions after the
+beta text-search and results-page stories, without counting that base work twice.

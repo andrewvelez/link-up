@@ -20,7 +20,7 @@ async function bundleClientJs() {
     globDirectory: "./dist",
     globPatterns: ["**/*.{html,js,json,css,svg,png}"],
     modifyURLPrefix: { "default.html": "/" },
-    swSrc: "./src/web/sw.js",
+    swSrc: "./src/sw.js",
     swDest: "./dist/sw.js",
   });
 
@@ -54,7 +54,7 @@ async function bundleServerExecutable() {
 
   /** @type {Object} Bun compilation result containing success and logs properties. */
   const result = await Bun.build({
-    entrypoints: ["./src/server/server.js"],
+    entrypoints: ["./src/server.js"],
     compile: { outfile: "./dist/link-up" },
     naming: {
       asset: "[name].[ext]",
@@ -73,13 +73,17 @@ async function bundleServerExecutable() {
  */
 function copyBuildFiles() {
   rmSync("./dist", { recursive: true, force: true });
-  cpSync("./src/web/pages", "./dist", { recursive: true });
-  cpSync("./src/web/components", "./dist/components", { recursive: true });
-  cpSync("./src/web/scripts", "./dist/js", { recursive: true });
-  cpSync("./src/web/styles", "./dist/styles", { recursive: true });
-  cpSync("./src/web/images", "./dist/icons", { recursive: true });
-  cpSync("./src/web/manifest.json", "./dist/manifest.json");
-  cpSync("./src/web/sw.js", "./dist/sw.js");
+  mkdirSync("./dist/js", { recursive: true });
+  mkdirSync("./dist/styles", { recursive: true });
+  cpSync("./src/default.html", "./dist/default.html");
+  cpSync("./src/profiles/profiles.html", "./dist/profiles.html");
+  cpSync("./src/components", "./dist/components", { recursive: true });
+  cpSync("./src/appInit.js", "./dist/js/appInit.js");
+  cpSync("./src/profiles/profiles.js", "./dist/js/profiles.js");
+  cpSync("./src/global.css", "./dist/styles/global.css");
+  cpSync("./src/images", "./dist/icons", { recursive: true });
+  cpSync("./src/manifest.json", "./dist/manifest.json");
+  cpSync("./src/sw.js", "./dist/sw.js");
 
   mkdirSync("./dist/external", { recursive: true });
   cpSync("./node_modules/htmx.org/dist/htmx.min.js", "./dist/external/htmx.min.js");
@@ -147,7 +151,7 @@ function runTests() {
  * @returns {Promise} Resolves after the server module loads.
  */
 async function startServer() {
-  await import("./src/server/server.js");
+  await import("./src/server.js");
 }
 
 /**

@@ -14,3 +14,8 @@ SVG glyphs use currentColor. When inline, set CSS color to recolor them. When us
 
 Screenshots use locally installed Albert Sans. Font files are not included.
 Mockup names, ages, status indicators, map circles and counts are fictional.
+
+These are concept assets, not an implementation or delivery specification.
+The About screenshot is historical; the current pages are Default and Profiles.
+Follow ../../DESIGN.md and ../../ROADMAP_Detailed.md for current disclosure
+policy and delivery scope. The text-search beta does not require a live map.

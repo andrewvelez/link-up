@@ -4,37 +4,39 @@
  * @description Defines routes for the PWA files embedded in the executable.
  */
 
-import about from "../../dist/about.html" with { type: "file" };
-import appInitialization from "../../dist/js/appInit.js" with { type: "file" };
-import login from "../../dist/default.html" with { type: "file" };
-import loginComponent from "../../dist/components/login.js" with { type: "file" };
-import profiles from "../../dist/profiles.html" with { type: "file" };
-import profileViews from "../../dist/js/profiles.js" with { type: "file" };
-import manifest from "../../dist/manifest.json" with { type: "file" };
-import serviceWorker from "../../dist/sw.min.js" with { type: "file" };
-import htmx from "../../dist/external/htmx.min.js" with { type: "file" };
-import icon192 from "../../dist/icons/192x192.png" with { type: "file" };
-import icon24 from "../../dist/icons/24x24.png" with { type: "file" };
-import icon48 from "../../dist/icons/48x48.png" with { type: "file" };
-import icon512 from "../../dist/icons/512x512.png" with { type: "file" };
-import icon192Named from "../../dist/icons/icon_192.png" with { type: "file" };
-import icon24Named from "../../dist/icons/icon_24.png" with { type: "file" };
-import icon48Named from "../../dist/icons/icon_48.png" with { type: "file" };
-import icon512Named from "../../dist/icons/icon_512.png" with { type: "file" };
-import styles from "../../dist/styles/global.css" with { type: "file" };
-import milligramStyles from "../../dist/external/milligram.min.css" with { type: "file" };
+import appInitialization from "../dist/js/appInit.js" with { type: "file" };
+import login from "../dist/default.html" with { type: "file" };
+import loginComponent from "../dist/components/login/login.js" with { type: "file" };
+import loginMarkup from "../dist/components/login/login.html" with { type: "file" };
+import loginStyles from "../dist/components/login/login.css" with { type: "file" };
+import profiles from "../dist/profiles.html" with { type: "file" };
+import profileViews from "../dist/js/profiles.js" with { type: "file" };
+import manifest from "../dist/manifest.json" with { type: "file" };
+import serviceWorker from "../dist/sw.min.js" with { type: "file" };
+import htmx from "../dist/external/htmx.min.js" with { type: "file" };
+import icon192 from "../dist/icons/192x192.png" with { type: "file" };
+import icon24 from "../dist/icons/24x24.png" with { type: "file" };
+import icon48 from "../dist/icons/48x48.png" with { type: "file" };
+import icon512 from "../dist/icons/512x512.png" with { type: "file" };
+import icon192Named from "../dist/icons/icon_192.png" with { type: "file" };
+import icon24Named from "../dist/icons/icon_24.png" with { type: "file" };
+import icon48Named from "../dist/icons/icon_48.png" with { type: "file" };
+import icon512Named from "../dist/icons/icon_512.png" with { type: "file" };
+import styles from "../dist/styles/global.css" with { type: "file" };
+import milligramStyles from "../dist/external/milligram.min.css" with { type: "file" };
 
-import mockupArtwork from "../../dist/icons/mockup.svg" with { type: "file" };
+import mockupArtwork from "../dist/icons/mockup.svg" with { type: "file" };
 
 const pages = {
   Default: login,
   Profiles: profiles,
-  About: about,
 };
 
 const assets = {
   appInitialization,
   loginComponent,
+  loginMarkup,
+  loginStyles,
   profileViews,
   manifest,
   serviceWorker,
@@ -76,10 +78,9 @@ export const routes = {
   "/Profiles": asset(pages.Profiles),
   "/profiles": redirect("/Profiles"),
   "/profiles.html": redirect("/Profiles"),
-  "/About": asset(pages.About),
-  "/about": redirect("/About"),
-  "/about.html": redirect("/About"),
-  "/components/login.js": asset(assets.loginComponent),
+  "/components/login/login.js": asset(assets.loginComponent),
+  "/components/login/login.html": asset(assets.loginMarkup),
+  "/components/login/login.css": asset(assets.loginStyles),
   "/js/profiles.js": asset(assets.profileViews),
   "/js/appInit.js": asset(assets.appInitialization),
   "/manifest.json": asset(assets.manifest),

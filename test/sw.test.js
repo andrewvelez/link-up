@@ -38,13 +38,13 @@ describe("service worker", () => {
   test("passes the injected manifest to Workbox precaching", async () => {
     const manifest = [
       { revision: "app-revision", url: "js/appInit.js" },
-      { revision: "about-revision", url: "about.html" },
+      { revision: "profiles-revision", url: "profiles.html" },
       { revision: "login-revision", url: "/" },
     ];
 
     globalThis.self = { __WB_MANIFEST: manifest };
 
-    await import(`../src/web/sw.js?test=${Date.now()}`);
+    await import(`../src/sw.js?test=${Date.now()}`);
 
     expect(precacheAndRoute).toHaveBeenCalledTimes(1);
     expect(precacheAndRoute).toHaveBeenCalledWith(manifest, {
@@ -59,7 +59,6 @@ describe("service worker", () => {
       ["/", "navigate", true],
       ["/default", "navigate", true],
       ["/default.html", "navigate", true],
-      ["/about.html", "navigate", false],
       ["/home.html", "navigate", false],
       ["/profiles.html", "navigate", false],
       ["/", "cors", false],

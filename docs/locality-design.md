@@ -4,6 +4,13 @@
 
 ## Purpose and constraints
 
+This is the proposed geographic design for later Version 1 work, not completed
+implementation. The [text-search beta demo](Speed_Sprint_Detailed.md) needs no
+geolocation, H3 processing, locality reference data, or map. Its completion gate
+is E13-S5; there is no separate two-device prototype. MVP scope remains open.
+See [DESIGN](DESIGN.md#delivery-scope-and-documentation) for document authority
+and the distinction between beta scope and broader product scope.
+
 Link-up's location model supports U.S. locality-aware discovery through **geocells**: small discovery regions used for rendezvous, profile discovery, caching, message-routing hints, abuse detection, and local network organization.
 
 The geographic infrastructure must cost **$0 to use**. Commercial free tiers do not meet that requirement because location is a universal feature whose usage grows with application activity. The essential geographic search and locality-resolution paths should use device coordinates, local computation, and downloaded reference data, with public government APIs available only as optional fallbacks.
@@ -14,6 +21,10 @@ Geographic reference data and live user location are separate concerns:
 - **Dynamic state:** user coordinates, user-to-cell membership, and nearby-user results. These may change continuously, especially while a user travels by car.
 
 Real-time locality search is primarily a dynamic indexing and search problem. It does not require a new geographic-data request for every position update.
+
+Local reference data removes mandatory geographic API calls; it does not remove
+the application's network-required interaction policy. During sustained network
+loss, the blocking overlay still applies even when reference data is cached.
 
 ## Geocells and the discovery experience
 
@@ -45,6 +56,12 @@ The client should perform as much location interpretation and local discovery wo
 
 Servers may assist with rendezvous, validation, abuse controls, rate limits, and fallback delivery. A location record used for computation is not, by itself, a requirement to transmit exact coordinates to a server or expose them to other users. Any shared representation must respect the location-privacy policy in [DESIGN.md](DESIGN.md#locality).
 
+The initial disclosure mode is city-level; precise disclosure requires explicit
+choice later in E3-S5. Private coordinates and fine H3 membership must not leak
+through shared records, routing identifiers, indexes, or map rendering when
+city-level disclosure is selected. Broader H3 parents alone do not establish
+city-level privacy, since grid cells and administrative boundaries differ.
+
 ## Geographic components
 
 The source proposals identify the following components for an unmetered geographic path:
@@ -65,7 +82,9 @@ Essential search should continue functioning without the optional Census service
 
 ## Density-adaptive H3 indexing
 
-H3's hierarchy supports fine-grained indexing and broader discovery or stronger location privacy through parent cells. The source brainstorm gives these approximate average cell areas:
+H3's hierarchy supports fine-grained private indexing and broader discovery
+through parent cells. Disclosure precision needs a separate policy as above.
+The source brainstorm gives these approximate average cell areas:
 
 | H3 resolution | Average area |
 | ---: | ---: |
@@ -87,6 +106,11 @@ Each active user needs an ephemeral location record. The brainstorm's illustrati
 | `cell` | Identify the user's indexed H3 cell |
 | `updatedAt` | Track freshness and expiration |
 
+This is a private computation record, not a shared-record schema. Encrypt
+persisted owner coordinates and derive a separate permitted discovery record
+from the selected disclosure mode. Candidate search and distance calculations
+must use only the precision a candidate has permitted the viewer to receive.
+
 The search sequence is:
 
 1. Receive a device position update.
@@ -99,7 +123,8 @@ The search sequence is:
 
 ### Update frequency and expiration
 
-The app should coalesce meaningful position changes rather than write a new server location for every GPS event:
+The app should coalesce meaningful position changes rather than publish a new
+discovery record for every GPS event:
 
 - Ignore small movements consistent with GPS jitter.
 - Update the indexed record after crossing an H3 boundary or moving a chosen minimum distance.
@@ -113,7 +138,7 @@ The search origin can change more frequently than the locality label. A city or 
 
 Prepare the reference data separately from live location updates:
 
-1. Download current Census boundary and Gazetteer files during a build or maintenance process, with GNIS supplying additional geographic names.
+1. Download current Census boundary and Gazetteer files during a separate reference-data preparation or maintenance process, with GNIS supplying additional geographic names. The current application build does not do this.
 2. Convert the data into a compact application-specific spatial index, potentially partitioned by state or region.
 3. Resolve coordinates against the local index.
 4. Cache mappings such as `H3 cell → locality` for reuse. Users in the same cell will usually receive the same label; the source proposal does not establish a universal one-label-per-cell rule.

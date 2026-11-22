@@ -41,14 +41,5 @@
   ],
   "categories": [
     "utility"
-  ],
-  "shortcuts": [
-    {
-      "name": "Open About",
-      "short_name": "About",
-      "description": "Open the about page",
-      "url": "./about.html",
-      "icons": [{ "src": "icons/192x192.png", "sizes": "192x192" }]
-    }
   ]
 }

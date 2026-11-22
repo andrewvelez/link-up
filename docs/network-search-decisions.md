@@ -1,6 +1,7 @@
 # Network and Search Decisions
 
-Updated: October 30, 2026.
+Updated: November 22, 2026. Earlier library assessments retain their original
+research context; this update aligns delivery scope and architectural boundaries.
 
 This document consolidates [Network Requirements.md](archived/Network%20Requirements.md), [regional-search-recap.md](regional-search-recap.md), and the subsequent library evaluation. It distinguishes requirements, preferred directions, proposals, and unresolved choices. It does not describe completed implementation.
 
@@ -8,7 +9,23 @@ This document consolidates [Network Requirements.md](archived/Network%20Requirem
 
 Link-up is intended to compete with Sniffies across its functionality over time. Version 1 focuses on geographic discovery, searchable profile information, and rudimentary messaging.
 
-The application is a browser-only, local-first PWA intended to run from cached assets. Essential application logic and authoritative user data remain on the user's device. design.md selects granthdb with SQLite/WASM, OPFS persistence, and an IndexedDB fallback for local application storage.
+The application is a browser-only, local-first PWA that can load cached assets.
+Essential application logic and authoritative user data remain on the user's
+device. DESIGN proposes granthdb with SQLite/WASM, OPFS persistence, and an
+IndexedDB fallback for local application storage.
+
+The storage path is a proposal to validate, not an implemented integration.
+The application requires network access for feature interaction, including local
+search. Cached assets and local computation do not promise offline operation;
+see [Connectivity](DESIGN.md#connectivity) for the sustained-offline overlay.
+
+The immediate delivery target is the [text-search beta demo](Speed_Sprint_Detailed.md),
+ending at roadmap E13-S5: persisted synthetic profile text, local text queries,
+and a functional PWA results page. granthdb owns beta records; Orama is evaluated
+as their derived search index. Geographic routing, shared indexes, networking,
+and messaging below are later Version 1 work, not beta prerequisites. The former
+two-device prototype is removed. MVP scope remains to be agreed; full Version 1
+completion remains E13-S4.
 
 Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source, but ad delivery is deferred.
 
@@ -16,7 +33,11 @@ Eliminating every server is not required. A server backup, shared connection inf
 
 ## Discovery and Profile Data
 
-Discovery uses a local-first P2P database with a server backup. Each node holds only the minimum geographic scope and user data needed for its discovery needs.
+Discovery is planned to prefer peer exchange, with permitted server backup.
+No P2P database or transport has been selected; an artifact-distribution layer
+may suffice alongside Orama. Each node should hold only the minimum geographic
+scope and permitted user data needed for its discovery needs. Remote copies
+must not replace local user-data authority.
 
 | Data level | Contents and source |
 | --- | --- |
@@ -24,13 +45,13 @@ Discovery uses a local-first P2P database with a server backup. Each node holds 
 | Search-index profile data | Profile information needed to display and filter search results, supplied by the P2P search index |
 | Detailed profile data | Retrieved directly from the profile owner's node |
 
-Discovery and search-index data replicate only across the geographic scope needed by each node. Detailed profiles remain on their owners' nodes. Behavior when an owner's node is unavailable remains undecided.
+Discovery and search-index data replicate only across the geographic scope needed by each node. Detailed profiles remain on their owners' nodes. The initial owner-detail flow shows unavailable when the owner cannot be reached (E9-S2); richer unavailable-owner behavior remains undecided.
 
 The P2P search system must supply presence, permitted location information, indexed profile information, and changes or withdrawals affecting those records. The database, indexing, distribution, and application responsibilities still need to be assigned to libraries.
 
 Only information intended for the recipient may enter a distributed document or index. Omitting a field from searchable indexes does not establish that the underlying document will not replicate.
 
-User-owned data must remain encrypted as required by design.md. Authorized local searching may operate on decrypted data. Shared indexes can reveal information about the records they describe and require corresponding access controls. Withdrawal cannot guarantee erasure of copies independently retained by recipients.
+User-owned data must remain encrypted as required by [DESIGN](DESIGN.md#local-authority-and-storage). Authorized local searching may operate on decrypted data. Shared indexes can reveal information about the records they describe and require corresponding access controls. Withdrawal cannot guarantee erasure of copies independently retained by recipients.
 
 ## Geographic Scope and Local Search
 
@@ -44,7 +65,7 @@ The earlier search discussion prioritized fast local results over immediate fres
 
 The earlier geographic query model measured distance between the viewer's geocell center and profile geocell centers. Profiles in the same cell would need a secondary ordering rule. Geographic radius filtering and nearest-first ordering remain distinct capabilities.
 
-Location disclosure must respect the user's selected precision. design.md describes city-level and precise-location modes; the discovery/index schema must not expose greater precision than the user permits.
+Location disclosure must respect the user's selected precision. [DESIGN](DESIGN.md#locality) describes city-level and precise-location modes; the discovery/index schema must not expose greater precision than the user permits.
 
 Exact regions, H3 resolutions, search radius behavior, record fields, and expiry rules remain undecided. Earlier city-centered region examples were illustrative, not fixed boundaries.
 
@@ -69,11 +90,18 @@ Builder selection, verification, failover, handoff, and transferable index updat
 
 ## Orama Search Direction
 
-Orama is the current preferred local search candidate. The earlier recap explicitly left final selection open pending shared-index validation.
+Orama is the current preferred local search candidate, not an installed or
+integrated dependency. Validate local text search first in E5-S6. The earlier
+recap left regional selection open pending shared-index validation, which remains
+later work in E5-S1/E8; it does not block the bounded text-search beta.
 
 The embedded JavaScript library supports browser execution, retained documents, full-text search, typed fields, structured filters, and geographic search. Its open-source library is Apache-2.0 licensed and does not require the hosted Orama service for local search.
 
-Orama can serve as the searchable store for distributed profile summaries. A separate database should be added only for responsibilities that Orama and the distribution layer do not provide.
+Orama may serve as the searchable store for distributed profile summaries. It
+does not replace granthdb's authoritative owner-data role. Beta synthetic text
+records live in granthdb with a derived Orama index; later regional summaries
+need no duplicate database unless Orama and the distribution layer leave a
+specific storage responsibility unmet.
 
 Orama's save/load implementation includes documents, indexes, internal document identifiers, sorting state, pinning state, and language. This provides a foundation for complete regional snapshots; application-level compatibility and persistence handling still need validation.
 
@@ -121,7 +149,12 @@ Sources: [libp2p browser connectivity](https://docs.libp2p.io/guides/webrtc-brow
 
 Version 1 requires rudimentary messaging with eventual consistency. Useful library-provided features are welcome, but most additional messaging functionality can wait until version 2.
 
-design.md currently selects Converse/XMPP and local message history. That selection has not been replaced. Its relationship to the P2P layer, encryption, and delivery infrastructure remains unresolved.
+[DESIGN](DESIGN.md#messaging) names Converse/XMPP as the planned messaging
+library with encrypted local message history. It is not installed or integrated.
+Its relationship to the P2P layer, end-to-end encryption, server configuration,
+and granthdb persistence remains unresolved (E10-S1/E10-S4). Supported platform
+notifications for messages received by an active application are E10-S6 scope;
+closed-app/background delivery remains undecided.
 
 Eventual consistency does not decide whether messages remain on the sender's device until reconnection or are retained by another node/server for later delivery.
 
@@ -133,13 +166,16 @@ The following supporting capabilities are likely necessary and remain in scope f
 - Reporting and moderation.
 - Abuse prevention and resource limits.
 
-Direct connections versus relay-only operation remains a privacy and cost decision. Persistent identity and initial network-entry mechanisms were proposed but have not been explicitly affirmed.
+Direct connections versus relay-only operation remains a privacy and cost
+decision. E1-S6 defines account authentication before live discovery and
+networking; identity implementation and initial network entry still need
+validation. Public shell/demo access is separate from private feature access.
 
 ## Excluded and Deferred Features
 
 | Feature | Status |
 | --- | --- |
-| Anonymous or guest entry | Excluded |
+| Anonymous publication, private owner-detail access, or messaging | Excluded; public shell/synthetic demo browsing exists. Unauthenticated access to real opted-in summaries must be decided in E1-S6. |
 | Read receipts and typing indicators | Explicitly excluded |
 | Remote-region browsing or travel mode | Deferred |
 | Advanced message delivery, background notifications, attachments, and structured sharing | Not individually committed launch requirements |
@@ -152,12 +188,16 @@ Direct connections versus relay-only operation remains a privacy and cost decisi
 
 ## Application Distribution
 
-Application downloads must come from a central server, with download integrity as a requirement. Caching supports subsequent local operation.
+Application downloads must come from a central server, with download integrity
+as a requirement. Caching supports subsequent interface loading; feature
+interaction remains subject to the network-required policy.
 
 Central hosting alone does not specify the integrity-verification mechanism. Distribution, update, verification, and recovery arrangements remain undecided.
 
 ## Next Validation Work
 
+- Complete the beta's profile-text storage, basic text matching, and PWA results
+  page before the geographic and network work below; no two-device gate applies.
 - Define minimal discovery records and the separate indexed profile summary.
 - Define geographic replication units and behavior when users cross boundaries.
 - Verify Orama snapshot loading, nearest-first searching, persistence, and phone resource use.

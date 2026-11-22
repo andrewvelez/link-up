@@ -1,0 +1,96 @@
+/*
+ * @author Andrew Velez
+ * @license MIT
+ * Description: Defines the login component presentation in the regular DOM.
+ */
+
+.login button:disabled:hover {
+  opacity: 1;
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+link-up-login {
+  display: contents;
+}
+
+.login {
+  margin-top: 42px;
+}
+
+.login label {
+  margin-bottom: 11px;
+  color: #b6b7bd;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.login input {
+  height: 51px;
+  margin-bottom: 23px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #17181c;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.login input::placeholder {
+  color: #8d909b;
+  opacity: 1;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 50px;
+  letter-spacing: 4px;
+}
+
+.password-field .icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 19px;
+  height: 19px;
+  color: var(--muted);
+}
+
+.text-button, .text-button:disabled, .login .text-button:disabled:hover {
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: inherit;
+  font-weight: 400;
+  line-height: inherit;
+}
+
+.forgot, .forgot:disabled {
+  display: block;
+  margin: -9px 0 25px auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.login .primary {
+  width: 100%;
+}
+
+.join {
+  margin-top: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.login .placeholder-note {
+  text-align: center;
+}

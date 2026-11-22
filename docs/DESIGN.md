@@ -3,6 +3,7 @@
 ## Contents
 
 - [Overview](#overview)
+- [Delivery Scope and Documentation](#delivery-scope-and-documentation)
 - [Locality](#locality)
 - [Profiles](#profiles)
 - [Messaging](#messaging)
@@ -13,11 +14,32 @@
 
 ## Overview
 
-Link-up is a free messenger.  Communication between people should be free, similar to the principles of the [Zen of Reticulum](https://reticulum.network/zenofreticulum.html).  Private data remains private unless given express permission.  No data is sold or used otherwise.  Link-up is an app helping people to connect for dating with a focus on gay men looking for gay men.  Eventually, it may be an umbrella app for a series of web properties each with their own branding.
+Link-up is an application to facilitate communication between people primarily targeting the gay dating space.  It less a service and more a standalone application.  Communication between people should be free, similar to the principles of the [Zen of Reticulum](https://reticulum.network/zenofreticulum.html).  Private data remains private unless given express permission.  Link-Up is local first software.  Data belongs with the user and the primary copy is kept on the user's local device.
 
-Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source.
+Link-up targets $0 ongoing operating costs at launch, with any later costs small enough for limited ad revenue to cover. Limited ad spots are the only planned revenue source.  Link-up is a local-first, mobile-first Progressive Web App (PWA). It runs in a browser and can be installed where the platform supports PWAs.
 
-Link-up is a local-first, mobile-first Progressive Web App (PWA). It runs in a browser and can be installed where the platform supports PWAs.
+## Delivery Scope and Documentation
+
+The immediate target is a **text-search beta demo**: a functional text-only
+profile-search page in the PWA, a defined local profile-text store, and working
+queries and results. Use synthetic demo summaries; profile editing and encrypted
+owner storage provide the reusable foundation. The beta does not need photos,
+location, peer networking, regional snapshots, messaging, or notifications.
+Local text search still follows the network-required interaction policy below.
+
+The [Speed Sprint](Speed_Sprint_Detailed.md) selects the seven beta stories from
+the [roadmap](ROADMAP_Detailed.md#delivery-milestones-and-beta-first-order), ending
+at **E13-S5**. The separate two-device prototype has been removed and E13-S1 is
+retired. **MVP scope remains undecided**; this beta is not an MVP. The broader
+Version 1 feature and release scope below finishes at E13-S4.
+
+README describes the implemented baseline, this document owns the architecture,
+and the roadmap owns story acceptance and dependencies. The locality and network
+documents elaborate proposed feature designs. The regional search recap records
+earlier reasoning; its examples are not additional requirements. Files under
+`docs/archived/` are historical references rather than current implementation
+instructions. None of the new beta features is implemented by this documentation
+update, reviewed against the current checkout on November 22, 2026.
 
 ## Locality
 
@@ -30,6 +52,12 @@ The planned approach uses geographic cells to organize nearby discovery and loca
 Users should be able to create and update their locally stored Link-up profile, share it with other Link-up users, and view profiles shared with them. The Profiles page should display search results for nearby users who are online in Map and Grid views, with facets to narrow the search. The information included in a profile has not yet been decided.
 
 The current Profiles page uses sample data and an illustrative map. Switching between Map and Grid and selecting the grid's column count are implemented. Profile editing, sharing, and live search are not yet implemented. The detailed discovery and search proposals are described in [Network and Search Decisions](network-search-decisions.md).
+
+Beta text search comes before geographic discovery. It searches synthetic
+display names and bios from local storage and displays text results without
+claiming live presence or location. Real Map/Grid discovery remains Version 1
+scope (E9-S1 and E9-S5); the beta does not require map data or a tile provider.
+Profile fields beyond the initial display name and bio remain undecided.
 
 ## Messaging
 
@@ -49,7 +77,7 @@ Application data that is not user-owned is also stored locally first. It may be 
 
 ### Code Organization and Responsibilities
 
-Browser code is organized by responsibility. Shared initialization handles common browser listeners and service-worker registration. Feature logic, persistence, networking, and page-specific behavior belong in separate modules, initialized through the shared entry point when needed. Web components encapsulate reusable interface elements such as the login form.
+Browser code is organized by responsibility. Shared initialization handles common browser listeners and service-worker registration. Feature logic, persistence, networking, and page-specific behavior belong in separate modules, initialized through the shared entry point when needed. Web components encapsulate reusable interface elements such as the login form. Each component keeps its script, HTML, and component-specific CSS in one folder under `src/components/`. Components use the regular DOM, with htmx loading their markup; Shadow DOM is not used.
 
 The browser application uses vanilla JavaScript and HTML with standard browser and PWA APIs. It owns the interface, local state, and essential application logic. The server serves the application and may provide supporting network capabilities. Server framework choices are independent of browser libraries.
 
@@ -77,6 +105,23 @@ Link-up PWA ↔ granthdb ↔ SQLite/WASM ↔ OPFS (IndexedDB fallback)
 
 The integration between local application storage and Converse's message persistence remains an open decision.
 
+For beta, define persisted profile text as stable ID, display name, bio,
+ownership, and revision. Keep encrypted owner records separate from synthetic
+demo summaries. Evaluate Orama as the preferred local text-search candidate,
+using a derived index that can be reopened or rebuilt from stored summaries.
+granthdb owns the persisted beta records; Orama does not replace authoritative
+owner storage. Owner-derived summaries and persisted search artifacts must also
+remain encrypted; authorized searching can use decrypted data in memory. For
+later regional discovery, Orama may retain permitted shared
+summaries and snapshots without duplicating that dataset in another database
+unless a concrete responsibility requires it.
+
+Validate granthdb's proposed SQLite/WASM, OPFS, and IndexedDB fallback path in
+E1-S1 and basic Orama text search in E5-S6. Geographic search and shared-index
+compatibility are later E5-S1/E8 validations, not beta prerequisites. Neither
+library is integrated or installed in the current checkout. Installed Dexie
+does not establish an implemented persistence layer or replace this proposal.
+
 Geographic reference data changes slowly enough to be shipped statically; when its size makes that impractical, it can be segmented by locality and cached on demand. See [Locality design](locality-design.md) for the detailed proposal.
 
 ### Peer Connection Boundary
@@ -91,7 +136,7 @@ The peer transport has not yet been selected. If direct peer connections are use
 
 The production deployment artifact is `dist/link-up`, a full-stack executable for VPS deployment. It embeds the completed PWA assets and serves them through its local HTTP routes. Its current host listens on `127.0.0.1` with an operating-system-assigned port (`port: 0`) and logs the selected URL at startup; any public VPS-facing proxy or TLS arrangement is outside this project's current design.
 
-All shipped application source lives under `src/`, organized by responsibility: `web/` contains the browser application, and `server/` contains the executable host. The build copies `web/` into `dist/` and stages third-party browser assets from `node_modules/` into `dist/external/`, preserving browser asset URLs. `dist/` is generated build output and is never edited directly.
+All shipped application source lives under `src/`. Profile-specific markup and behavior live together in `src/profiles/`. Reusable web components live in `src/components/`, and artwork lives in `src/images/`. Shared pages, browser initialization, global styles, PWA metadata, the service worker, and the executable host and HTTP routes live directly under `src/`. The build copies browser assets into `dist/` and stages third-party browser assets from `node_modules/` into `dist/external/`, preserving browser asset URLs. `dist/` is generated build output and is never edited directly.
 
 ### Server and Browser Responsibilities
 
@@ -106,9 +151,9 @@ The Bun host uses Bun's native HTTP APIs. A server framework would be evaluated 
 
 ### Browser Initialization
 
-`src/web/scripts/appInit.js` is the shared browser entry point loaded by Default, Profiles, and About. It configures the share button where the Web Share API is supported and registers `./sw.min.js` on the window's `load` event where service workers are supported.
+`src/appInit.js` is the shared browser entry point loaded by Default and Profiles. It configures the share button where the Web Share API is supported and registers `./sw.min.js` on the window's `load` event where service workers are supported.
 
-The Default page loads the reusable login component from `src/web/components/login.js`. Profiles loads `src/web/scripts/profiles.js` for Map/Grid switching and grid column selection.
+The Default page loads the reusable login component from `src/components/login/login.js`. Profiles loads `src/profiles/profiles.js` for Map/Grid switching and grid column selection.
 
 ### Service-Worker Configuration
 
@@ -128,7 +173,7 @@ The `version` property in `package.json` is the authoritative application versio
 Page loads → shared listeners are configured → window load → service-worker registration
 ```
 
-The shared browser entry point is loaded by Default, Profiles, and About. It sets up common listeners and registers the service worker when supported. Page-specific modules initialize their own behavior. Feature persistence and networking initialization remain future work.
+The shared browser entry point is loaded by Default and Profiles. It sets up common listeners and registers the service worker when supported. Page-specific modules initialize their own behavior. Feature persistence and networking initialization remain future work.
 
 ### Page Flow
 
@@ -136,13 +181,16 @@ The shared browser entry point is loaded by Default, Profiles, and About. It set
 flowchart LR
     Entry["Browser entry or PWA launch: /"] --> Default["Default: login component"]
     Default -->|Explore| Profiles["Profiles: Map and Grid"]
-    Default -->|About Link-up| About["About: app and PWA installation information"]
-    About -->|Explore| Profiles
-    About -->|Back to sign in| Default
     Profiles -->|Sign in| Default
 ```
 
 The manifest has one stable start URL, `/`, which serves Default. The diagram shows the existing public page links. The login component is currently a placeholder; authentication and navigation after sign-in are not yet implemented.
+
+The beta adds navigation to text-profile editing and working text search through
+these PWA entry points, with a local demo-account unlock rather than remote
+sign-in. E1-S6 later defines account authentication and whether unauthenticated
+users may browse real opted-in summaries. Public shell and synthetic demo
+browsing do not authorize publication, owner-detail access, or messaging.
 
 ### Connectivity
 
@@ -169,19 +217,19 @@ Changed builds use the browser's service-worker update lifecycle. See [Service-w
 
 The build environments are development and production. Each top-level command independently calls shared internal functions; top-level commands do not call one another.
 
-- `bun run build:dev` calls `buildDev()`: bundle for development, then run tests.
-- `bun run start:dev` calls `startDev()`: bundle for development, run tests, then start the local server from source.
-- `bun run deploy:prod` calls `deployProd()`: bundle for production, then run tests. Deployment is currently a TODO.
+- `bun run build` calls `buildDev()`: bundle for development, then run tests.
+- `bun run start` calls `startDev()`: bundle for development, run tests, then start the local server from source.
+- `bun run deploy` calls `deployProd()`: bundle for production, then run tests. Deployment is currently a TODO.
 
 `NODE_ENV` comes from `.env` files: `.env.local` sets `dev` locally, `.env` sets `prod`, and `runTests()` loads `.env.test` with `test` after excluding the inherited `NODE_ENV`. `bundleApplication()` performs these stages in order:
 
 1. In `clean()`, delete `dist/` if it exists.
-2. In `copyBuildFiles()`, copy the PWA pages, manifest, and static assets from `src/web/` into `dist/`, then stage HTMX and Milligram from `node_modules/` into `dist/external/`.
+2. In `copyBuildFiles()`, copy the PWA pages, manifest, and static assets from `src/` into `dist/`, then stage HTMX and Milligram from `node_modules/` into `dist/external/`.
 3. In `removeComments()`, remove HTML comments from the copied pages.
 4. In `bundleClientJs()`, inject the Workbox asset manifest into intermediate `dist/sw.js`, bundle and minify it into `dist/sw.min.js`, then remove `dist/sw.js`.
-5. In `bundleServerExecutable()`, compile `src/server/server.js` and its route-embedded assets into `dist/link-up`.
+5. In `bundleServerExecutable()`, compile `src/server.js` and its route-embedded assets into `dist/link-up`.
 
-All three commands call `runTests()` after bundling. A build or test failure stops the workflow; `startDev()` calls `startServer()` only after tests pass. Deploy the production `dist/link-up` only when `bun run deploy:prod` succeeds (exit code 0). Automatic deployment is not implemented.
+All three commands call `runTests()` after bundling. A build or test failure stops the workflow; `startDev()` calls `startServer()` only after tests pass. Deploy the production `dist/link-up` only when `bun run deploy` succeeds (exit code 0). Automatic deployment is not implemented.
 
 `bun test --env-file=.env.test` runs the test suite in the test environment without bundling first.
 
@@ -199,23 +247,22 @@ All three commands call `runTests()` after bundling. A build or test failure sto
 │   └── archived/
 │       └── locality-diagram.png
 ├── src/
-│   ├── web/
-│   │   ├── components/
-│   │   ├── images/
-│   │   ├── manifest.json
-│   │   ├── pages/
-│   │   │   ├── about.html
-│   │   │   ├── default.html
-│   │   │   └── profiles.html
-│   │   ├── scripts/
-│   │   │   ├── appInit.js
-│   │   │   └── profiles.js
-│   │   ├── styles/
-│   │   │   └── global.css
-│   │   └── sw.js
-│   └── server/
-│       ├── routes.js
-│       └── server.js
+│   ├── components/
+│   │   └── login/
+│   │       ├── login.js
+│   │       ├── login.html
+│   │       └── login.css
+│   ├── images/
+│   ├── profiles/
+│   │   ├── profiles.html
+│   │   └── profiles.js
+│   ├── appInit.js
+│   ├── default.html
+│   ├── global.css
+│   ├── manifest.json
+│   ├── routes.js
+│   ├── server.js
+│   └── sw.js
 ├── test/
 │   ├── app.test.js
 │   ├── build.test.js

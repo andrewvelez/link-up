@@ -1,91 +1,92 @@
-# Speed Sprint
+# Speed Sprint — Text-Search Beta Demo
 
-> **Early rough draft — not a final implementation outline.**
+> **Early implementation proposal.**
 >
-> Stories, acceptance criteria, dependencies, priorities, and estimates are
-> provisional proposals based on overarching design goals, not approved
-> implementation commitments.
+> The beta demo scope below is the requested delivery target. Story details,
+> library integration, and estimates remain provisional until validated.
 
-Demonstrate location, profile discovery, and private messaging on two devices,
-including a phone, while keeping authoritative user data encrypted on-device.
-This sprint is composed entirely of whole stories from [ROADMAP_Detailed.md](ROADMAP_Detailed.md).
-That document owns each story's scope, acceptance criteria, and prerequisites.
+Build a functional text-only profile-search page inside the PWA, with a defined
+local store for profile text and working search results. This is a **beta demo**,
+not an MVP. The former two-device prototype is removed from this sprint and the
+roadmap; there is no second-device completion gate.
 
-See the roadmap for [story decision status](ROADMAP_Detailed.md#story-decision-status).
+This sprint selects whole stories from [ROADMAP_Detailed.md](ROADMAP_Detailed.md),
+which owns their scope, acceptance criteria, and prerequisites. See its
+[current baseline](ROADMAP_Detailed.md#current-baseline) and
+[delivery milestones](ROADMAP_Detailed.md#delivery-milestones-and-beta-first-order).
+The existing PWA shell and sample Map/Grid views do not yet provide persistence
+or search, and no selected story is marked complete by this planning update.
 
-## Proposed execution rules
+## Data and runtime boundaries
 
-The proposed story order is listed below. Every direct and transitive
-prerequisite is included earlier in the sequence. A story is complete only when
-its roadmap acceptance criteria pass; headings below group work, not new tasks.
-The final verification story establishes prototype completion, not Version 1 release.
+Define profile text as stable ID, display name, bio, ownership, and revision.
+Use the proposed granthdb store for persisted profile records and synthetic demo
+summaries, validating SQLite/WASM, OPFS, and the IndexedDB fallback in E1-S1.
+Protect authoritative owner records with E1-S2 encryption and local account
+unlock. Full network account authentication is later E1-S6 work.
 
-Build profile data structures first, then their local store with locality as a
-first-class entity. Save profiles, resolve locality and presence, and implement
-local search before networking and regional distribution. Complete working
-discovery before messaging. Research, definitions, library evaluation, and
-decisions are part of the implementation story that needs them.
+Evaluate Orama for searching display names and bios in E5-S6. Its local index is
+derived from stored synthetic summaries and can be reopened or rebuilt after
+reload; it does not replace the authoritative owner store. Private owner records
+are not implicitly included in search. Clearly identify demo data, and allow
+local-only inclusion only through an explicit choice. Persist owner-derived
+summaries and search artifacts encrypted; queries can use decrypted data in memory.
 
-The proposed setup uses one test region, known peers, a fixed builder,
-city-level disclosure, and complete Orama snapshots. Verify required library
-capabilities within the implementation; resolve failed validation before
-completing that story.
-The messaging library, delivery behavior, and persistence integration remain
-speculative; Converse/XMPP is only a candidate. Record the required signaling,
-relay, builder, and messaging infrastructure and costs as choices are resolved.
+Text search runs locally while the app has network access. DESIGN's network
+requirement still applies: tolerate brief interruptions and block interaction
+with the sustained-offline overlay. Cached assets do not imply offline feature
+support. Keep page markup/styles separate from scripts, components in their
+own `src/components/` folders using regular DOM, and feature logic separate from
+shared initialization. Do not edit generated `dist/` files.
 
-## Selected stories
+## Selected stories and execution order
 
-| Order | Roadmap story |
-| --- | --- |
-| 1 | [E1-S1 — Create profile and locality data structures and their local store](ROADMAP_Detailed.md#e1-s1--create-profile-and-locality-data-structures-and-their-local-store) |
-| 2 | [E1-S2 — Encrypt and reopen authoritative owner records](ROADMAP_Detailed.md#e1-s2--encrypt-and-reopen-authoritative-owner-records) |
-| 3 | [E2-S1 — Save a minimal text profile locally](ROADMAP_Detailed.md#e2-s1--save-a-minimal-text-profile-locally) |
-| 4 | [E2-S2 — Add one locally owned profile photo](ROADMAP_Detailed.md#e2-s2--add-one-locally-owned-profile-photo) |
-| 5 | [E2-S3 — Opt into publishing a permitted search summary](ROADMAP_Detailed.md#e2-s3--opt-into-publishing-a-permitted-search-summary) |
-| 6 | [E2-S4 — Withdraw a searchable profile](ROADMAP_Detailed.md#e2-s4--withdraw-a-searchable-profile) |
-| 7 | [E3-S1 — Obtain a private position and H3 membership](ROADMAP_Detailed.md#e3-s1--obtain-a-private-position-and-h3-membership) |
-| 8 | [E4-S1 — Prepare reference data for one test region](ROADMAP_Detailed.md#e4-s1--prepare-reference-data-for-one-test-region) |
-| 9 | [E4-S2 — Resolve and cache locality labels locally](ROADMAP_Detailed.md#e4-s2--resolve-and-cache-locality-labels-locally) |
-| 10 | [E3-S2 — Derive city-level discovery locations](ROADMAP_Detailed.md#e3-s2--derive-city-level-discovery-locations) |
-| 11 | [E3-S3 — Refresh active location and expire presence](ROADMAP_Detailed.md#e3-s3--refresh-active-location-and-expire-presence) |
-| 12 | [E5-S1 — Search local summaries by text and radius](ROADMAP_Detailed.md#e5-s1--search-local-summaries-by-text-and-radius) |
-| 13 | [E5-S2 — Include neighboring cells without duplicate profiles](ROADMAP_Detailed.md#e5-s2--include-neighboring-cells-without-duplicate-profiles) |
-| 14 | [E11-S1 — Store and apply a local block list](ROADMAP_Detailed.md#e11-s1--store-and-apply-a-local-block-list) |
-| 15 | [E11-S2 — Validate untrusted input at prototype boundaries](ROADMAP_Detailed.md#e11-s2--validate-untrusted-input-at-prototype-boundaries) |
-| 16 | [E12-S1 — Preserve the page and enforce sustained-offline behavior](ROADMAP_Detailed.md#e12-s1--preserve-the-page-and-enforce-sustained-offline-behavior) |
-| 17 | [E6-S1 — Connect known peers securely](ROADMAP_Detailed.md#e6-s1--connect-known-peers-securely) |
-| 18 | [E6-S2 — Recover known-peer connections within bounded limits](ROADMAP_Detailed.md#e6-s2--recover-known-peer-connections-within-bounded-limits) |
-| 19 | [E7-S1 — Deliver opted-in summaries to one regional builder](ROADMAP_Detailed.md#e7-s1--deliver-opted-in-summaries-to-one-regional-builder) |
-| 20 | [E7-S2 — Apply withdrawals, expiry, and record ordering](ROADMAP_Detailed.md#e7-s2--apply-withdrawals-expiry-and-record-ordering) |
-| 21 | [E7-S3 — Converge the test region after movement and reconnect](ROADMAP_Detailed.md#e7-s3--converge-the-test-region-after-movement-and-reconnect) |
-| 22 | [E8-S1 — Build one complete regional snapshot](ROADMAP_Detailed.md#e8-s1--build-one-complete-regional-snapshot) |
-| 23 | [E8-S2 — Load and retain a compatible shared snapshot](ROADMAP_Detailed.md#e8-s2--load-and-retain-a-compatible-shared-snapshot) |
-| 24 | [E8-S3 — Refresh through complete replacement snapshots](ROADMAP_Detailed.md#e8-s3--refresh-through-complete-replacement-snapshots) |
-| 25 | [E5-S5 — Keep searching during background refresh](ROADMAP_Detailed.md#e5-s5--keep-searching-during-background-refresh) |
-| 26 | [E9-S1 — Display real nearby profiles](ROADMAP_Detailed.md#e9-s1--display-real-nearby-profiles) |
-| 27 | [E9-S2 — Open details directly from an authorized owner](ROADMAP_Detailed.md#e9-s2--open-details-directly-from-an-authorized-owner) |
-| 28 | [E10-S1 — Send and receive encrypted one-to-one text](ROADMAP_Detailed.md#e10-s1--send-and-receive-encrypted-one-to-one-text) |
-| 29 | [E10-S2 — Retain and retry sender-held pending messages](ROADMAP_Detailed.md#e10-s2--retain-and-retry-sender-held-pending-messages) |
-| 30 | [E10-S3 — Provide a conversation view](ROADMAP_Detailed.md#e10-s3--provide-a-conversation-view) |
-| 31 | [E13-S1 — Verify the complete two-device prototype](ROADMAP_Detailed.md#e13-s1--verify-the-complete-two-device-prototype) |
+Each prerequisite appears earlier in this sequence. Story IDs are stable
+references, not priority numbers; higher-numbered beta stories intentionally
+execute before geographic and distributed-search stories.
 
-E5-S3 and E5-S4 are deliberately unselected: basic text/radius discovery and
-background refresh do not require full profile filters or density adaptation.
-The explicit dependencies in the roadmap permit this selection without partially
-completing either story.
+| Order | Roadmap story | Demonstrable outcome |
+| --- | --- | --- |
+| 1 | [E1-S1 — Create profile and locality data structures and their local store](ROADMAP_Detailed.md#e1-s1--create-profile-and-locality-data-structures-and-their-local-store) | Defined persistent text records and store API; locality remains optional. |
+| 2 | [E1-S2 — Encrypt and reopen authoritative owner records](ROADMAP_Detailed.md#e1-s2--encrypt-and-reopen-authoritative-owner-records) | Local owner data survives reload and unlock without plaintext fallback. |
+| 3 | [E2-S1 — Save a minimal text profile locally](ROADMAP_Detailed.md#e2-s1--save-a-minimal-text-profile-locally) | Display name and bio can be edited and restored. |
+| 4 | [E5-S6 — Search locally stored profile text](ROADMAP_Detailed.md#e5-s6--search-locally-stored-profile-text) | Queries return matching persisted synthetic summaries. |
+| 5 | [E9-S4 — Provide the text-only profile-search page](ROADMAP_Detailed.md#e9-s4--provide-the-text-only-profile-search-page) | The PWA renders query results and loading/empty/error states. |
+| 6 | [E12-S1 — Preserve the page and enforce sustained-offline behavior](ROADMAP_Detailed.md#e12-s1--preserve-the-page-and-enforce-sustained-offline-behavior) | Connectivity behavior follows DESIGN. |
+| **7** | [**E13-S5 — Verify the text-search beta demo**](ROADMAP_Detailed.md#e13-s5--verify-the-text-search-beta-demo) | **Beta demo finished when all seven stories pass.** |
 
-## Completion and follow-on work
+## Completion and verification
 
-The sprint is complete when all 31 selected stories meet their roadmap acceptance
-criteria and E13-S1 records the two-device results, phone resource measurements,
-infrastructure requirements/costs, and `bun run test` outcome. Failed criteria
-remain incomplete and feed the affected roadmap decision or implementation story.
+E13-S5 verifies the complete edit/save/reload/unlock and query/results flow with
+reproducible synthetic summaries. Matching and nonmatching queries, summary
+updates/deletions, private-record exclusion, and empty/error states must behave
+as specified. Verify the PWA entry and sustained-offline overlay in the browser
+and installed PWA where supported. Run `bun run build`, which bundles and then
+runs tests, and record the results. Failed acceptance criteria remain incomplete.
 
-The remaining roadmap retains full profile fields, precise-location opt-in,
-driving adaptation, nationwide reference data, density-adaptive discovery,
-automatic peer entry, multi-region replication, backup/deletion propagation,
-the selected launch index-update strategy, builder selection/failover,
-reporting/moderation, full recovery, and release preparation. A map requires the
-inclusion decision within E9-S3. These capabilities are not implied complete
-by a working prototype.
+No photos, location permission, H3 processing, locality reference dataset,
+regional builder or snapshots, peer exchange, live discovery, messaging,
+notifications, or second device are required. Defining a locality model in
+E1-S1 does not require implementing locality resolution. Synthetic local browsing
+does not settle access policy for real discovery data.
+
+## Later product work and MVP status
+
+After beta, the roadmap retains authenticated accounts, profile publication and
+withdrawal, photos, geographic search, real Map/Grid discovery, peer networking,
+regional indexes, private messaging, supported notifications, abuse controls,
+data recovery, and release preparation. These features are outside this sprint.
+
+**MVP scope and completion gate remain to be agreed.** The beta demo is not an
+MVP, and there is no separate two-device prototype milestone. The complete
+currently specified Version 1 scope finishes at E13-S4; a smaller product MVP
+needs an agreed scope before its earlier completion point can be identified.
+
+## Coding estimates
+
+- **Human coding time:** 54–90 hours.
+- **Human coding with AI:** 27–49 hours.
+
+These are the sum of the seven selected stories' coding estimates. As in the
+roadmap, they exclude research, testing, and documentation and are not an elapsed
+delivery-date estimate. Library validation can change the implementation scope.

@@ -2,6 +2,30 @@
 
 Date: October 9, 2026
 
+## Current scope and interpretation
+
+This recap preserves earlier search-design reasoning and library comparisons;
+it is not a completed implementation or an additional delivery commitment.
+[DESIGN](DESIGN.md) owns current architecture,
+[Network and Search Decisions](network-search-decisions.md) records the later
+network proposals, and the [roadmap](ROADMAP_Detailed.md) owns story acceptance.
+
+As of November 22, 2026, the immediate target is the
+[text-search beta demo](Speed_Sprint_Detailed.md), ending at E13-S5: defined local
+profile-text records, queries, and PWA results with synthetic summaries.
+granthdb is the proposed persisted beta-record store; Orama is the preferred
+derived text-search candidate. Authoritative owner records stay encrypted and
+separate from searchable summaries. Basic local text search comes before H3,
+regional builders, shared snapshots, and networking. There is no separate
+two-device prototype, and MVP scope remains undecided.
+
+The app requires network access for feature interaction, even when queries and
+data are local; cached assets/indexes do not promise offline feature use.
+Earlier examples below involving complete profile documents, master backups,
+city-centered regions, or builder pools are historical proposals. In the current
+design only permitted summaries may be distributed, remote backup is optional
+and cannot replace local authority, and region/builder policies require validation.
+
 ## How search engines represent and store data
 
 A **document** holds the fields and values supplied to the engine. It can contain the complete data object. The engine builds an **inverted index** that maps terms to matching document IDs; one index covers many documents.
@@ -33,13 +57,24 @@ Documents and indexes can be held in memory or saved to persistent storage. Maki
 
 ## Using the search engine as a data store
 
-If the engine retains the documents as well as the index, and can retrieve them, it can also serve as a data store. One system can store and search complete profiles, avoiding a separate database and synchronization between the two. The tradeoffs are memory and storage use, index maintenance when data changes, and engine-specific limits on transactions, constraints, and other queries. Keeping documents in memory does not by itself preserve them across restarts. With a master backup assumed elsewhere, recovery was outside scope. This left each node able to use the engine as a local searchable store, with a separate layer still needed to distribute data between nodes.
+The early discussion considered using an engine that retains searchable
+documents as the data store, avoiding a duplicate database. Its tradeoffs include
+memory, persistence, transactions, constraints, and index maintenance. That
+discussion assumed a master backup and left recovery outside scope. Current
+owner data instead remains authoritative in encrypted on-device storage; an
+Orama summary store does not replace it. Distribution and backup still need
+separate implementation and cannot be assumed from engine persistence.
 
 ## Applying that model to profiles and encryption
 
 For the gay dating app, a document could contain a profile’s fields and values. Media would be stored separately, with references in the profile. Nodes would receive only profiles they were authorized to read and decrypt them locally for searching. The engine would not need to search data that remained encrypted and unreadable to it. An index can reveal information about the profiles it describes, so access permissions also apply to indexes shared with other nodes. Revoking access cannot guarantee removal of data already decrypted by a recipient.
 
-The shared search index contains only the limited profile properties needed to display a search-results grid. Profiles are not searchable by default. A user must explicitly mark their profile as searchable, granting anyone searching permission to view those result properties as public display data. This permission does not extend to detailed profile data.
+The shared search index contains only the limited profile properties needed to
+display and filter results. Profiles are not searchable by default. Explicit
+opt-in permits intended search recipients to view those properties; it does
+not authorize detailed profile access. Whether unauthenticated visitors may
+read real opted-in summaries remains an E1-S6 access-policy decision. Synthetic
+beta browsing does not settle it.
 
 Blocked profiles are filtered from displayed results by the searching user's client. Blocking therefore controls display rather than access to the distributed search summary, allowing regional indexes to be shared without recipient-specific versions.
 

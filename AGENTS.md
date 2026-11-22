@@ -2,14 +2,17 @@
 
 ## Required Directives
 
-- If the prompt is ambiguous, ask clarifying questions before responding.
-- Always get approval for and show changes before applying changes.
-- Diffs should be as small as possible to satisfy the prompt.
-- You should be prepared to justify every line you change.
-- Write code that is easy to read and maintain.
-- All src code, test code, jsdoc annotations and examples in docs should be in JavaScript with no references to TypeScript types.
-- Prefer synchronous code over asynchronous code.
-- Regular code should never have to be modified in order to satisfy or to write a test.
+- If needed, ask clarifying questions regarding the prompt before responding.
+- Show a minimal diff for approval if asked to change code; otherwise, show code in the response.
+- Write code that prioritizes correctness, readability and maintainability over conciseness and speed.
+- This project is JavaScript with no TypeScript; that includes JSDoc annotations.
+- Code shouldn't be changed to make a test work, but code may be refactored in hindsight if necessary.
+
+## Coding Style
+
+- We should not put markup (html) within js files. At a minimum, web components should have markup/styles separated from scripting.
+- Keep each web component and its markup, script, and component-specific styles in its own folder under `src/components/`.
+- Web components use the regular DOM; do not use Shadow DOM.
 
 ## Build Commands
 
@@ -17,10 +20,10 @@
   > `bun install`
 
 * Bundle for development and run tests
-  > `bun run build:dev` **or** `bun build.js buildDevelopment`
+  > `bun run build`
 
 * Bundle for development, run tests, and start the local server
-  > `bun run start:dev` **or** `bun build.js startDevelopment`
+  > `bun run start`
 
 * Bundle for production and run tests (deployment is TODO)
-  > `bun run deploy:prod` **or** `bun build.js deployProduction`
+  > `bun run deploy`

@@ -141,7 +141,6 @@ describe("build", () => {
       "js/appInit.js",
       "default.html",
       "profiles.html",
-      "about.html",
       "manifest.json",
       "styles/global.css",
       "external/milligram.min.css",
@@ -165,11 +164,11 @@ describe("build", () => {
     expect(serviceWorker).toMatch(
       /"?revision"?:"[a-f0-9]{32}","?url"?:"\/"/,
     );
-    expect(serviceWorker).toMatch(
-      /"?revision"?:"[a-f0-9]{32}","?url"?:"about\.html"/,
-    );
+    expect(serviceWorker).not.toContain("about.html");
+    expect(existsSync(join(outputDirectory, "about.html"))).toBe(false);
     const manifest = JSON.parse(readFileSync(join(outputDirectory, "manifest.json"), "utf8"));
     expect(manifest.start_url).toBe("/");
+    expect(manifest.shortcuts).toBeUndefined();
     expect(serviceWorker).not.toMatch(/"?url"?:"home\.html"/);
     expect(serviceWorker).toMatch(/"?revision"?:"[a-f0-9]{32}","?url"?:"profiles\.html"/);
     expect(serviceWorker).not.toMatch(/"?url"?:"default\.html"/);
@@ -181,7 +180,7 @@ describe("build", () => {
 
   test("removes only HTML comments before precaching copied pages", async () => {
     const fixtureDirectory = createFixture();
-    const pagesDirectory = join(fixtureDirectory, "src", "web", "pages");
+    const sourceDirectory = join(fixtureDirectory, "src");
     const outputDirectory = join(fixtureDirectory, "dist");
     const expected = `<html>
   <body>
@@ -192,50 +191,53 @@ describe("build", () => {
 `;
     const html = `<!-- Header
 comment -->${expected.replace("<p>", "<!-- Inside body --><p>")}`;
-    const pages = ["about.html", "nested/extra.html"];
+    const pages = [
+      ["profiles/profiles.html", "profiles.html"],
+      ["components/nested/extra.html", "components/nested/extra.html"],
+    ];
 
-    mkdirSync(join(pagesDirectory, "nested"), { recursive: true });
-    for (const page of pages) {
-      writeFileSync(join(pagesDirectory, page), html);
+    mkdirSync(join(sourceDirectory, "components", "nested"), { recursive: true });
+    for (const [source] of pages) {
+      writeFileSync(join(sourceDirectory, source), html);
     }
-    writeFileSync(join(pagesDirectory, "keep.txt"), html);
+    writeFileSync(join(sourceDirectory, "components", "keep.txt"), html);
 
     const result = await runBuildScript(fixtureDirectory, "buildDev");
 
     expect(result.exitCode).toBe(0);
-    for (const page of pages) {
-      expect(readFileSync(join(outputDirectory, page), "utf8")).toBe(expected);
-      expect(readFileSync(join(pagesDirectory, page), "utf8")).toBe(html);
+    for (const [source, output] of pages) {
+      expect(readFileSync(join(outputDirectory, output), "utf8")).toBe(expected);
+      expect(readFileSync(join(sourceDirectory, source), "utf8")).toBe(html);
     }
-    expect(readFileSync(join(outputDirectory, "keep.txt"), "utf8")).toBe(html);
+    expect(readFileSync(join(outputDirectory, "components", "keep.txt"), "utf8")).toBe(html);
 
     const revision = createHash("md5").update(expected).digest("hex");
     expect(readFileSync(join(outputDirectory, "sw.min.js"), "utf8")).toMatch(
-      new RegExp(`"?revision"?:"${revision}","?url"?:"about\\.html"`),
+      new RegExp(`"?revision"?:"${revision}","?url"?:"profiles\\.html"`),
     );
   });
 
   test("updates precache revisions when asset contents change", async () => {
     const fixtureDirectory = createFixture();
-    const aboutPath = join(fixtureDirectory, "src", "web", "pages", "about.html");
+    const profilesPath = join(fixtureDirectory, "src", "profiles", "profiles.html");
     const workerPath = join(fixtureDirectory, "dist", "sw.min.js");
 
     for (const content of ["<p>Initial content</p>", "<p>Changed content</p>"]) {
-      writeFileSync(aboutPath, content);
+      writeFileSync(profilesPath, content);
 
       const result = await runBuildScript(fixtureDirectory, "buildDev");
 
       expect(result.exitCode).toBe(0);
       const revision = createHash("md5").update(content).digest("hex");
       expect(readFileSync(workerPath, "utf8")).toMatch(
-        new RegExp(`"?revision"?:"${revision}","?url"?:"about\\.html"`),
+        new RegExp(`"?revision"?:"${revision}","?url"?:"profiles\\.html"`),
       );
     }
   });
 
   test("fails when the service worker has no manifest placeholder", async () => {
     const fixtureDirectory = createFixture();
-    const serviceWorkerPath = join(fixtureDirectory, "src", "web", "sw.js");
+    const serviceWorkerPath = join(fixtureDirectory, "src", "sw.js");
 
     writeFileSync(serviceWorkerPath, "export {};\n");
 
@@ -249,7 +251,7 @@ comment -->${expected.replace("<p>", "<!-- Inside body --><p>")}`;
 
   test("fails when the service worker cannot compile", async () => {
     const fixtureDirectory = createFixture();
-    const serviceWorkerPath = join(fixtureDirectory, "src", "web", "sw.js");
+    const serviceWorkerPath = join(fixtureDirectory, "src", "sw.js");
 
     writeFileSync(serviceWorkerPath, "self.__WB_MANIFEST;\nexport const =;\n");
 
@@ -264,7 +266,7 @@ comment -->${expected.replace("<p>", "<!-- Inside body --><p>")}`;
 
   test("fails when the server bundle cannot compile", async () => {
     const fixtureDirectory = createFixture();
-    const serverPath = join(fixtureDirectory, "src", "server", "server.js");
+    const serverPath = join(fixtureDirectory, "src", "server.js");
 
     writeFileSync(serverPath, "export const =;\n");
 
@@ -272,7 +274,7 @@ comment -->${expected.replace("<p>", "<!-- Inside body --><p>")}`;
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain('Expected identifier but found "="');
-    expect(result.stderr).toContain("src/server/server.js");
+    expect(result.stderr).toContain("src/server.js");
     expect(existsSync(join(fixtureDirectory, "dist", "sw.min.js"))).toBe(true);
     expect(existsSync(join(fixtureDirectory, "dist", "sw.js"))).toBe(false);
     expect(existsSync(join(fixtureDirectory, "dist", "link-up"))).toBe(false);
@@ -370,8 +372,6 @@ test("fixture failure", () => {
         ["/default.html", "default.html"],
         ["/profiles", "profiles.html"],
         ["/profiles.html", "profiles.html"],
-        ["/about", "about.html"],
-        ["/about.html", "about.html"],
       ]) {
         const response = await fetch(new URL(path, serverUrl));
 
@@ -389,7 +389,7 @@ test("fixture failure", () => {
         expect(await head.text()).toBe("");
       }
 
-      for (const path of ["/search", "/search.html", "/Default.html", "/js/clerk.js", "/auth/config"]) {
+      for (const path of ["/About", "/about", "/about.html", "/search", "/search.html", "/Default.html", "/js/clerk.js", "/auth/config"]) {
         expect((await fetch(new URL(path, serverUrl))).status).toBe(404);
       }
     } finally {

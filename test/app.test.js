@@ -71,7 +71,7 @@ async function loadApp({
   globalThis.window = window;
   globalThis.navigator = navigator;
 
-  const app = await import(`../src/web/scripts/appInit.js?test=${importNumber++}`);
+  const app = await import(`../src/appInit.js?test=${importNumber++}`);
 
   return {
     shareButton,
@@ -90,7 +90,7 @@ afterEach(() => {
 });
 
 describe("app initialization", () => {
-  test.each(["/", "/about.html", "/home.html", "/profiles.html"])("initialization preserves %s", async (path) => {
+  test.each(["/", "/home.html", "/profiles.html"])("initialization preserves %s", async (path) => {
     const context = await loadApp({ href: `https://example.test${path}` });
     expect(context.window.location.replace).not.toHaveBeenCalled();
   });

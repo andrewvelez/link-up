@@ -19,34 +19,35 @@ bun install
 
 | Command | Purpose |
 | --- | --- |
-| `bun run build:dev` | Bundle the application for development, then run tests. |
-| `bun run start:dev` | Bundle for development, run tests, then start the local host from source. |
-| `bun run deploy:prod` | Bundle for production and run tests. Deployment is currently a TODO. |
+| `bun run build` | Bundle the application for development, then run tests. |
+| `bun run start` | Bundle for development, run tests, then start the local host from source. |
+| `bun run deploy` | Bundle for production and run tests. Deployment is currently a TODO. |
 
-For local development, run `bun run start:dev` and open the URL printed at startup.
+For local development, run `bun run start` and open the URL printed at startup.
 The host listens on `127.0.0.1` with an operating-system-assigned port. Public
 hosting and TLS configuration are outside the current implementation.
 
 ### Before production deployment
 
-Run `bun run deploy:prod` and deploy the resulting `dist/link-up` only if the
+Run `bun run deploy` and deploy the resulting `dist/link-up` only if the
 command succeeds (exit code 0). Automatic deployment is currently a TODO.
 All three commands test after bundling and stop if bundling or tests fail.
 Bare `bun test` runs the test suite without bundling first.
 
 ## Current implementation status
 
-The current checkout contains public default, Home, Profiles, and About pages,
+The current checkout contains public default and Profiles pages,
 a web app manifest, service-worker registration, automated tests, and the
 full-stack executable build pipeline. Build output is generated in `dist/`.
 Authentication is not implemented; all current pages are publicly accessible.
-Profiles provides a selector for placeholder map, grid, and list views.
+Profiles displays synthetic sample profiles and an illustrative map, with
+Map/Grid switching and grid column selection.
 
 The service worker uses bundled Workbox precaching with content revisions.
 Startup navigation to `/`, `/default`, and `/default.html` uses the network,
-falling back to cached `/` if the request fails. Profiles and About are
+falling back to cached `/` if the request fails. Profiles is
 precached and served cache-first; Home is excluded from precaching. See
-[Service-Worker Cache Design](docs/DESIGN.md#service-worker-cache-design).
+[Service-Worker Configuration](docs/DESIGN.md#service-worker-configuration).
 
 Profile creation, local persistence, geographic discovery, search, peer
 networking, encryption, messaging, and notifications remain unimplemented.
@@ -54,9 +55,21 @@ The design keeps authoritative user data and essential logic on-device while
 requiring network access for product functionality. The planned interaction-blocking
 overlay for sustained network loss is not yet implemented.
 
+## Next delivery target
+
+The [Speed Sprint](docs/Speed_Sprint_Detailed.md) targets a **text-search beta
+demo**: a functional PWA page with a defined local profile-text store, text
+queries, and displayed results. Photos, geolocation, peer networking, regional
+indexes, and messaging follow later. The demo uses synthetic profiles and keeps
+owner data encrypted; it does not publish real profiles.
+
+The beta completes at roadmap story **E13-S5**, after the seven selected stories
+pass. The former two-device prototype has been removed. MVP scope remains to be
+agreed; the beta is not an MVP. Full Version 1 completion remains E13-S4.
+
 ## Project documentation
 
 - [Design and architecture](docs/DESIGN.md)
 - [Implementation roadmap](docs/ROADMAP_Detailed.md)
-- [Two-device prototype sprint](docs/Speed_Sprint_Detailed.md)
+- [Text-search beta demo sprint](docs/Speed_Sprint_Detailed.md)
 - [Network and search decisions](docs/network-search-decisions.md)
