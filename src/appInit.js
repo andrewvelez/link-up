@@ -2,10 +2,6 @@
  * @author Andrew Velez
  * @license MIT
  * @description Initializes Link-up pages with standard browser APIs.
- *
- * Scope: shared listener setup and service-worker registration.
- * Keep feature logic, persistence, networking, and page-specific behavior in
- * separate modules; call their initialization functions here when needed.
  */
 
 const shareButton = document.querySelector("#share-button");

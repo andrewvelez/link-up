@@ -75,7 +75,7 @@ function copyBuildFiles() {
   rmSync("./dist", { recursive: true, force: true });
   mkdirSync("./dist/js", { recursive: true });
   mkdirSync("./dist/styles", { recursive: true });
-  cpSync("./src/default.html", "./dist/default.html");
+  cpSync("./src/home/default.html", "./dist/default.html");
   cpSync("./src/profiles/profiles.html", "./dist/profiles.html");
   cpSync("./src/components", "./dist/components", { recursive: true });
   cpSync("./src/appInit.js", "./dist/js/appInit.js");

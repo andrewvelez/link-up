@@ -136,7 +136,7 @@ The peer transport has not yet been selected. If direct peer connections are use
 
 The production deployment artifact is `dist/link-up`, a full-stack executable for VPS deployment. It embeds the completed PWA assets and serves them through its local HTTP routes. Its current host listens on `127.0.0.1` with an operating-system-assigned port (`port: 0`) and logs the selected URL at startup; any public VPS-facing proxy or TLS arrangement is outside this project's current design.
 
-All shipped application source lives under `src/`. Profile-specific markup and behavior live together in `src/profiles/`. Reusable web components live in `src/components/`, and artwork lives in `src/images/`. Shared pages, browser initialization, global styles, PWA metadata, the service worker, and the executable host and HTTP routes live directly under `src/`. The build copies browser assets into `dist/` and stages third-party browser assets from `node_modules/` into `dist/external/`, preserving browser asset URLs. `dist/` is generated build output and is never edited directly.
+All shipped application source lives under `src/`. The default page lives in `src/home/default.html`. Profile-specific markup and behavior live together in `src/profiles/`. Reusable web components live in `src/components/`, and artwork lives in `src/images/`. Browser initialization, global styles, PWA metadata, the service worker, and the executable host and HTTP routes live directly under `src/`. The build copies browser assets into `dist/` and stages third-party browser assets from `node_modules/` into `dist/external/`, preserving browser asset URLs. `dist/` is generated build output and is never edited directly.
 
 ### Server and Browser Responsibilities
 
@@ -252,12 +252,13 @@ All three commands call `runTests()` after bundling. A build or test failure sto
 │   │       ├── login.js
 │   │       ├── login.html
 │   │       └── login.css
+│   ├── home/
+│   │   └── default.html
 │   ├── images/
 │   ├── profiles/
 │   │   ├── profiles.html
 │   │   └── profiles.js
 │   ├── appInit.js
-│   ├── default.html
 │   ├── global.css
 │   ├── manifest.json
 │   ├── routes.js

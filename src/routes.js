@@ -24,7 +24,6 @@ import icon48Named from "../dist/icons/icon_48.png" with { type: "file" };
 import icon512Named from "../dist/icons/icon_512.png" with { type: "file" };
 import styles from "../dist/styles/global.css" with { type: "file" };
 import milligramStyles from "../dist/external/milligram.min.css" with { type: "file" };
-
 import mockupArtwork from "../dist/icons/mockup.svg" with { type: "file" };
 
 const pages = {
